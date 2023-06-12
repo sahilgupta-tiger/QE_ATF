@@ -1,5 +1,0 @@
-{
-    "connnectiontype":"aws-s3",
-    "connectname":"raw_s3_connection",
-    "bucketname":"test"
-}

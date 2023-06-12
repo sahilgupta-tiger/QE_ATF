@@ -1,0 +1,11 @@
+{
+    "connnectiontype":"snowsqldatabase",
+    "connectname":"python_snowflake_connection",
+    "url":"jdbc:snowflake://<account_identifier>.snowflakecomputing.com/",
+    "user":"user",
+    "account":"account_identifier",
+    "privateKey":"pkb",
+    "warehouse":"WAREHOUSE",
+    "database":"DATABASE",
+    "schema":"SCHEMA"
+}
