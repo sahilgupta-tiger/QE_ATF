@@ -1,0 +1,1 @@
+SELECT * FROM indigo-almanac-384011.atf_data_target.patients_db_target

@@ -1,0 +1,1 @@
+spark.sql("SELECT trim(src.ID) as id, trim(src.PREFIX) as PREFIX, trim(src.LAST) as LAST, trim(src.FIRST) as FIRST, trim(src.SUFFIX) as SUFFIX, trim(src.GENDER) as GENDER, trim(CONCAT(COALESCE(PREFIX,''),' ',COALESCE(FIRST,''),' ',COALESCE(LAST,''),' ',COALESCE(SUFFIX,''))) as FULLNAME FROM indigo-almanac-384011.indigo-almanac-384011.atf_data_source.patients_db_source src  ")
