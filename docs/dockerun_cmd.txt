@@ -8,7 +8,7 @@ Docker Image creation with Spark download:
     COPY . .
 
 >> Once this is complete use the Docker Run Command below:
-    docker run -it  -v  C:/Workspaces/GitHub/QE_Automated_Testing_Framework/:/app  apache/spark-py bash
+    docker run -it -v  C:/Workspaces/GitHub/QE_ATF/:/app  apache/spark-py bash
 
 >> find and start shell scripting within an already running docker container
     docker ps
