@@ -1,0 +1,836 @@
+from pyspark.sql.functions import *
+from pyspark.sql import SparkSession
+from pyspark.conf import SparkConf
+import pandas as pd
+from datetime import datetime
+from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
+from atf.common.atf_dc_read_datasources import read_data
+from atf.common.atf_cls_pdfformatting import generatePDF
+from atf.common.atf_cls_loads2t import LoadS2T
+from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
+from atf.common.atf_pdf_constants import *
+import os
+import datacompy
+import sys
+import traceback
+
+def createsparksession():
+    spark = SparkSession.builder.master("local[1]") \
+        .appName('s2ttester') \
+        .config("spark.executor.instances","4") \
+        .config("spark.executor.memory","4gb") \
+        .config("spark.default.parallelism", "8") \
+        .config("spark.sql.shuffle.partitions", "100") \
+        .getOrCreate()
+    spark.sparkContext.setLogLevel('WARN')
+    log_info("Spark Session Configuration items are listed below -")
+    prnSparkConfigs = {}
+    prnSparkConfigs["spark.version"]=spark.sparkContext.version
+    prnSparkConfigs["spark.app.name"]=spark.sparkContext.getConf().get("spark.app.name")
+    prnSparkConfigs["spark.master"]=spark.sparkContext.getConf().get("spark.master")
+    prnSparkConfigs["spark.executor.instances"]=spark.sparkContext.getConf().get("spark.executor.instances")
+    prnSparkConfigs["spark.executor.memory"]=spark.sparkContext.getConf().get("spark.executor.memory")
+    prnSparkConfigs["spark.default.parallelism"]=spark.sparkContext.getConf().get("spark.default.parallelism")
+    prnSparkConfigs["spark.sql.shuffle.partitions"]=spark.sparkContext.getConf().get("spark.sql.shuffle.partitions")
+    prnSparkConfigs["spark.submit.deployMode"]=spark.sparkContext.getConf().get("spark.submit.deployMode")
+    for key, value in prnSparkConfigs.items():
+        log_info(f"{key} --> {value}")
+    return spark
+
+
+class S2TTester:
+    def __init__(self, spark):
+        self.var = ""
+        self.spark = spark
+    
+    def starttestexecute(self, protocol_file_path, testcasetype,testcasesrunlist):
+        log_info(f"Protocol Execution Started")
+        try:
+            log_info(
+                f"Reading the Protocol file details from {protocol_file_path}")
+            dict_protocol, df_testcases = read_protocol_file(
+                protocol_file_path)
+
+            # "test_case_type", "count", ["count","duplicate","content"]
+            # s3_path = get_connection_config(s3_conn_name)
+            # s3_path = s3_path['BUCKETNAME']
+            s3_path = ""
+            # + '/' + str(testcasetype) + '/'
+            # results_path = str(s3_path) + \
+            #   str(dict_protocol['protocol_results_path'])
+
+            results_path = str(dict_protocol['protocol_results_path'])
+            created_time = str(datetime.astimezone(
+                datetime.now()).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
+            # folder_s3 = results_path + str(dict_protocol['protocol_name']) +'/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
+            folder_s3 = results_path + \
+                str(dict_protocol['protocol_name']) + \
+                '/run_'+testcasetype+"_"+created_time+'/'
+            print(f"Protocol Result folder Path: {folder_s3}")
+            os.mkdir(folder_s3)
+            testcase_folder_s3 = folder_s3 + '/run_testcase_summary_' + created_time+'/'
+            os.mkdir(testcase_folder_s3)
+            # protocol_output_path = "/dbfs" + get_mount_path(folder_s3)
+            # testcase_output_path = "/dbfs" + get_mount_path(testcase_folder_s3)
+            protocol_output_path = folder_s3
+            testcase_output_path = testcase_folder_s3
+            combined_testcase_output_path = protocol_output_path + "/run_tc_combined_" + \
+                str(dict_protocol['protocol_name']) + \
+                "_" + created_time + ".pdf"
+            #print(results_path)
+            #print(protocol_output_path)
+            #print(testcase_output_path)
+            df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
+                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype,testcasesrunlist)
+            self.generate_protocol_summary_report(
+                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time,testcasetype)
+            log_info("Protocol Execution Completed")
+
+        except Exception as e2:
+            log_error(f"Protocol Execution ERRORED: {str(e2)}")
+
+
+    def execute_protocol(self, dict_protocol, df_testcases, output_path, combined_testcase_output_path, testcasetype,testcasesrunlist):
+
+        log_info("Protocol Testcases Execution Started")
+        protocol_starttime = datetime.now()
+        # auto_script_path = generate_autoscript_path(combined_testcase_output_path)
+        auto_script_path = ""
+        if testcasetype == "count":
+            df_protocol_summary = pd.DataFrame(columns=[
+                                               'Testcase Name', 'No. of Rows in Source', 'No. of Rows in Target', 'Test Result', 'Reason', 'Runtime'])
+
+        elif testcasetype == "duplicate":
+            df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Distinct Rows in Source',
+                                               'No. of Rows in Target', 'No. of Distinct Rows in Target', 'Test Result', 'Reason', 'Runtime'])
+
+        elif (testcasetype == "content" or testcasetype == "count and content"):
+            df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Rows in Target',
+                                               'No. of Rows matched', 'No. of Rows mismatched', 'Test Result', 'Reason', 'Runtime'])
+        
+        elif testcasetype == "fingerprint":
+            df_protocol_summary = pd.DataFrame(columns=[
+                                               'Testcase Name', 'No. of KPIs in Source', 'No. of KPIs in Target', 'Test Result', 'Reason', 'Runtime'])
+
+        pdfobj_combined_testcase = generatePDF()
+
+        testcases_run_list = []
+        lst_run_testcases = testcasesrunlist
+        log_info("Test Case(s) part of current execution are:")
+        print(lst_run_testcases)
+        
+        for index, row in df_testcases.iterrows():
+            log_info(
+                f"{row['test_case_name']}: Testcase Execution Started")
+            testcase_details = {}
+            test_case_name = row['test_case_name']
+            tcnbr = str(int(row['Sno.']))
+            s3_conn_name = dict_protocol['protocol_connection']
+            # s3_path = get_connection_config(s3_conn_name)
+            # s3_path = s3_path['BUCKETNAME']
+            # test_case_mnt_src_path = s3_path + row['test_case_file_path']
+            # test_case_file_path = '/dbfs' + get_mount_path(s3_path) + row['test_case_file_path']
+            test_case_file_path = row['test_case_file_path']
+
+            try:
+                if (lst_run_testcases[0] == 'all' or (test_case_name.lower() in lst_run_testcases)):
+                    execute_flag = 'Y'
+                    testcases_run_list.append(test_case_name)
+                    pass
+                else:
+                    log_info(
+                        f"The Test Case No.{tcnbr} is not in run_test_cases param, skipping its execution")
+                    execute_flag = 'N'
+                    continue
+                if (len(testcases_run_list) > 1):
+                    pdfobj_combined_testcase.pdf.add_page()
+
+                log_info(
+                    f"{row['test_case_name']}: Reading Test Case Config at {test_case_file_path}")
+                testcase_details = read_test_case(test_case_file_path)
+                # rel_source_path = testcase_details['sourcepath']
+                # testcase_details['sourcepath'] = s3_path + testcase_details['sourcepath']
+                #testcase_details['sourcepath'] = testcase_details['sourcepath']
+                # rel_target_path = testcase_details['targetpath']
+                # testcase_details['targetpath'] = s3_path + testcase_details['targetpath']
+                #testcase_details['targetpath'] = testcase_details['targetpath']
+                testcase_starttime = datetime.now()
+
+                log_info(f"{row['test_case_name']}: Reading Source and Target Data based on TestCase Configuration:  {test_case_name}")
+                # log_info('[{}]: Test Case Config Path {}'.format(str(datetime.astimezone(datetime.now()).strftime("%d-%b-%Y_%H:%M:%S_%Z")).lstrip().rstrip(), test_case_mnt_src_path))
+                compare_input = self.execute_testcase(testcase_details, auto_script_path, testcasetype)
+
+                log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
+                dict_compareoutput = self.compare_data(compare_input, testcasetype)
+
+                testcase_endtime = datetime.now()
+                testcase_exectime = testcase_endtime - testcase_starttime
+                testcase_exectime = str(testcase_exectime).split('.')[0]
+                log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
+                # log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
+
+                log_info(
+                    f"{row['test_case_name']}: Test Results PDF Generation for Test Case Started for {test_case_name}")
+                testcase_starttime = datetime.astimezone(
+                    testcase_starttime).strftime("%d-%b-%Y %H:%M:%S %Z")
+                testcase_endtime = datetime.astimezone(
+                    testcase_endtime).strftime("%d-%b-%Y %H:%M:%S %Z")
+                # testcase_exectime = testcase_exectime.strftime("%H:%M:%S")
+
+                dict_runsummary = {'Application Name': dict_protocol['protocol_application_name'], 'Protocol Name': dict_protocol['protocol_name'],
+                                   "Protocol File Path": protocol_file_path, 'Testcase Name': testcase_details['testcasename'],
+                                   "Testcase Type": testcasetype,
+                                   'Test Environment': dict_protocol['protocol_run_environment'], 'Start Time': testcase_starttime,
+                                   'End Time': testcase_endtime, 'Run Time': testcase_exectime, 'Test Result': dict_compareoutput['test_result'],
+                                   'Reason': dict_compareoutput['result_desc']}
+                # ADD if condition for testcasetype
+                join_cols = ",".join(compare_input['joincolumns'])
+                dict_config = {'Compare Type': testcase_details['comparetype'], 'testquerygenerationmode': testcase_details['testquerygenerationmode'], 'Testcase Type': testcasetype, 'Source Connection Name': testcase_details['sourceconnectionname'],
+                                'Source Connection Type': testcase_details['sourceconnectiontype'], 'Source Connection Value': testcase_details['sourceconnectionname'], 
+                                'Source Format': testcase_details['sourcefileformat'], 'Source Schema': '', 'Source Name': testcase_details['sourcefilename'],
+                                  'Source Path': testcase_details['sourcefilepath'], 'Source Exclude Columns': testcase_details['sourceexcludecolumnlist'], 
+                                  'Source Filter': testcase_details['sourcefilter'], 'Target Connection Name': testcase_details['targetconnectionname'], 
+                                  'Target Connection Type': testcase_details['targetconnectiontype'], 'Target Connection Value': testcase_details['targetconnectionname'], 
+                                  'Target Format': testcase_details['targetfileformat'], 'Target Schema': '', 'Target Name': testcase_details['targetfilename'], 
+                                  'Target Path': testcase_details['targetfilepath'], 'Target Exclude Columns': testcase_details['targetexcludecolumnlist'], 
+                                  'Target Filter': testcase_details['targetfilter'], 'S2T Path': testcase_details['s2tpath'], 'Primary Keys': join_cols}
+                dict_config_temp = dict_config.copy()
+                testcasetype = compare_input['testcasetype']
+                col_match_summary = dict_compareoutput['col_match_summary']
+                comparison_type = testcase_details['comparetype']
+                dict_testresults = dict_compareoutput['dict_results']
+                testcasereportheader = ""
+                pdfobj = generatePDF()
+                pdfobj.write_text(testcasereportheader, 'report header')
+                pdfobj.write_text(
+                    dict_runsummary['Testcase Name'], 'subheading')
+                pdfobj_combined_testcase.write_text(
+                    dict_runsummary['Testcase Name'], 'report header')
+                results_path = output_path + '/' + test_case_name + '_' + \
+                    dict_compareoutput['test_result'].lower() + '.pdf'
+                #testcase summary pdf creation
+                pdfobj = self.generate_testcase_summary_report(dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj)
+                pdfobj.pdf.output(results_path, 'F')
+                log_info(
+                    f"{row['test_case_name']}: Testcase Results PDF for {test_case_name} testcase is created at location:{results_path}")
+                log_info(
+                    f"{row['test_case_name']}: TestCase Results PDF Generation for Test Case Completed:{test_case_name}")
+                dict_config = dict_config_temp
+
+                log_info(
+                    f"{row['test_case_name']}: TestCase Results of  {test_case_name} are Appended to the Summary")
+                pdfobj_combined_testcase = self.generate_testcase_summary_report(
+                    dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj_combined_testcase)
+                
+                if testcasetype == "count":
+                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(
+                        dict_testresults['No. of rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+
+                elif testcasetype == "duplicate":
+
+                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
+                        dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+
+                elif (testcasetype == "content" or testcasetype == "count and content"):
+                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']), str(
+                        dict_testresults['No. of matched rows']), str(dict_testresults['No. of mismatched rows']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                log_info(
+                    f"{row['test_case_name']}: Testcase Execution Completed for {row['test_case_name']}")
+            except Exception as e1:
+                log_error(f"{row['test_case_name']}: Testcase Execution ERRORED:{row['test_case_name']} - ERRORMSG:{str(e1)}")
+                log_error(traceback.format_exc())
+                if testcasetype == "count":
+                    df_protocol_summary.loc[index] = [
+                        test_case_name, '', '', 'Failed', 'Execution Error', '']
+                if (testcasetype == "content" or testcasetype == "count and content"):
+                    df_protocol_summary.loc[index] = [
+                        test_case_name, '', '', '', '', 'Failed', 'Execution Error', '']
+
+        pdfobj_combined_testcase.pdf.output(
+            combined_testcase_output_path, 'F')  # generate combined pdf
+        log_info("Combined Test Case PDF Generated")
+        protocol_endtime = datetime.now()
+        protocol_exectime = protocol_endtime - protocol_starttime
+        protocol_exectime = str(protocol_exectime).split('.')[0]
+        log_info(
+            f"Protocol {dict_protocol['protocol_name']} executed in {protocol_exectime}")
+        protocol_starttime = datetime.astimezone(
+            protocol_starttime).strftime("%d-%b-%Y %H:%M:%S %Z")
+        protocol_endtime = datetime.astimezone(
+            protocol_endtime).strftime("%d-%b-%Y %H:%M:%S %Z")
+
+        totaltestcases = 0
+        testcasespassed = 0
+        testcasesfailed = 0
+        if (len(df_protocol_summary) != 0):
+            totaltestcases = len(df_protocol_summary)
+            testcasespassed = len(
+                df_protocol_summary[df_protocol_summary["Test Result"] == "Passed"])
+            testcasesfailed = len(
+                df_protocol_summary[df_protocol_summary["Test Result"] == "Failed"])
+            df_protocol_summary = df_protocol_summary.sort_values('Reason')
+            df_protocol_summary = spark.createDataFrame(df_protocol_summary)
+        else:
+            log_info("No testcase executed.")
+            df_protocol_summary = None
+
+        protocol_run_details = {'Application Name': dict_protocol['protocol_application_name'], 'Test Protocol Name': dict_protocol['protocol_name'], 'Test Protocol Version': dict_protocol['protocol_version'], 'Test Environment': dict_protocol['protocol_run_environment'],
+                                'Test Protocol Start Time': protocol_starttime, 'Test Protocol End Time': protocol_endtime, 'Total Protocol Run Time': protocol_exectime, 'Total No of Test Cases': totaltestcases, 'No of Test Cases Passed': testcasespassed, 'No of Test Cases Failed': testcasesfailed}
+
+        if (lst_run_testcases[0] == ''):
+            testcases_run_list = "All testcases from protocol executed"
+        else:
+            testcases_run_list = ",".join(testcases_run_list)
+        protocol_run_params = {"Protocol File Path": protocol_file_path,
+                               "Testcases Executed": testcases_run_list, "Testcase Type": testcasetype}
+
+        log_info("Protocol Testcases Executions Completed")
+        return df_protocol_summary, protocol_run_details, protocol_run_params
+    
+    def execute_testcase(self, tc_config, auto_script_path, testcasetype):
+        print(tc_config)
+        s2tmappingsheet = tc_config['s2tmappingsheet']
+        
+        source_file_details_dict = None
+        if (tc_config['samplelimit'] is None):
+            limit = 10
+        else:
+            limit = tc_config['samplelimit']
+
+        log_info(f"Sample limit is {limit}")
+        
+        join_cols = tc_config['primarykey'].split(',')
+        #join_cols = [word.upper() for word in join_cols]
+        join_cols_source = []
+        join_cols_target = []
+        map_cols = []
+
+        if tc_config['s2tpath'] != "":
+            log_info(f"Reading the S2T for Source Details located at {tc_config['s2tpath']}")
+
+        if tc_config['comparetype'] ==  's2tcompare':
+            s2tobj = LoadS2T(tc_config['s2tpath'], self.spark)
+
+        if (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Manual'):
+            log_info("Reading the Source Data")
+            tc_source_config = {'aliasname': tc_config['sourcealiasname'], 'connectiontype': tc_config['sourceconnectiontype'],
+                           'path': tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
+                           'connectionname': tc_config['sourceconnectionname'], 
+                           'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'], 
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
+                           'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],
+                           'schemastruct': s2tobj.getSchemaStruct("source"),'comparetype':tc_config['comparetype'],'filename':tc_config['sourcefilename']}
+            source_df, source_query = read_data(tc_source_config,self.spark)
+
+            log_info(f"Reading the Target Data")
+            tc_target_config = {'aliasname': tc_config['targetaliasname'], 'connectiontype': tc_config['targetconnectiontype'],
+                           'path': tc_config['targetfilepath']+"/"+tc_config['targetfilename'], 'format': tc_config['targetfileformat'], 
+                           'connectionname': tc_config['targetconnectionname'], 
+                           'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'], 
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
+                           'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],
+                           'schemastruct': s2tobj.getSchemaStruct("target"),'comparetype':tc_config['comparetype'],'filename':tc_config['targetfilename']}    
+            target_df, target_query = read_data(tc_target_config,self.spark)
+
+        elif (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Auto'):
+            # s2tconnectionval = get_connection_config(testcase_details['s2tconnectionname'])['BUCKETNAME']
+            # s2tfilepath = s2tconnectionval + testcase_details['s2tpath']
+            log_info(f"Reading the Source Data")
+            tc_source_config = {'connectionname': tc_config['sourceconnectionname'], 'connectiontype': tc_config['sourceconnectiontype'],
+                           'path': tc_config['sourcefilepath'], 'format': tc_config['sourcefileformat'], 'name': tc_config['sourcefilename'],
+                           'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'],
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'],
+                           'testcasename': tc_config['testcasename'], 'autoscripttype': 'source', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
+                           'filename':tc_config['sourcefilename']}
+            autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_source_config, self.spark)
+            scriptpath, source_df, source_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
+            source_conn_name = source_file_details_dict["connectionname"]
+            join_cols_source = source_file_details_dict["join_columns"]
+            source_query = open(scriptpath).read().split('\n')
+
+            log_info(f"Reading the Target Data")
+            tc_target_config = {'connectionname': tc_config['targetconnectionname'], 'connectiontype': tc_config['targetconnectiontype'],
+                           'path': tc_config['targetfilepath'], 'format': tc_config['targetfileformat'], 'name': tc_config['targetfilename'],
+                           'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'],
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'],
+                           'testcasename': tc_config['testcasename'], 'autoscripttype': 'target', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
+                           'filename':tc_config['targetfilename']}
+            autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_target_config, self.spark)
+            scriptpath, target_df, target_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
+            target_conn_name = target_file_details_dict["connectionname"]
+            join_cols_target = target_file_details_dict["join_columns"]
+            target_query = open(scriptpath).read().split('\n')
+
+        elif tc_config['comparetype'] == 'likeobjectcompare':
+            log_info("Reading the Source Data")
+            tc_source_config = {'aliasname': tc_config['sourcealiasname'], 'connectiontype': tc_config['sourceconnectiontype'],
+                           'path': tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
+                           'connectionname': tc_config['sourceconnectionname'], 
+                           'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'], 
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
+                           'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],'comparetype':tc_config['comparetype'],
+                           'filename':tc_config['sourcefilename']}
+            source_df, source_query = read_data(tc_source_config,self.spark)
+           
+            log_info(f"Reading the Target Data")
+            tc_target_config = {'aliasname': tc_config['targetaliasname'], 'connectiontype': tc_config['targetconnectiontype'],
+                           'path': tc_config['targetfilepath']+"/"+tc_config['targetfilename'], 'format': tc_config['targetfileformat'], 
+                           'connectionname': tc_config['targetconnectionname'], 
+                           'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'], 
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
+                           'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
+                           'filename':tc_config['targetfilename']}    
+            target_df, target_query = read_data(tc_target_config,self.spark)
+            
+
+        if (source_file_details_dict is not None):
+            file_details_dict = {"sourcefile": source_file_details_dict["file_path"], "targetfile": target_file_details_dict["file_path"], "sourceconnectionname": source_conn_name,
+                                 "targetconnectionname": target_conn_name, "sourceconnectiontype": source_file_details_dict['connectiontype'], "targetconnectiontype": target_file_details_dict['connectiontype']}
+        else:
+            file_details_dict = {"sourcefile": None, "targetfile": None,
+                                 "sourceconnectionname": "", "targetconnectionname": ""}
+
+        # splitting the columns from source/target queries and writing mismatched in a tuple-list
+        if (tc_config['comparetype'] == 'likeobjectcompare' and tc_config['testquerygenerationmode'] == 'Manual'):
+            find_src_cols = source_query.split(" ")
+            find_tgt_cols = target_query.split(" ")
+            temp_src_cols = find_src_cols[1].split(",")
+            temp_tgt_cols = find_tgt_cols[1].split(",")
+  
+            map_cols = [(x, y) for x in temp_src_cols for y in temp_tgt_cols if x != y and x.lower() == y.lower()]
+            log_info(f"Case-sensitive mismatched columns in both queries are: {map_cols}")
+
+        #compareInput Output values    
+        compare_input = {'sourcedf': source_df, 
+                         'targetdf': target_df, 
+                         'sourcequery': source_query, 
+                         'targetquery': target_query,
+                         'colmapping': map_cols, 
+                         'joincolumns': join_cols, 
+                         'testcasetype': testcasetype, 
+                         'limit': limit, 
+                         "filedetails": file_details_dict}
+
+        return compare_input
+
+    
+    def compare_data(self, compare_input, testcasetype):
+        log_info(f"Data Compare Started for TestingType {testcasetype} ")
+        sourcedf = compare_input['sourcedf']
+        targetdf = compare_input['targetdf']
+        joincolumns = compare_input['joincolumns']
+        log_info(f"Joining with column names: {joincolumns}")
+        colmapping = compare_input['colmapping']
+        limit = compare_input['limit']
+
+        rowcount_source = sourcedf.count()
+        rowcount_target = targetdf.count()
+
+        if (testcasetype == 'content'):
+
+            comparison_obj = datacompy.SparkCompare(self.spark, sourcedf, targetdf,  column_mapping=colmapping, \
+                join_columns=joincolumns, cache_intermediates=True)
+            #comparison_obj.report()
+            distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
+            distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
+            duplicate_rowcount_source = rowcount_source - distinct_rowcount_source
+            duplicate_rowcount_target = rowcount_target - distinct_rowcount_target
+            rows_both_all = comparison_obj.rows_both_all
+            rows_mismatch = comparison_obj.rows_both_mismatch
+            rows_only_source = comparison_obj.rows_only_base
+            rows_only_target = comparison_obj.rows_only_compare
+            rowcount_common = comparison_obj.common_row_count
+            rowcount_only_source = rows_only_source.count()
+            rowcount_only_target = rows_only_target.count()
+            rowcount_mismatch = rows_mismatch.count()
+            rowcount_match = rowcount_common - rowcount_mismatch
+
+            rowcount_total_mismatch = rowcount_only_target + \
+                rowcount_only_source  # + rowcount_mismatch
+
+            if (rowcount_mismatch > 0 or rowcount_only_target > 0 or rowcount_only_source > 0):
+                log_info("Test Case Failed as Content Mismatched")
+                result_desc = "Content mismatched"
+                test_result = "Failed"
+            else:
+                log_info("Test Case Passed as Content Matched")
+                result_desc = "Content matched"
+                test_result = "Passed"
+
+            dict_results = {'Test Result': test_result,
+                            'No. of rows in Source': f"{rowcount_source:,}", 'No. of distinct rows in Source': f"{distinct_rowcount_source:,}",
+                            'No. of duplicate rows in Source': f"{duplicate_rowcount_source:,}",
+                            'No. of rows in Target': f"{rowcount_target:,}", 'No. of distinct rows in Target': f"{distinct_rowcount_target:,}",
+                            'No. of duplicate rows in Target': f"{duplicate_rowcount_target:,}",
+                            'No. of matched rows': f"{rowcount_match:,}",
+                            'No. of mismatched rows': f"{rowcount_mismatch:,}",
+                            'No. of rows in Source but not in Target': f"{rowcount_only_source:,}",
+                            'No. of rows in Target but not in Source': f"{rowcount_only_target:,}"
+                            }
+
+
+            dict_no_of_rows = {'No. of rows in Source': rowcount_source,
+                               'No. of rows in Target': rowcount_target}
+
+            dict_match_summary = {}
+            dict_match_details = {}
+            if rows_only_source.rdd.isEmpty() and rows_only_target.rdd.isEmpty():
+                rows_both_all = None
+            if rows_mismatch.rdd.isEmpty():
+                rows_mismatch = None
+                sample_mismatch = None
+            else:
+                sample_mismatch = rows_mismatch.select(
+                    joincolumns).limit(limit)
+                sample_mismatch, concat_list = self.concat_keys(
+                    sample_mismatch, joincolumns)
+                sample_mismatch = sample_mismatch.select(
+                    concat(*concat_list).alias("Key Columns"))
+            if rows_only_source.rdd.isEmpty():
+                rows_only_source = None
+                sample_source_only = None
+            else:
+                sample_source_only = rows_only_source.select(
+                    joincolumns).limit(limit)
+                sample_source_only, concat_list = self.concat_keys(
+                    sample_source_only, joincolumns)
+                sample_source_only = sample_source_only.select(
+                    concat(*concat_list).alias("Key Columns"))
+            if rows_only_target.rdd.isEmpty():
+                rows_only_target = None
+                sample_target_only = None
+            else:
+                sample_target_only = rows_only_target.select(
+                    joincolumns).limit(limit)
+                sample_target_only, concat_list = self.concat_keys(
+                    sample_target_only, joincolumns)
+                sample_target_only = sample_target_only.select(
+                    concat(*concat_list).alias("Key Columns"))
+
+            if rows_both_all == None:
+                df_match_summary = None
+
+            else:
+                df = rows_both_all
+                #col_list = df.columns
+                if len(colmapping) == 0:
+                    column_mapping = {
+                        i: i for i in sourcedf.columns if i not in joincolumns}
+                    collist = [
+                        i for i in sourcedf.columns if i not in joincolumns]
+                else:
+                    column_mapping = dict(colmapping)
+                    collist = [
+                        i for i in sourcedf.columns if i not in joincolumns]
+
+                for column in collist:
+
+                    base_col = column + "_base"
+                    compare_col = column + "_compare"
+                    match_col = column + "_match"
+                    sel_col_list = []
+                    sel_col_list = joincolumns.copy()
+                    sel_col_list.append(base_col)
+                    sel_col_list.append(compare_col)
+                    key_cols = joincolumns.copy()
+
+                    filter_false = match_col + " == False"
+                    filter_true = match_col + " == True"
+
+                    mismatch = df.select(match_col).filter(
+                        filter_false).count()
+                    if (mismatch == 0):
+                        continue
+
+                    match = df.select(match_col).filter(filter_true).count()
+                    dict_match_summary[column] = [match, mismatch]
+
+                    df_details = df.select(sel_col_list).filter(filter_false).withColumnRenamed(
+                        base_col, "Source value").withColumnRenamed(compare_col, "Target value").distinct().limit(limit)
+
+                    df_details, concat_list = self.concat_keys(
+                        df_details, key_cols)
+                    df_details = df_details.select(
+                        concat(*concat_list).alias("Key Columns"), "Source value", "Target value")
+
+                    dict_match_details[column] = df_details
+
+                list_match_summary = []
+                for k, v in dict_match_summary.items():
+                    list_match_summary.append(
+                        [k, column_mapping[k], rowcount_source, rowcount_target, rowcount_match, v[0], v[1]])
+
+                df_match_summary = pd.DataFrame(list_match_summary, columns=[
+                                                "Source Column Name", "Target Column Name", "Rows in Source", "Rows in Target", "Rows with Common Keys", "Rows Matched", "Rows Mismatch"])
+
+                if (len(df_match_summary) == 0):
+                    df_match_summary = None
+                else:
+                    df_match_summary = spark.createDataFrame(df_match_summary)
+
+        elif (testcasetype == "duplicate"):
+            distinct_rowcount_source = sourcedf.select(
+                joincolumns).distinct().count()
+            distinct_rowcount_target = targetdf.select(
+                joincolumns).distinct().count()
+            duplicate_rowcount_source = rowcount_source - distinct_rowcount_source
+            duplicate_rowcount_target = rowcount_target - distinct_rowcount_target
+            if (distinct_rowcount_source == rowcount_target and rowcount_target == distinct_rowcount_target):
+                test_result = "Passed"
+                result_desc = "No Duplicates"
+                log_info("Test Case Passed - no duplicates")
+            else:
+                test_result = "Failed"
+                result_desc = "Duplicates"
+                log_info("Test Case Failed - duplicates found")
+            dict_results = {
+                'Test Result': test_result, 'No. of rows in Source': f"{rowcount_source:,}", 'No. of distinct rows in Source': f"{distinct_rowcount_source:,}", 'No. of duplicate rows in Source': f"{duplicate_rowcount_source:,}", 'No. of rows in Target': f"{rowcount_target:,}", 'No. of distinct rows in Target': f"{distinct_rowcount_target:,}", 'No. of duplicate rows in Target': f"{duplicate_rowcount_target:,}"
+            }
+            rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
+
+        elif (testcasetype == "count"):
+            if (rowcount_source == rowcount_target):
+                test_result = "Passed"
+                result_desc = "Count matched"
+                log_info("Test Case Passed - Count matched")
+            else:
+                test_result = "Failed"
+                result_desc = "Count mismatched"
+                log_info("Test Case Failed - Count mismatched")
+            dict_results = {
+                'Test Result': test_result, 'No. of rows in Source': f"{rowcount_source:,}", 'No. of rows in Target': f"{rowcount_target:,}"
+            }
+            rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
+
+        elif (testcasetype == "fingerprint"):
+            if (rowcount_source == rowcount_target):
+                test_result = "Passed"
+                result_desc = "Fingerprint matched"
+                log_info("Test Case Passed - KPIs matched")
+            else:
+                test_result = "Failed"
+                result_desc = "Fingerprint mismatched"
+                log_info("Test Case Failed - KPIs mismatched")
+            dict_results = {
+                'Test Result': test_result, 'No. of KPIs in Source': f"{rowcount_source:,}", 'No. of KPIs in Target': f"{rowcount_target:,}"
+            }
+            rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
+
+        dict_compareoutput = {'rows_both_all': rows_both_all, 'rows_mismatch': rows_mismatch, 'rows_only_source': rows_only_source, 'rows_only_target': rows_only_target, 'test_result': test_result, 'sample_mismatch': sample_mismatch,
+                              'sample_source': sample_source_only, 'sample_target': sample_target_only, 'dict_results': dict_results, 'col_match_summary': df_match_summary, 'row_count': dict_no_of_rows, 'col_match_details': dict_match_details, 'result_desc': result_desc}
+        log_info(f"Data Compare Completed for TestingType {testcasetype} ")
+        return dict_compareoutput
+
+    def generate_testcase_summary_report(self, dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj):
+        if (compare_input['filedetails']["sourcefile"] is not None):
+            file_details = compare_input['filedetails']
+            source_file_path = file_details["sourcefile"]
+            dict_config['Source Format'], dict_config['Source Path'] = source_file_path.split(
+                ".", 1)
+            dict_config['Source Path'] = get_mount_src_path(
+                dict_config['Source Path'].replace("`", ""))
+            target_file_path = file_details["targetfile"]
+            dict_config['Target Format'], dict_config['Target Path'] = target_file_path.split(
+                ".", 1)
+            dict_config['Target Path'] = get_mount_src_path(
+                dict_config['Target Path'].replace("`", ""))
+        else:
+            source_file_path = compare_input['sourcequery'].split(
+                "FROM")[-1].split(" ")[1]
+            target_file_path = compare_input['targetquery'].split(
+                "FROM")[-1].split(" ")[1]
+        if (testcasetype == 'count'):
+            srcquery = compare_input['sourcequery']
+            srcquery = "SELECT Count(1) FROM "+source_file_path
+            tgtquery = compare_input['targetquery']
+            tgtquery = "SELECT Count(1) FROM "+target_file_path
+            query_details = {'Source Query': srcquery,
+                             'Target Query': tgtquery}
+        elif (testcasetype == 'duplicate'):
+            srcquery = compare_input['sourcequery']
+            join_cols = dict_config['Primary Keys']
+            srcquery = "SELECT Count(DISTINCT " + \
+                join_cols + ") FROM "+source_file_path
+            tgtquery = compare_input['targetquery']
+            tgtquery = "SELECT Count(DISTINCT " + \
+                join_cols + ") FROM "+target_file_path
+            query_details = {'Source Query': srcquery,
+                             'Target Query': tgtquery}
+        else:
+            query_details = {
+                'Source Query': compare_input['sourcequery'], 'Target Query': compare_input['targetquery']}
+
+        sample_source_only = dict_compareoutput['sample_source']
+        sample_target_only = dict_compareoutput['sample_target']
+        sample_mismatch = dict_compareoutput['sample_mismatch']
+        col_match_summary = dict_compareoutput['col_match_summary']
+        col_match_details = dict_compareoutput['col_match_details']
+        row_count = dict_compareoutput['row_count']
+        if (dict_config['Compare Type'] == 's2tcompare'  and  dict_config['testquerygenerationmode']  =="Auto"):
+            src_conn = get_connection_config(
+                compare_input['filedetails']['sourceconnectionname'])
+            tgt_conn = get_connection_config(
+                compare_input['filedetails']['targetconnectionname'])
+            dict_config['Source Connection Type'] = compare_input['filedetails']['sourceconnectiontype']
+            dict_config['Target Connection Type'] = compare_input['filedetails']['targetconnectiontype']
+            dict_config['Source Connection Name'] = compare_input['filedetails']['sourceconnectionname']
+            dict_config['Target Connection Name'] = compare_input['filedetails']['sourceconnectionname']
+            '''
+            if (src_conn['CONNTYPE'].lower() == 'aws-s3'):
+                dict_config['Source Connection Value'] = src_conn['BUCKETNAME']
+            else:
+                dict_config['Source Connection Value'] = src_conn['CONNURL']
+            if (tgt_conn['CONNTYPE'].lower() == 'aws-s3'):
+                dict_config['Target Connection Value'] = tgt_conn['BUCKETNAME']
+            else:
+                dict_config['Target Connection Value'] = tgt_conn['CONNURL']
+            dict_config['Source Path'] = dict_config['Source Path'].replace(
+                dict_config['Source Connection Value'], "")
+            dict_config['Target Path'] = dict_config['Target Path'].replace(
+                dict_config['Target Connection Value'], "")
+            '''
+        else:
+            '''
+            if (dict_config['Source Connection Type'].lower() == 'aws-s3'):
+                dict_config['Source Connection Value'] = get_connection_config(
+                    dict_config['Source Connection Name'])['BUCKETNAME']
+            else:
+                dict_config['Source Connection Value'] = get_connection_config(
+                    dict_config['Source Connection Name'])['CONNURL']
+            if (dict_config['Target Connection Type'].lower() == 'aws-s3'):
+                dict_config['Target Connection Value'] = get_connection_config(
+                    dict_config['Target Connection Name'])['BUCKETNAME']
+            else:
+                dict_config['Target Connection Value'] = get_connection_config(
+                    dict_config['Target Connection Name'])['CONNURL']
+            '''
+        dict_testresults = dict_compareoutput['dict_results']
+        compare_type = dict_config['Testcase Type'] + " comparison"
+
+        dict_runsummary = {k: v for k, v in dict_runsummary.items() if v != ''}
+        dict_config = {k: v for k, v in dict_config.items() if v != ''}
+        
+
+        pdfobj.write_text(compare_type, 'subheading')
+        pdfobj.write_text(rundetails_subheading, 'section heading')
+        pdfobj.create_table_summary(dict_runsummary)
+        pdfobj.write_text(configdetails_subheading, 'section heading')
+        pdfobj.create_table_summary(dict_config)
+        testcasetype_subheading = "3. " + testcasetype.capitalize() + " Summary"
+        pdfobj.write_text(testcasetype_subheading, 'section heading')
+        pdfobj.create_table_summary(dict_testresults)  # ,'L')
+        pdfobj.write_text('4. SQL Queries', 'section heading')
+        pdfobj.write_text('4.1 Source Query', 'section heading')
+
+        if (testcasetype == "content" and dict_config['Compare Type'] == 's2tcompare' and  dict_config['testquerygenerationmode']  =="Auto"):
+            for i in query_details['Source Query']:
+                pdfobj.display_sql_query(i)
+        else:
+            pdfobj.display_sql_query(query_details['Source Query'])
+        pdfobj.write_text('4.2 Target Query', 'section heading')
+
+        if (testcasetype == "content" and dict_config['Compare Type'] == 's2tcompare' and  dict_config['testquerygenerationmode']  =="Auto"):
+            for i in query_details['Target Query']:
+                pdfobj.display_sql_query(i)
+        else:
+            pdfobj.display_sql_query(query_details['Target Query'])
+
+        if testcasetype == 'count' or testcasetype == "duplicate":
+            pass
+        # or testcasetype == "duplicate"):
+        elif (testcasetype == 'content' or testcasetype == 'count and content'):
+            mismatch_heading = "5. Sample Mismatches " + \
+                str(compare_input['limit']) + " rows"
+            pdfobj.write_text(mismatch_heading, 'section heading')
+            pdfobj.write_text(
+                '5.1 Keys in source but not in target', 'section heading')
+            pdfobj.create_table_details(sample_source_only, 'mismatch')
+            pdfobj.write_text(
+                '5.2 Keys in target but not in source', 'section heading')
+            pdfobj.create_table_details(sample_target_only, 'mismatch')
+            pdfobj.write_text(
+                '5.3 Keys having one or more unequal column values', 'section heading')
+            pdfobj.create_table_details(sample_mismatch, 'mismatch')
+            pdfobj.write_text(
+                '6. Columnwise Mismatch Summary', 'section heading')
+            if col_match_summary != None:
+                pdfobj.create_table_summary(row_count)
+            pdfobj.create_table_details(col_match_summary, 'mismatch_summary')
+            pdfobj.write_text(
+                '7. Columnwise Mismatch Details', 'section heading')
+            sno = 1
+            if len(col_match_details) != 0:
+                for key, value in col_match_details.items():
+                    header = "7." + str(sno) + " " + str(key)
+                    pdfobj.write_text(header, 'section heading')
+                    pdfobj.create_table_details(value, 'mismatch_details')
+                    sno = sno + 1
+            else:
+                df_7 = None
+                pdfobj.create_table_details(df_7)
+        return pdfobj
+
+    def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time,testcasetype):
+        pdfobj_protocol = generatePDF()
+        comparison_type = testcasetype + " comparison"
+        pdfobj_protocol.write_text(protocolreportheader, 'report header')
+        pdfobj_protocol.write_text(protocol_run_details['Test Protocol Name'], 'subheading')
+        pdfobj_protocol.write_text(comparison_type, 'subheading')
+        pdfobj_protocol.write_text(protocolrunparams, 'section heading')
+        pdfobj_protocol.create_table_summary(protocol_run_params)
+        pdfobj_protocol.write_text(protocoltestcaseheader, 'section heading')
+        pdfobj_protocol.create_table_summary(protocol_run_details)
+        pdfobj_protocol.write_text(testresultheader, 'section heading')
+        table_type = 'protocol'
+        if (testcasetype == "count"):
+            table_type = 'protocol_count'
+        sno = 1
+        test_results_list = ['Failed', 'Passed']
+        for test_result in test_results_list:
+            testheader = "3." + str(sno) + ". " + test_result + " Testcases"
+            pdfobj_protocol.write_text(testheader, 'section heading')
+            if (df_protocol_summary is not None):
+                df_protocol_summary_temp = df_protocol_summary.select(
+                    '*').filter(col('Test Result') == test_result)
+                if (df_protocol_summary_temp.count() == 0):
+                    df_protocol_summary_temp = None
+            else:
+                df_protocol_summary_temp = None
+
+            pdfobj_protocol.create_table_details(
+                df_protocol_summary_temp, table_type)
+            sno = sno + 1
+
+        protocol_output_path = output_path + "/run_" + \
+            protocol_run_details['Test Protocol Name'] + \
+            "_" + created_time+".pdf"
+        pdfobj_protocol.pdf.output(protocol_output_path, 'F')
+        log_info("Protocol Summary PDF Generated")
+
+    def concat_keys(self, df, key_cols_list):
+            keycols_name_temp = [i+'_temp' for i in key_cols_list]
+            keycols_val_temp = [j+'=' if i == 0 else ', ' +
+                                j+'= ' for i, j in enumerate(key_cols_list)]
+            for i in range(len(keycols_name_temp)):
+                df = df.withColumn(keycols_name_temp[i], lit(keycols_val_temp[i]))
+
+            concat_key_cols = []
+            for i, j in zip(keycols_name_temp, key_cols_list):
+                concat_key_cols.append(i)
+                concat_key_cols.append(j)
+            return df, concat_key_cols
+
+if __name__ == "__main__":
+    spark = createsparksession()
+    protocol_file_path = sys.argv[1]
+    testtype = sys.argv[2]
+    temporaryrunlist=sys.argv[3].rstrip()
+    if "," in sys.argv[3]:
+        testcasesrunlist=temporaryrunlist.split(",")
+    else:
+        testcasesrunlist=temporaryrunlist
+    log_info(f"Protocol Config path :{protocol_file_path}")
+    log_info(f"TestType:{testtype}")
+    log_info(f"TestCasesRunList:{testcasesrunlist}")
+    testerobj = S2TTester(spark)
+    testerobj.starttestexecute(protocol_file_path, testtype,testcasesrunlist)
