@@ -110,38 +110,44 @@ class S2TTester:
         
         elif testcasetype == "fingerprint":
             df_protocol_summary = pd.DataFrame(columns=[
-                                               'Testcase Name', 'No. of KPIs in Source', 'No. of KPIs in Target', 'Test Result', 'Reason', 'Runtime'])
+                                               'Testcase Name', 'No. of KPIs in Source', 'No. of KPIs in Target', 'No. of KPIs matched',
+                                                 'No. of KPIs mismatched', 'Test Result', 'Reason', 'Runtime'])
 
         pdfobj_combined_testcase = generatePDF()
 
         testcases_run_list = []
+
+        if testcasesrunlist[0] != 'all':
+            log_info("Test Case(s) part of current execution are:")
+            print(testcasesrunlist)
         lst_run_testcases = testcasesrunlist
-        log_info("Test Case(s) part of current execution are:")
-        print(lst_run_testcases)
         
         for index, row in df_testcases.iterrows():
             log_info(
-                f"{row['test_case_name']}: Testcase Execution Started")
+                f"{row['test_case_name']}: Testcase Picked up for Execution")
             testcase_details = {}
             test_case_name = row['test_case_name']
             tcnbr = str(int(row['Sno.']))
+            execute_flag = row['execute']
+            test_case_file_path = row['test_case_file_path']
             s3_conn_name = dict_protocol['protocol_connection']
             # s3_path = get_connection_config(s3_conn_name)
             # s3_path = s3_path['BUCKETNAME']
             # test_case_mnt_src_path = s3_path + row['test_case_file_path']
             # test_case_file_path = '/dbfs' + get_mount_path(s3_path) + row['test_case_file_path']
-            test_case_file_path = row['test_case_file_path']
 
             try:
-                if (lst_run_testcases[0] == 'all' or (test_case_name.lower() in lst_run_testcases)):
-                    execute_flag = 'Y'
+                if (lst_run_testcases[0] == 'all' and execute_flag == 'Y'):
+                    testcases_run_list.append(test_case_name)
+                    pass
+                elif (test_case_name.lower() in lst_run_testcases):
                     testcases_run_list.append(test_case_name)
                     pass
                 else:
                     log_info(
                         f"The Test Case No.{tcnbr} is not in run_test_cases param, skipping its execution")
-                    execute_flag = 'N'
                     continue
+
                 if (len(testcases_run_list) > 1):
                     pdfobj_combined_testcase.pdf.add_page()
 
@@ -234,6 +240,11 @@ class S2TTester:
                 elif (testcasetype == "content" or testcasetype == "count and content"):
                     df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']), str(
                         dict_testresults['No. of matched rows']), str(dict_testresults['No. of mismatched rows']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                
+                elif (testcasetype == "fingerprint"):
+                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of KPIs in Source']), str(dict_testresults['No. of KPIs in Target']), str(
+                        dict_testresults['No. of matched KPIs']), str(dict_testresults['No. of mismatched KPIs']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                    
                 log_info(
                     f"{row['test_case_name']}: Testcase Execution Completed for {row['test_case_name']}")
             except Exception as e1:
@@ -242,7 +253,7 @@ class S2TTester:
                 if testcasetype == "count":
                     df_protocol_summary.loc[index] = [
                         test_case_name, '', '', 'Failed', 'Execution Error', '']
-                if (testcasetype == "content" or testcasetype == "count and content"):
+                if (testcasetype == "content" or testcasetype == "duplicate" or testcasetype == "fingerprint"):
                     df_protocol_summary.loc[index] = [
                         test_case_name, '', '', '', '', 'Failed', 'Execution Error', '']
 
@@ -287,6 +298,7 @@ class S2TTester:
         log_info("Protocol Testcases Executions Completed")
         return df_protocol_summary, protocol_run_details, protocol_run_params
     
+
     def execute_testcase(self, tc_config, auto_script_path, testcasetype):
         print(tc_config)
         s2tmappingsheet = tc_config['s2tmappingsheet']
@@ -822,15 +834,16 @@ class S2TTester:
 
 if __name__ == "__main__":
     spark = createsparksession()
+    testcasesrunlist=[]
     protocol_file_path = sys.argv[1]
     testtype = sys.argv[2]
     temporaryrunlist=sys.argv[3].rstrip()
     if "," in sys.argv[3]:
         testcasesrunlist=temporaryrunlist.split(",")
     else:
-        testcasesrunlist=temporaryrunlist
+        testcasesrunlist.append(temporaryrunlist)
     log_info(f"Protocol Config path :{protocol_file_path}")
-    log_info(f"TestType:{testtype}")
-    log_info(f"TestCasesRunList:{testcasesrunlist}")
+    log_info(f"TestType: {testtype}")
+    log_info(f"TestCasesRunList: {testcasesrunlist}")
     testerobj = S2TTester(spark)
     testerobj.starttestexecute(protocol_file_path, testtype,testcasesrunlist)
