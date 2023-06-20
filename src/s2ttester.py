@@ -21,6 +21,7 @@ def createsparksession():
         .config("spark.executor.memory","4gb") \
         .config("spark.default.parallelism", "8") \
         .config("spark.sql.shuffle.partitions", "100") \
+        .config("spark.sql.debug.maxToStringFields","250") \
         .getOrCreate()
     spark.sparkContext.setLogLevel('WARN')
     log_info("Spark Session Configuration items are listed below -")
@@ -66,7 +67,7 @@ class S2TTester:
             folder_s3 = results_path + \
                 str(dict_protocol['protocol_name']) + \
                 '/run_'+testcasetype+"_"+created_time+'/'
-            print(f"Protocol Result folder Path: {folder_s3}")
+            log_info(f"Protocol Result folder Path: {folder_s3}")
             os.mkdir(folder_s3)
             testcase_folder_s3 = folder_s3 + '/run_testcase_summary_' + created_time+'/'
             os.mkdir(testcase_folder_s3)
