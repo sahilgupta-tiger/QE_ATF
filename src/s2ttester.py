@@ -1,6 +1,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
+from tqdm import tqdm
 import pandas as pd
 from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
@@ -15,27 +16,24 @@ import sys
 import traceback
 
 def createsparksession():
-    spark = SparkSession.builder.master("local[1]") \
-        .appName('s2ttester') \
-        .config("spark.executor.instances","4") \
-        .config("spark.executor.memory","4gb") \
-        .config("spark.default.parallelism", "8") \
-        .config("spark.sql.shuffle.partitions", "100") \
-        .config("spark.sql.debug.maxToStringFields","250") \
-        .getOrCreate()
-    spark.sparkContext.setLogLevel('WARN')
+
+    myconf = SparkConf().setMaster("local[1]") \
+            .setAppName('s2ttester') \
+            .set("spark.executor.instances","4") \
+            .set("spark.executor.memory","4gb") \
+            .set("spark.default.parallelism", "8") \
+            .set("spark.sql.shuffle.partitions", "50") \
+            .set("spark.sql.debug.maxToStringFields","250") \
+    
+    for i in tqdm (range (100), desc="Loading...", ncols=100):
+        spark = SparkSession.builder.master("local[1]").appName('s2ttester') \
+            .config(conf=myconf).enableHiveSupport().getOrCreate()
+        spark.sparkContext.setLogLevel('WARN')
+
     log_info("Spark Session Configuration items are listed below -")
-    prnSparkConfigs = {}
-    prnSparkConfigs["spark.version"]=spark.sparkContext.version
-    prnSparkConfigs["spark.app.name"]=spark.sparkContext.getConf().get("spark.app.name")
-    prnSparkConfigs["spark.master"]=spark.sparkContext.getConf().get("spark.master")
-    prnSparkConfigs["spark.executor.instances"]=spark.sparkContext.getConf().get("spark.executor.instances")
-    prnSparkConfigs["spark.executor.memory"]=spark.sparkContext.getConf().get("spark.executor.memory")
-    prnSparkConfigs["spark.default.parallelism"]=spark.sparkContext.getConf().get("spark.default.parallelism")
-    prnSparkConfigs["spark.sql.shuffle.partitions"]=spark.sparkContext.getConf().get("spark.sql.shuffle.partitions")
-    prnSparkConfigs["spark.submit.deployMode"]=spark.sparkContext.getConf().get("spark.submit.deployMode")
-    for key, value in prnSparkConfigs.items():
-        log_info(f"{key} --> {value}")
+    #configs = myconf.getAll()
+    configs = spark.sparkContext.getConf().getAll()
+    for item in configs: log_info(item)
     return spark
 
 
