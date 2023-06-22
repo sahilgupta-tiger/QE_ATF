@@ -3,4 +3,5 @@ pip install datacompy
 pip install fpdf
 pip install openpyxl
 pip install fsspec
-pip install snowflake-connector-python
+pip install tqdm
+pip install great_expectations
