@@ -19,10 +19,10 @@ def createsparksession():
 
     myconf = SparkConf().setMaster("local[1]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","4") \
-            .set("spark.executor.memory","4gb") \
+            .set("spark.executor.instances","8") \
+            .set("spark.executor.memory","5gb") \
             .set("spark.default.parallelism", "8") \
-            .set("spark.sql.shuffle.partitions", "50") \
+            .set("spark.sql.shuffle.partitions", "150") \
             .set("spark.sql.debug.maxToStringFields","250") \
     
     for i in tqdm (range (100), desc="Loading...", ncols=100):
@@ -434,13 +434,16 @@ class S2TTester:
         colmapping = compare_input['colmapping']
         limit = compare_input['limit']
 
-        rowcount_source = sourcedf.count()
-        rowcount_target = targetdf.count()
+        for x in tqdm (range (100), desc="Counting Rows...", ncols=100):
+            rowcount_source = sourcedf.count()
+            rowcount_target = targetdf.count()
 
         if (testcasetype == 'content'):
-
-            comparison_obj = datacompy.SparkCompare(self.spark, sourcedf, targetdf,  column_mapping=colmapping, \
-                join_columns=joincolumns, cache_intermediates=True)
+            for y in tqdm (range (100), desc="Comparing Content...", ncols=100):
+                comparison_obj = datacompy.SparkCompare(self.spark, sourcedf, targetdf,  \
+                                                        column_mapping=colmapping, \
+                                                        join_columns=joincolumns, \
+                                                        cache_intermediates=True)
             #comparison_obj.report()
             distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
             distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
@@ -618,7 +621,8 @@ class S2TTester:
             pandas_tgtdf = targetdf.toPandas()
             srcdf_desc = pandas_srcdf.describe()
             tgtdf_desc = pandas_tgtdf.describe()
-            fingerprintcomp_obj = datacompy.Compare(srcdf_desc, tgtdf_desc)
+            for z in tqdm (range (100), desc="Comparing Fingerprints...", ncols=100):
+                fingerprintcomp_obj = datacompy.Compare(srcdf_desc, tgtdf_desc)
             fingerprintcomp_obj.report()
 
             rows_both_all = fingerprintcomp_obj.rows_both_all
