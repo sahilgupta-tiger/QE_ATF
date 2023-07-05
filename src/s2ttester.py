@@ -614,7 +614,21 @@ class S2TTester:
             rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
 
         elif (testcasetype == "fingerprint"):
-            if (rowcount_source == rowcount_target):
+            srcdf_desc = sourcedf.describe
+            tgtdf_desc = targetdf.describe
+            fingerprintcomp_obj = datacompy.Compare(self.spark, srcdf_desc, tgtdf_desc, cache_intermediates=True)
+            fingerprintcomp_obj.report()
+
+            rows_both_all = fingerprintcomp_obj.rows_both_all
+            rows_mismatch = fingerprintcomp_obj.rows_both_mismatch
+            rows_only_source = fingerprintcomp_obj.rows_only_base
+            rows_only_target = fingerprintcomp_obj.rows_only_compare
+            rowcount_common = fingerprintcomp_obj.common_row_count
+            rowcount_only_source = rows_only_source.count()
+            rowcount_only_target = rows_only_target.count()
+            rowcount_mismatch = rows_mismatch.count()
+            rowcount_match = rowcount_common - rowcount_mismatch
+            if (rowcount_mismatch == 0 or rowcount_only_target == 0 or rowcount_only_source == 0):
                 test_result = "Passed"
                 result_desc = "Fingerprint matched"
                 log_info("Test Case Passed - KPIs matched")
