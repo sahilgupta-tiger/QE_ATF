@@ -614,9 +614,11 @@ class S2TTester:
             rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
 
         elif (testcasetype == "fingerprint"):
-            srcdf_desc = sourcedf.describe
-            tgtdf_desc = targetdf.describe
-            fingerprintcomp_obj = datacompy.Compare(self.spark, srcdf_desc, tgtdf_desc, cache_intermediates=True)
+            pandas_srcdf = sourcedf.toPandas()
+            pandas_tgtdf = targetdf.toPandas()
+            srcdf_desc = pandas_srcdf.describe()
+            tgtdf_desc = pandas_tgtdf.describe()
+            fingerprintcomp_obj = datacompy.Compare(srcdf_desc, tgtdf_desc)
             fingerprintcomp_obj.report()
 
             rows_both_all = fingerprintcomp_obj.rows_both_all
