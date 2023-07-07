@@ -123,12 +123,15 @@ class S2TAutoLoadScripts:
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="stage")]["columnname"].tolist()
         connectionname = self.s2tobj.stageConnectionName 
         connectiontype = self.s2tobj.stageConnectionType
+        delimiter=self.s2tobj.sourceFileDelimiter
       elif autoscripttype == "target":
         dataFormat = self.s2tobj.targetFileFormat
         dataFile = self.s2tobj.targetFile     
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="target")]["columnname"].tolist()
         connectionname =self.s2tobj.targetConnectionName  
         connectiontype = self.s2tobj.targetConnectionType
+        delimiter=self.s2tobj.targetFileDelimiter
+
         
     elif loadLayer == "source_to_target":
       srcTableName = self.s2tobj.sourceTableName
@@ -142,11 +145,13 @@ class S2TAutoLoadScripts:
         dataFile = self.s2tobj.sourceFile
         connectionname = self.s2tobj.sourceConnectionName  
         connectiontype = self.s2tobj.sourceConnectionType
+        delimiter=self.s2tobj.sourceFileDelimiter
       elif autoscripttype == "target":
         dataFormat = self.s2tobj.targetFileFormat
         dataFile = self.s2tobj.targetFile
         connectionname = self.s2tobj.targetConnectionName  
         connectiontype = self.s2tobj.targetConnectionType
+        delimiter=self.s2tobj.targetFileDelimiter
 
 
     for mapping in tgtmapping_df.rdd.collect():
