@@ -73,6 +73,25 @@ class S2TAutoLoadScripts:
     #print(schemaStruct)
     return schemaStruct
 
+  def getSchemaDefinitionTarget(self, schemadf):
+    schemaStruct = StructType()
+    #print("I am at the point")
+    #schemadf.printSchema()
+    schemadfCollect = schemadf.collect()
+    #print(schemadfCollect)
+    for row in schemadfCollect:
+      #print(row['stagecolumnname'] + "," +row['targetcolumndatatype'])
+      if row['targetcolumndatatype'] == "string" :
+        schemaStruct.add(StructField(row['targetcolumnname'],StringType(),True))
+      elif row['targetcolumndatatype'] == "datetime" :
+        schemaStruct.add(StructField(row['targetcolumnname'],DateType(),True))
+      elif row['targetcolumndatatype'] == "double" :
+        schemaStruct.add(StructField(row['targetcolumnname'],DoubleType(),True))
+      elif row['targetcolumndatatype'] == "integer" :
+        schemaStruct.add(StructField(row['targetcolumnname'],IntegerType(),True))
+    #print(schemaStruct)
+    return schemaStruct
+  
   
   def getSelectTableCmd(self, loadLayer):
     srccollist=[]
@@ -143,12 +162,14 @@ class S2TAutoLoadScripts:
       if autoscripttype == "source":
         dataFormat = self.s2tobj.sourceFileFormat
         dataFile = self.s2tobj.sourceFile
+        joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="source")]["columnname"].tolist()
         connectionname = self.s2tobj.sourceConnectionName  
         connectiontype = self.s2tobj.sourceConnectionType
         delimiter=self.s2tobj.sourceFileDelimiter
       elif autoscripttype == "target":
         dataFormat = self.s2tobj.targetFileFormat
         dataFile = self.s2tobj.targetFile
+        joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="target")]["columnname"].tolist()
         connectionname = self.s2tobj.targetConnectionName  
         connectiontype = self.s2tobj.targetConnectionType
         delimiter=self.s2tobj.targetFileDelimiter
@@ -211,7 +232,11 @@ class S2TAutoLoadScripts:
         self.selectTableCommand=f"SELECT {selcolClause} FROM {srcTableName} src {lookupClause} {filterClause}"
       else:
         self.selectTableCommand=f"SELECT {selcolClause} FROM dataview src {lookupClause} {filterClause}"
-      schemaStruct= self.getSchemaDefinitionSource(self.s2tobj.srcschema_df)
+      if loadLayer == "source_to_stage":
+        schemaStruct= self.getSchemaDefinitionSource(self.s2tobj.srcschema_df)
+      else:
+        schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
+        
     elif autoscripttype == "target":
       selcolClause=commaseparator.join(tgtcollist)
       tgtTableName = self.tcdict["path"]+"."+self.tcdict["name"]
@@ -219,7 +244,10 @@ class S2TAutoLoadScripts:
         self.selectTableCommand=f"SELECT {selcolClause} FROM {tgtTableName} tgt {filterClause}"
       else:
         self.selectTableCommand=f"SELECT {selcolClause} FROM dataview tgt {filterClause}"  
-      schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df) 
+      if loadLayer == "stage_to_target" or loadLayer == "source_to_target":
+        schemaStruct= self.getSchemaDefinitionTarget(self.s2tobj.stgschema_df)
+      else:
+        schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
     
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
