@@ -21,10 +21,11 @@ def createsparksession():
             .setAppName('s2ttester') \
             .set("spark.executor.instances","8") \
             .set("spark.executor.cores","8") \
-            .set("spark.executor.memory","8g") \
+            .set("spark.executor.memory","1g") \
             .set("spark.default.parallelism", "8") \
-            .set("spark.sql.shuffle.partitions", "180") \
-            .set("spark.sql.debug.maxToStringFields","290") \
+            .set("spark.sql.shuffle.partitions", "50") \
+            .set("spark.sql.debug.maxToStringFields","300") \
+            .set("spark.sql.legacy.timeParserPolicy","LEGACY")
     
     for i in tqdm (range (100), desc="Building Spark Session...", ncols=100):
         spark = SparkSession.builder.config(conf=myconf).enableHiveSupport().getOrCreate()
