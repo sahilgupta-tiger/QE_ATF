@@ -19,13 +19,13 @@ def createsparksession():
 
     myconf = SparkConf().setMaster("local[1]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","8") \
-            .set("spark.executor.memory","5gb") \
-            .set("spark.default.parallelism", "8") \
-            .set("spark.sql.shuffle.partitions", "150") \
+            .set("spark.executor.instances","24") \
+            .set("spark.executor.memory","6gb") \
+            .set("spark.default.parallelism", "12") \
+            .set("spark.sql.shuffle.partitions", "200") \
             .set("spark.sql.debug.maxToStringFields","250") \
     
-    for i in tqdm (range (100), desc="Loading...", ncols=100):
+    for i in tqdm (range (100), desc="Building Spark Session...", ncols=100):
         spark = SparkSession.builder.master("local[1]").appName('s2ttester') \
             .config(conf=myconf).enableHiveSupport().getOrCreate()
         spark.sparkContext.setLogLevel('WARN')
