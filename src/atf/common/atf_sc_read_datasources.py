@@ -48,7 +48,7 @@ def read_schema(dict_connection,comparetype):
     df_oracleschema = read_oracleschema(dict_connection, comparetype)
     df_schema = df_oracleschema
 
-  elif(connectiontype == 'mysal' and connectionformat == 'table'):
+  elif(connectiontype == 'mysql' and connectionformat == 'table'):
     df_mysqlschema = read_mysqlschema(dict_connection, comparetype)
     df_schema = df_mysqlschema
     

@@ -1,8 +1,7 @@
 {
     "connnectiontype":"jdbcdatabase",
     "connectname":"postgresql_jdbc_connection",
-    "url":"jdbc:postgresql://localhost:5432/bdepgsql",
-    "database":"bdepgsql",
-    "user":"postgres",
-    "password":"admin123"
+    "url":"jdbc:postgresql://host.docker.internal:5432/postgresqldb",
+    "user":"admin",
+    "password":"tiger@123"
 }

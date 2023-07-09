@@ -9,6 +9,7 @@ from atf.common.atf_dc_read_oracledata import read_oracledata
 from atf.common.atf_dc_read_bigquerydata import read_bigquerydata
 from atf.common.atf_dc_read_deltadata import read_deltadata
 from atf.common.atf_dc_read_snowflakedata import read_snowflakedata
+from atf.common.atf_dc_read_postgresdata import read_postgresdata
 
 def read_data(tc_datasource_config,spark):
   log_info("Inside read_data function")
@@ -50,6 +51,9 @@ def read_data(tc_datasource_config,spark):
 
   elif connectiontype == 'snowflake' and resourceformat == 'table':
       df, query = read_snowflakedata(tc_datasource_config,spark)
+
+  elif connectiontype == 'postgresql' and resourceformat == 'table':
+      df, query = read_postgresdata(tc_datasource_config,spark)
 
   else:
     df = None

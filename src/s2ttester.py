@@ -21,14 +21,13 @@ def createsparksession():
             .setAppName('s2ttester') \
             .set("spark.executor.instances","8") \
             .set("spark.executor.cores","8") \
-            .set("spark.executor.memory","1gb") \
-            .set("spark.default.parallelism", "24") \
-            .set("spark.sql.shuffle.partitions", "200") \
-            .set("spark.sql.debug.maxToStringFields","250") \
+            .set("spark.executor.memory","8g") \
+            .set("spark.default.parallelism", "8") \
+            .set("spark.sql.shuffle.partitions", "180") \
+            .set("spark.sql.debug.maxToStringFields","290") \
     
     for i in tqdm (range (100), desc="Building Spark Session...", ncols=100):
-        spark = SparkSession.builder.master("local[1]").appName('s2ttester') \
-            .config(conf=myconf).enableHiveSupport().getOrCreate()
+        spark = SparkSession.builder.config(conf=myconf).enableHiveSupport().getOrCreate()
         spark.sparkContext.setLogLevel('WARN')
 
     log_info("Spark Session Configuration items are listed below -")
@@ -435,16 +434,20 @@ class S2TTester:
         colmapping = compare_input['colmapping']
         limit = compare_input['limit']
 
-        for x in tqdm (range (100), desc="Counting Rows...", ncols=100):
-            rowcount_source = sourcedf.count()
-            rowcount_target = targetdf.count()
+        print("Counting Source Rows now...")
+        #for x in tqdm (range (100), desc="Counting Source Rows...", ncols=100):
+        rowcount_source = sourcedf.count()
+        print("Counting Target Rows now...")
+        #for y in tqdm (range (100), desc="Counting Target Rows...", ncols=100):
+        rowcount_target = targetdf.count()
 
         if (testcasetype == 'content'):
-            for y in tqdm (range (100), desc="Comparing Content...", ncols=100):
-                comparison_obj = datacompy.SparkCompare(self.spark, sourcedf, targetdf,  \
-                                                        column_mapping=colmapping, \
-                                                        join_columns=joincolumns, \
-                                                        cache_intermediates=True)
+            
+            print("Comparing Contents of Source and Target now...(this may take a while)...")
+            comparison_obj = datacompy.SparkCompare(self.spark, sourcedf, targetdf,  \
+                                                    column_mapping=colmapping, \
+                                                    join_columns=joincolumns, \
+                                                    cache_intermediates=True)
             #comparison_obj.report()
             distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
             distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
@@ -652,6 +655,7 @@ class S2TTester:
                               'sample_source': sample_source_only, 'sample_target': sample_target_only, 'dict_results': dict_results, 'col_match_summary': df_match_summary, 'row_count': dict_no_of_rows, 'col_match_details': dict_match_details, 'result_desc': result_desc}
         log_info(f"Data Compare Completed for TestingType {testcasetype} ")
         return dict_compareoutput
+
 
     def generate_testcase_summary_report(self, dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj):
         if (compare_input['filedetails']["sourcefile"] is not None):
