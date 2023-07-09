@@ -17,11 +17,12 @@ import traceback
 
 def createsparksession():
 
-    myconf = SparkConf().setMaster("local[1]") \
+    myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","24") \
-            .set("spark.executor.memory","6gb") \
-            .set("spark.default.parallelism", "12") \
+            .set("spark.executor.instances","8") \
+            .set("spark.executor.cores","8") \
+            .set("spark.executor.memory","1gb") \
+            .set("spark.default.parallelism", "24") \
             .set("spark.sql.shuffle.partitions", "200") \
             .set("spark.sql.debug.maxToStringFields","250") \
     
