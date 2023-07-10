@@ -19,13 +19,13 @@ def createsparksession():
 
     myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","6") \
-            .set("spark.executor.cores","6") \
-            .set("spark.executor.memory","1g") \
+            .set("spark.executor.instances","5") \
+            .set("spark.executor.cores","5") \
+            .set("spark.executor.memory","2g") \
             .set("spark.memory.offHeap.enabled","true") \
-            .set("spark.memory.offHeap.size","1g") \
-            .set("spark.default.parallelism", "6") \
-            .set("spark.sql.shuffle.partitions", "100") \
+            .set("spark.memory.offHeap.size","2g") \
+            .set("spark.default.parallelism", "8") \
+            .set("spark.sql.shuffle.partitions", "150") \
             .set("spark.sql.debug.maxToStringFields","300") \
             .set("spark.sql.legacy.timeParserPolicy","LEGACY")
     
@@ -34,8 +34,8 @@ def createsparksession():
         spark.sparkContext.setLogLevel('WARN')
 
     log_info("Spark Session Configuration items are listed below -")
-    #configs = myconf.getAll()
-    configs = spark.sparkContext.getConf().getAll()
+    configs = myconf.getAll()
+    #configs = spark.sparkContext.getConf().getAll()
     for item in configs: log_info(item)
     return spark
 
