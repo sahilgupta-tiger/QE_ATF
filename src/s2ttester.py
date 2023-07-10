@@ -429,7 +429,7 @@ class S2TTester:
 
     
     def compare_data(self, compare_input, testcasetype):
-        log_info(f"Data Compare Started for TestingType {testcasetype} ")
+        log_info(f"Data Compare Started for TestingType - {testcasetype} ")
         sourcedf = compare_input['sourcedf']
         targetdf = compare_input['targetdf']
         joincolumns = compare_input['joincolumns']
@@ -438,10 +438,8 @@ class S2TTester:
         limit = compare_input['limit']
 
         print("Counting Source Rows now...")
-        #for x in tqdm (range (100), desc="Counting Source Rows...", ncols=100):
         rowcount_source = sourcedf.count()
         print("Counting Target Rows now...")
-        #for y in tqdm (range (100), desc="Counting Target Rows...", ncols=100):
         rowcount_target = targetdf.count()
 
         if (testcasetype == 'content'):
@@ -628,8 +626,7 @@ class S2TTester:
             pandas_tgtdf = targetdf.toPandas()
             srcdf_desc = pandas_srcdf.describe()
             tgtdf_desc = pandas_tgtdf.describe()
-            for z in tqdm (range (100), desc="Comparing Fingerprints...", ncols=100):
-                fingerprintcomp_obj = datacompy.Compare(srcdf_desc, tgtdf_desc)
+            fingerprintcomp_obj = datacompy.Compare(srcdf_desc, tgtdf_desc)
             fingerprintcomp_obj.report()
 
             rows_both_all = fingerprintcomp_obj.rows_both_all
@@ -656,7 +653,7 @@ class S2TTester:
 
         dict_compareoutput = {'rows_both_all': rows_both_all, 'rows_mismatch': rows_mismatch, 'rows_only_source': rows_only_source, 'rows_only_target': rows_only_target, 'test_result': test_result, 'sample_mismatch': sample_mismatch,
                               'sample_source': sample_source_only, 'sample_target': sample_target_only, 'dict_results': dict_results, 'col_match_summary': df_match_summary, 'row_count': dict_no_of_rows, 'col_match_details': dict_match_details, 'result_desc': result_desc}
-        log_info(f"Data Compare Completed for TestingType {testcasetype} ")
+        log_info(f"Data Compare Completed for TestingType - {testcasetype} ")
         return dict_compareoutput
 
 

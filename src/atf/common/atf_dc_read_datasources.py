@@ -52,7 +52,7 @@ def read_data(tc_datasource_config,spark):
   elif connectiontype == 'snowflake' and resourceformat == 'table':
       df, query = read_snowflakedata(tc_datasource_config,spark)
 
-  elif connectiontype == 'postgresql' and resourceformat == 'table':
+  elif connectiontype == 'postgres' and resourceformat == 'table':
       df, query = read_postgresdata(tc_datasource_config,spark)
 
   else:

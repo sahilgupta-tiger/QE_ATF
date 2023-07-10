@@ -1,0 +1,3 @@
+readdatadf=spark.read.format('delimitedfile').option('delimiter',,).option('header','true').load('/app/test/data/target/hnpstats_data.csv')
+readdatadf.createOrReplaceTempView('dataview')
+spark.sql("SELECT countryname, indicatorcode, y1960, y1962, y1963, countrycode, y1961, indicatorname, y1967, y1965, y1970, y1964, y1968, y1969, y1966, y1971, y1973, y1975, y1977, y1974, y1978, y1976, y1972, y1979, y1984, y1985, y1982, y1986, y1981, y1980, y1983, y1987, y1995, y1988, y1994, y1991, y1990, y1989, y1992, y1993, y1998, y2001, y1996, y2003, y2000, y1997, y2002, y1999, y2011, y2009, y2006, y2010, y2007, y2005, y2008, y2004, y2021, y2014, y2018, y2012, y2015, y2013, y2020, y2017, y2016, y2019 FROM dataview tgt ")
