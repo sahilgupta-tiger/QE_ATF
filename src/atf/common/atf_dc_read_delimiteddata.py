@@ -1,5 +1,6 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
+from pyspark import StorageLevel
 from atf.common.atf_common_functions import log_info
 
 def read_delimiteddata(tc_datasource_config,spark):
@@ -18,6 +19,7 @@ def read_delimiteddata(tc_datasource_config,spark):
     exclude_cols = excludecolumns.split(',')
     datafilter = str(datafilter)
     df = spark.read.option("delimiter", delimiter).csv(filepath, header = True)
+    df.printSchema()
     df.createOrReplaceTempView(resourcename + "_csvview")
     columns = df.columns
     columnlist = list(set(columns) - set(exclude_cols))
@@ -32,7 +34,6 @@ def read_delimiteddata(tc_datasource_config,spark):
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)
-    print(query)
     df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(tc_datasource_config['path'], header = True)
     df.printSchema()
     print(tc_datasource_config['aliasname'])

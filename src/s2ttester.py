@@ -1,6 +1,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
+from pyspark import StorageLevel
 from tqdm import tqdm
 import pandas as pd
 from datetime import datetime
@@ -17,17 +18,21 @@ import traceback
 
 def createsparksession():
 
-    myconf = SparkConf().setMaster("local[*]") \
+    myconf = SparkConf().setMaster("local[1]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","5") \
-            .set("spark.executor.cores","5") \
-            .set("spark.executor.memory","2g") \
+            .set("spark.executor.instances","6") \
+            .set("spark.executor.cores","6") \
+            .set("spark.executor.memory","6g") \
+            .set("spark.driver.memory","6g") \
+            .set("spark.default.parallelism","48") \
+            .set("spark.sql.shuffle.partitions","150") \
             .set("spark.memory.offHeap.enabled","true") \
-            .set("spark.memory.offHeap.size","2g") \
-            .set("spark.default.parallelism", "8") \
-            .set("spark.sql.shuffle.partitions", "150") \
+            .set("spark.memory.offHeap.size","6g") \
+            .set("spark.memory.fraction","0.8") \
+            .set("spark.memory.storageFraction","0.6") \
             .set("spark.sql.debug.maxToStringFields","300") \
-            .set("spark.sql.legacy.timeParserPolicy","LEGACY")
+            .set("spark.sql.legacy.timeParserPolicy","LEGACY") \
+            .set("spark.sql.autoBroadcastJoinThreshold","-1")
     
     for i in tqdm (range (100), desc="Building Spark Session...", ncols=100):
         spark = SparkSession.builder.config(conf=myconf).enableHiveSupport().getOrCreate()
@@ -437,6 +442,7 @@ class S2TTester:
         colmapping = compare_input['colmapping']
         limit = compare_input['limit']
 
+        # Initial spark memory processing STARTS HERE...
         print("Counting Source Rows now...")
         rowcount_source = sourcedf.count()
         print("Counting Target Rows now...")
@@ -653,6 +659,7 @@ class S2TTester:
 
         dict_compareoutput = {'rows_both_all': rows_both_all, 'rows_mismatch': rows_mismatch, 'rows_only_source': rows_only_source, 'rows_only_target': rows_only_target, 'test_result': test_result, 'sample_mismatch': sample_mismatch,
                               'sample_source': sample_source_only, 'sample_target': sample_target_only, 'dict_results': dict_results, 'col_match_summary': df_match_summary, 'row_count': dict_no_of_rows, 'col_match_details': dict_match_details, 'result_desc': result_desc}
+        
         log_info(f"Data Compare Completed for TestingType - {testcasetype} ")
         return dict_compareoutput
 
@@ -855,6 +862,7 @@ class S2TTester:
                 concat_key_cols.append(i)
                 concat_key_cols.append(j)
             return df, concat_key_cols
+
 
 if __name__ == "__main__":
     spark = createsparksession()
