@@ -23,19 +23,18 @@ def createsparksession():
             .set("spark.executor.instances","6") \
             .set("spark.executor.cores","6") \
             .set("spark.executor.memory","6g") \
-            .set("spark.driver.memory","6g") \
             .set("spark.default.parallelism","48") \
-            .set("spark.sql.shuffle.partitions","150") \
+            .set("spark.sql.shuffle.partitions","250") \
             .set("spark.memory.offHeap.enabled","true") \
-            .set("spark.memory.offHeap.size","6g") \
-            .set("spark.memory.fraction","0.8") \
-            .set("spark.memory.storageFraction","0.6") \
+            .set("spark.memory.offHeap.size","3g") \
+            .set("spark.memory.fraction","0.9") \
+            .set("spark.memory.storageFraction","0.7") \
             .set("spark.sql.debug.maxToStringFields","300") \
             .set("spark.sql.legacy.timeParserPolicy","LEGACY") \
             .set("spark.sql.autoBroadcastJoinThreshold","-1")
     
     for i in tqdm (range (100), desc="Building Spark Session...", ncols=100):
-        spark = SparkSession.builder.config(conf=myconf).enableHiveSupport().getOrCreate()
+        spark = SparkSession.builder.config(conf=myconf).getOrCreate()
         spark.sparkContext.setLogLevel('WARN')
 
     log_info("Spark Session Configuration items are listed below -")
