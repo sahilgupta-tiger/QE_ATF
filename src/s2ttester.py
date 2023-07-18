@@ -18,17 +18,17 @@ import traceback
 
 def createsparksession():
 
-    myconf = SparkConf().setMaster("local[1]") \
+    myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","6") \
+            .set("spark.executor.instances","15") \
             .set("spark.executor.cores","6") \
             .set("spark.executor.memory","6g") \
             .set("spark.default.parallelism","48") \
-            .set("spark.sql.shuffle.partitions","250") \
+            .set("spark.sql.shuffle.partitions","200") \
             .set("spark.memory.offHeap.enabled","true") \
-            .set("spark.memory.offHeap.size","3g") \
-            .set("spark.memory.fraction","0.9") \
-            .set("spark.memory.storageFraction","0.7") \
+            .set("spark.memory.offHeap.size","2g") \
+            .set("spark.memory.fraction","0.8") \
+            .set("spark.memory.storageFraction","0.6") \
             .set("spark.sql.debug.maxToStringFields","300") \
             .set("spark.sql.legacy.timeParserPolicy","LEGACY") \
             .set("spark.sql.autoBroadcastJoinThreshold","-1")
@@ -629,9 +629,9 @@ class S2TTester:
         elif (testcasetype == "fingerprint"):
             pandas_srcdf = sourcedf.toPandas()
             pandas_tgtdf = targetdf.toPandas()
-            srcdf_desc = pandas_srcdf.describe()
-            tgtdf_desc = pandas_tgtdf.describe()
-            fingerprintcomp_obj = datacompy.Compare(srcdf_desc, tgtdf_desc)
+            print("Comparing Fingerprints of Source and Target now...",pandas_srcdf,pandas_tgtdf,sep='\n')
+            
+            fingerprintcomp_obj = datacompy.Compare(pandas_srcdf, pandas_tgtdf, join_columns=joincolumns)
             fingerprintcomp_obj.report()
 
             rows_both_all = fingerprintcomp_obj.rows_both_all
