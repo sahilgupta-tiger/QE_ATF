@@ -20,11 +20,11 @@ def createsparksession():
 
     myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","15") \
+            .set("spark.executor.instances","12") \
             .set("spark.executor.cores","6") \
             .set("spark.executor.memory","6g") \
             .set("spark.default.parallelism","48") \
-            .set("spark.sql.shuffle.partitions","200") \
+            .set("spark.sql.shuffle.partitions","250") \
             .set("spark.memory.offHeap.enabled","true") \
             .set("spark.memory.offHeap.size","2g") \
             .set("spark.memory.fraction","0.8") \
