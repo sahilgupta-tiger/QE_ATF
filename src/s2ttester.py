@@ -1,7 +1,6 @@
 from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
-from pyspark import StorageLevel
 from tqdm import tqdm
 import pandas as pd
 from datetime import datetime
@@ -20,18 +19,18 @@ def createsparksession():
 
     myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","15") \
-            .set("spark.executor.cores","6") \
-            .set("spark.executor.memory","6g") \
-            .set("spark.default.parallelism","48") \
-            .set("spark.sql.shuffle.partitions","200") \
-            .set("spark.memory.offHeap.enabled","true") \
-            .set("spark.memory.offHeap.size","2g") \
-            .set("spark.memory.fraction","0.8") \
-            .set("spark.memory.storageFraction","0.6") \
-            .set("spark.sql.debug.maxToStringFields","300") \
-            .set("spark.sql.legacy.timeParserPolicy","LEGACY") \
-            .set("spark.sql.autoBroadcastJoinThreshold","-1")
+            .set("spark.executor.instances", "15") \
+            .set("spark.executor.cores", "6") \
+            .set("spark.executor.memory", "6g") \
+            .set("spark.default.parallelism", "48") \
+            .set("spark.sql.shuffle.partitions", "200") \
+            .set("spark.memory.offHeap.enabled", "true") \
+            .set("spark.memory.offHeap.size", "2g") \
+            .set("spark.memory.fraction", "0.8") \
+            .set("spark.memory.storageFraction", "0.6") \
+            .set("spark.sql.debug.maxToStringFields", "300") \
+            .set("spark.sql.legacy.timeParserPolicy", "LEGACY") \
+            .set("spark.sql.autoBroadcastJoinThreshold", "-1")
     
     for i in tqdm (range (100), desc="Building Spark Session...", ncols=100):
         spark = SparkSession.builder.config(conf=myconf).getOrCreate()
