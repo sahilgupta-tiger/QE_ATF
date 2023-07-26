@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="jdbcdriver">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/test/jdbcdriver/terajdbc-20.00.00.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/test/jdbcdriver/ojdbc8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/test/jdbcdriver/postgresql-42.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/test/jdbcdriver/mysql-connector-java-5.1.46.jar!/" />
+      <root url="jar://$PROJECT_DIR$/test/jdbcdriver/spark-3.2-bigquery-0.30.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/test/jdbcdriver/snowflake-jdbc-3.13.30.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

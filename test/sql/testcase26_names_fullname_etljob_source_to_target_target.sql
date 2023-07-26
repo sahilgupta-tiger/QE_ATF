@@ -1,1 +1,1 @@
-spark.sql("SELECT BIRTHDATE, ID, PREFIX, PREFIX, FIRST, SUFFIX, LAST, GENDER, STATE, FULLNAME FROM OracleDemoTiger.sys.orc_patients_stg tgt ")
+spark.sql("SELECT FULLNAME, BIRTHDATE, FIRST, GENDER, ID, LAST, PREFIX, PREFIX, STATE, SUFFIX FROM OracleDemoTiger.sys.orc_patients_stg tgt ")

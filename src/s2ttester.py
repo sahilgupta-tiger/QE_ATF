@@ -20,11 +20,11 @@ def createsparksession():
 
     myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
-            .set("spark.executor.instances","12") \
+            .set("spark.executor.instances","15") \
             .set("spark.executor.cores","6") \
             .set("spark.executor.memory","6g") \
             .set("spark.default.parallelism","48") \
-            .set("spark.sql.shuffle.partitions","250") \
+            .set("spark.sql.shuffle.partitions","200") \
             .set("spark.memory.offHeap.enabled","true") \
             .set("spark.memory.offHeap.size","2g") \
             .set("spark.memory.fraction","0.8") \
@@ -38,8 +38,8 @@ def createsparksession():
         spark.sparkContext.setLogLevel('WARN')
 
     log_info("Spark Session Configuration items are listed below -")
-    configs = myconf.getAll()
-    #configs = spark.sparkContext.getConf().getAll()
+    #configs = myconf.getAll()
+    configs = spark.sparkContext.getConf().getAll()
     for item in configs: log_info(item)
     return spark
 
@@ -115,9 +115,9 @@ class S2TTester:
                                                'No. of Rows matched', 'No. of Rows mismatched', 'Test Result', 'Reason', 'Runtime'])
         
         elif testcasetype == "fingerprint":
-            df_protocol_summary = pd.DataFrame(columns=[
-                                               'Testcase Name', 'No. of KPIs in Source', 'No. of KPIs in Target', 'No. of KPIs matched',
-                                                 'No. of KPIs mismatched', 'Test Result', 'Reason', 'Runtime'])
+            df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of KPIs in Source',
+                                                        'No. of KPIs in Target', 'No. of KPIs matched',
+                                                        'No. of KPIs mismatched', 'Test Result', 'Reason', 'Runtime'])
 
         pdfobj_combined_testcase = generatePDF()
 
@@ -243,13 +243,13 @@ class S2TTester:
                     df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
                         dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
-                elif (testcasetype == "content" or testcasetype == "count and content"):
+                elif testcasetype == "content" or testcasetype == "count and content":
                     df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']), str(
                         dict_testresults['No. of matched rows']), str(dict_testresults['No. of mismatched rows']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
                 
-                elif (testcasetype == "fingerprint"):
+                elif testcasetype == "fingerprint":
                     df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of KPIs in Source']), str(dict_testresults['No. of KPIs in Target']), str(
-                        dict_testresults['No. of matched KPIs']), str(dict_testresults['No. of mismatched KPIs']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                        dict_testresults['No. of KPIs matched']), str(dict_testresults['No. of KPIs mismatched']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
                     
                 log_info(
                     f"{row['test_case_name']}: Testcase Execution Completed for {row['test_case_name']}")
@@ -440,7 +440,8 @@ class S2TTester:
         log_info(f"Joining with column names: {joincolumns}")
         colmapping = compare_input['colmapping']
         limit = compare_input['limit']
-
+        dict_match_summary = {}
+        dict_match_details = {}
         # Initial spark memory processing STARTS HERE...
         print("Counting Source Rows now...")
         rowcount_source = sourcedf.count()
@@ -496,8 +497,6 @@ class S2TTester:
             dict_no_of_rows = {'No. of rows in Source': rowcount_source,
                                'No. of rows in Target': rowcount_target}
 
-            dict_match_summary = {}
-            dict_match_details = {}
             if rows_only_source.rdd.isEmpty() and rows_only_target.rdd.isEmpty():
                 rows_both_all = None
             if rows_mismatch.rdd.isEmpty():
@@ -627,11 +626,12 @@ class S2TTester:
             rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
 
         elif (testcasetype == "fingerprint"):
-            pandas_srcdf = sourcedf.toPandas()
-            pandas_tgtdf = targetdf.toPandas()
-            print("Comparing Fingerprints of Source and Target now...",pandas_srcdf,pandas_tgtdf,sep='\n')
-            
-            fingerprintcomp_obj = datacompy.Compare(pandas_srcdf, pandas_tgtdf, join_columns=joincolumns)
+            special_srcdf = sourcedf
+            special_tgtdf = targetdf
+
+            print("Comparing Fingerprints of Source and Target now...")
+            fingerprintcomp_obj = datacompy.SparkCompare(self.spark, special_srcdf, special_tgtdf,  \
+                                                        column_mapping=colmapping, join_columns=joincolumns)
             fingerprintcomp_obj.report()
 
             rows_both_all = fingerprintcomp_obj.rows_both_all
@@ -651,6 +651,68 @@ class S2TTester:
                 test_result = "Failed"
                 result_desc = "Fingerprint mismatched"
                 log_info("Test Case Failed - KPIs mismatched")
+
+            if rows_both_all == None:
+                df_match_summary = None
+
+            else:
+                df = rows_both_all
+                #col_list = df.columns
+                if len(colmapping) == 0:
+                    column_mapping = {
+                        i: i for i in sourcedf.columns if i not in joincolumns}
+                    collist = [
+                        i for i in sourcedf.columns if i not in joincolumns]
+                else:
+                    column_mapping = dict(colmapping)
+                    collist = [
+                        i for i in sourcedf.columns if i not in joincolumns]
+
+                    for column in collist:
+
+                        base_col = column + "_base"
+                        compare_col = column + "_compare"
+                        match_col = column + "_match"
+                        sel_col_list = []
+                        sel_col_list = joincolumns.copy()
+                        sel_col_list.append(base_col)
+                        sel_col_list.append(compare_col)
+                        key_cols = joincolumns.copy()
+
+                        filter_false = match_col + " == False"
+                        filter_true = match_col + " == True"
+
+                        mismatch = df.select(match_col).filter(
+                            filter_false).count()
+                        if (mismatch == 0):
+                            continue
+
+                        match = df.select(match_col).filter(filter_true).count()
+                        dict_match_summary[column] = [match, mismatch]
+
+                        df_details = df.select(sel_col_list).filter(filter_false).withColumnRenamed(
+                            base_col, "Source value").withColumnRenamed(compare_col, "Target value").distinct().limit(limit)
+
+                        df_details, concat_list = self.concat_keys(
+                            df_details, key_cols)
+                        df_details = df_details.select(
+                            concat(*concat_list).alias("Key Columns"), "Source value", "Target value")
+
+                        dict_match_details[column] = df_details
+
+                list_match_summary = []
+                for k, v in dict_match_summary.items():
+                    list_match_summary.append(
+                        [k, column_mapping[k], rowcount_source, rowcount_target, rowcount_match, v[0], v[1]])
+
+                df_match_summary = pd.DataFrame(list_match_summary, columns=[
+                                                "Source Column Name", "Target Column Name", "Rows in Source", "Rows in Target", "Rows with Common Keys", "Rows Matched", "Rows Mismatch"])
+
+            if (len(df_match_summary) == 0):
+                df_match_summary = None
+            else:
+                df_match_summary = spark.createDataFrame(df_match_summary)
+
             dict_results = {
                 'Test Result': test_result, 'No. of KPIs in Source': f"{rowcount_source:,}", 'No. of KPIs in Target': f"{rowcount_target:,}"
             }
@@ -779,7 +841,12 @@ class S2TTester:
 
         if testcasetype == 'count' or testcasetype == "duplicate":
             pass
-        # or testcasetype == "duplicate"):
+        elif testcasetype == "fingerprint":
+            pdfobj.write_text("5. Fingerprint Comparison Report ", 'section heading')
+            if col_match_summary != None:
+                pdfobj.create_table_summary(row_count)
+            pdfobj.create_table_details(col_match_summary, 'mismatch_summary')
+
         elif (testcasetype == 'content' or testcasetype == 'count and content'):
             mismatch_heading = "5. Sample Mismatches " + \
                 str(compare_input['limit']) + " rows"
