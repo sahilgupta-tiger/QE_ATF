@@ -15,12 +15,13 @@ import datacompy
 import sys
 import traceback
 
+
 def createsparksession():
 
     myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
             .set("spark.executor.instances", "15") \
-            .set("spark.executor.cores", "6") \
+            .set("spark.executor.cores", "8") \
             .set("spark.executor.memory", "6g") \
             .set("spark.default.parallelism", "48") \
             .set("spark.sql.shuffle.partitions", "200") \
@@ -32,14 +33,15 @@ def createsparksession():
             .set("spark.sql.legacy.timeParserPolicy", "LEGACY") \
             .set("spark.sql.autoBroadcastJoinThreshold", "-1")
     
-    for i in tqdm (range (100), desc="Building Spark Session...", ncols=100):
+    for i in tqdm(range(100), desc="Building Spark Session...", ncols=100):
         spark = SparkSession.builder.config(conf=myconf).getOrCreate()
         spark.sparkContext.setLogLevel('WARN')
 
     log_info("Spark Session Configuration items are listed below -")
-    #configs = myconf.getAll()
+    # configs = myconf.getAll()
     configs = spark.sparkContext.getConf().getAll()
-    for item in configs: log_info(item)
+    for item in configs:
+        log_info(item)
     return spark
 
 
@@ -48,7 +50,7 @@ class S2TTester:
         self.var = ""
         self.spark = spark
     
-    def starttestexecute(self, protocol_file_path, testcasetype,testcasesrunlist):
+    def starttestexecute(self, protocol_file_path, testcasetype, testcasesrunlist):
         log_info(f"Protocol Execution Started")
         try:
             log_info(
@@ -67,7 +69,8 @@ class S2TTester:
             results_path = str(dict_protocol['protocol_results_path'])
             created_time = str(datetime.astimezone(
                 datetime.now()).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
-            # folder_s3 = results_path + str(dict_protocol['protocol_name']) +'/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
+            # folder_s3 = results_path + str(dict_protocol['protocol_name']) + \
+            # '/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
             folder_s3 = results_path + \
                 str(dict_protocol['protocol_name']) + \
                 '/run_'+testcasetype+"_"+created_time+'/'
@@ -82,9 +85,7 @@ class S2TTester:
             combined_testcase_output_path = protocol_output_path + "/run_tc_combined_" + \
                 str(dict_protocol['protocol_name']) + \
                 "_" + created_time + ".pdf"
-            #print(results_path)
-            #print(protocol_output_path)
-            #print(testcase_output_path)
+
             df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
                 dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype,testcasesrunlist)
             self.generate_protocol_summary_report(
@@ -93,7 +94,6 @@ class S2TTester:
 
         except Exception as e2:
             log_error(f"Protocol Execution ERRORED: {str(e2)}")
-
 
     def execute_protocol(self, dict_protocol, df_testcases, output_path, combined_testcase_output_path, testcasetype,testcasesrunlist):
 
@@ -161,10 +161,10 @@ class S2TTester:
                 testcase_details = read_test_case(test_case_file_path)
                 # rel_source_path = testcase_details['sourcepath']
                 # testcase_details['sourcepath'] = s3_path + testcase_details['sourcepath']
-                #testcase_details['sourcepath'] = testcase_details['sourcepath']
+                # testcase_details['sourcepath'] = testcase_details['sourcepath']
                 # rel_target_path = testcase_details['targetpath']
                 # testcase_details['targetpath'] = s3_path + testcase_details['targetpath']
-                #testcase_details['targetpath'] = testcase_details['targetpath']
+                # testcase_details['targetpath'] = testcase_details['targetpath']
                 testcase_starttime = datetime.now()
 
                 log_info(f"{row['test_case_name']}: Reading Source and Target Data based on TestCase Configuration:  {test_case_name}")
