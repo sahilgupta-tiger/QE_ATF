@@ -109,7 +109,7 @@ class S2TTester:
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Distinct Rows in Source',
                                                'No. of Rows in Target', 'No. of Distinct Rows in Target', 'Test Result', 'Reason', 'Runtime'])
 
-        elif (testcasetype == "content" or testcasetype == "count and content"):
+        elif testcasetype == "content" or testcasetype == "count and content":
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Rows in Target',
                                                'No. of Rows matched', 'No. of Rows mismatched', 'Test Result', 'Reason', 'Runtime'])
         
@@ -325,7 +325,7 @@ class S2TTester:
         if tc_config['s2tpath'] != "":
             log_info(f"Reading the S2T for Source Details located at {tc_config['s2tpath']}")
 
-        if tc_config['comparetype'] ==  's2tcompare':
+        if tc_config['comparetype'] == 's2tcompare':
             s2tobj = LoadS2T(tc_config['s2tpath'], self.spark)
 
         if (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Manual'):

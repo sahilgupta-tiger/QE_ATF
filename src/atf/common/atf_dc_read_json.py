@@ -1,6 +1,8 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import *
+from atf.common.atf_common_functions import log_info, get_mount_path
+
 
 def read_jsondata(tc_datasource_config,spark):
   log_info("Reading json File")
@@ -28,7 +30,8 @@ def read_jsondata(tc_datasource_config,spark):
     query_json = "SELECT " + columnlist + " FROM " + resourcename + "_jsonview"
     if len(datafilter) >=5:
       query_json = query_json + " WHERE " + datafilter
-    df_data = spark.sql(query_json)        
+    df_data = spark.sql(query_json)
+
   elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
     querypath = tc_datasource_config['querypath']
     f = open(querypath,"r")
