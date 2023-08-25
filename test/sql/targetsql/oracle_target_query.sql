@@ -1,2 +1,2 @@
 SELECT BIRTHDATE, ID, PREFIX, PREFIX, FIRST, SUFFIX, LAST, GENDER, STATE, FULLNAME FROM
-orc_patients_stg tgt
+sys.orc_patients_stg tgt

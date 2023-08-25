@@ -407,6 +407,7 @@ class S2TTester:
             file_details_dict = {"sourcefile": None, "targetfile": None,
                                  "sourceconnectionname": "", "targetconnectionname": ""}
 
+        '''
         # splitting the columns from source/target queries and writing mismatched in a tuple-list
         if (tc_config['comparetype'] == 'likeobjectcompare' and tc_config['testquerygenerationmode'] == 'Manual'):
             find_src_cols = source_query.split(" ")
@@ -416,8 +417,9 @@ class S2TTester:
   
             map_cols = [(x, y) for x in temp_src_cols for y in temp_tgt_cols if x != y and x.lower() == y.lower()]
             log_info(f"Case-sensitive mismatched columns in both queries are: {map_cols}")
+        '''
 
-        #compareInput Output values    
+        # compareInput Output values
         compare_input = {'sourcedf': source_df, 
                          'targetdf': target_df, 
                          'sourcequery': source_query, 
@@ -427,7 +429,7 @@ class S2TTester:
                          'testcasetype': testcasetype, 
                          'limit': limit, 
                          "filedetails": file_details_dict}
-
+        # print(compare_input)
         return compare_input
 
     
@@ -723,7 +725,6 @@ class S2TTester:
         log_info(f"Data Compare Completed for TestingType - {testcasetype} ")
         return dict_compareoutput
 
-
     def generate_testcase_summary_report(self, dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj):
         if (compare_input['filedetails']["sourcefile"] is not None):
             file_details = compare_input['filedetails']
@@ -737,11 +738,15 @@ class S2TTester:
                 ".", 1)
             dict_config['Target Path'] = get_mount_src_path(
                 dict_config['Target Path'].replace("`", ""))
-        else:
+        elif compare_input['sourcequery'] != '' or compare_input['targetquery'] != '':
             source_file_path = compare_input['sourcequery'].split(
                 "FROM")[-1].split(" ")[1]
             target_file_path = compare_input['targetquery'].split(
                 "FROM")[-1].split(" ")[1]
+        else:
+            source_file_path = dict_config['Source Name']
+            target_file_path = dict_config['Target Name']
+
         if (testcasetype == 'count'):
             srcquery = compare_input['sourcequery']
             srcquery = "SELECT Count(1) FROM "+source_file_path
