@@ -23,26 +23,24 @@ def read_oracledata(tc_datasource_config, spark):
 
     if tc_datasource_config['testquerygenerationmode'] == 'Manual':
         querypath = tc_datasource_config['querypath']
-        f = open(querypath, "r")
+        f = open(querypath, "r+")
         selectmanualqry = f.read().splitlines()
         selectmanualqry = ' '.join(selectmanualqry)
+        selectmanualqry = str(selectmanualqry)
         print(selectmanualqry)
-        selectcolqry_ret = f.read()
+        selectcolqry_ret = selectmanualqry
         f.close()
 
-        df_oracledata = (spark.read
-                       .format("jdbc")
-                       .option("driver", "oracle.jdbc.driver.OracleDriver")
-                       .option("url", connectionconfig['url'])
-                       .option("user", connectionconfig['user'])
-                       .option("password", connectionconfig['password'])
-                       .option("query", selectmanualqry)
-                       .option("oracle.jdbc.timezoneAsRegion", "false")
-                       .load())
+        df_out = (spark.read.format("jdbc")
+                        .option("driver", "oracle.jdbc.driver.OracleDriver")
+                        .option("url", connectionconfig['url'])
+                        .option("user", connectionconfig['user'])
+                        .option("password", connectionconfig['password'])
+                        .option("query", selectmanualqry)
+                        .option("oracle.jdbc.timezoneAsRegion", "false")
+                        .load())
 
-        df_out = df_oracledata
-
-    else:
+    elif tc_datasource_config['testquerygenerationmode'] == 'Auto':
         datafilter = tc_datasource_config['filter']
         excludecolumns = tc_datasource_config['excludecolumns']
         excludecolumns = str(excludecolumns)

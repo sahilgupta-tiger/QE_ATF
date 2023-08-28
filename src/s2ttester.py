@@ -38,8 +38,8 @@ def createsparksession():
         spark.sparkContext.setLogLevel('WARN')
 
     log_info("Spark Session Configuration items are listed below -")
-    # configs = myconf.getAll()
-    configs = spark.sparkContext.getConf().getAll()
+    configs = myconf.getAll()
+    # configs = spark.sparkContext.getConf().getAll()
     for item in configs:
         log_info(item)
     return spark

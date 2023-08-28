@@ -1,2 +1,0 @@
-SELECT BIRTHDATE, ID, PREFIX, PREFIX, src.FIRST, SUFFIX, src.LAST, GENDER, STATE,
-(NVL(src.PREFIX,'')||' '||NVL(src.FIRST,'')||' '||NVL(src.LAST,'')||' '||NVL(src.SUFFIX,'')) as FULLNAME FROM sys.orc_patients_db as src
