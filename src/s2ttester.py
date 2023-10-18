@@ -470,6 +470,10 @@ class S2TTester:
             rowcount_only_target = rows_only_target.count()
             rowcount_mismatch = rows_mismatch.count()
             rowcount_match = rowcount_common - rowcount_mismatch
+            colcount_source = comparison_obj.columns_only_base.count()
+            colcount_target = comparison_obj.columns_only_compare.count()
+            colcount_match = comparison_obj.columns_in_both.count()
+            colcount_mismatch = comparison_obj.columns_compared.count()
 
             rowcount_total_mismatch = rowcount_only_target + \
                 rowcount_only_source  # + rowcount_mismatch
@@ -484,9 +488,15 @@ class S2TTester:
                 test_result = "Passed"
 
             dict_results = {'Test Result': test_result,
-                            'No. of rows in Source': f"{rowcount_source:,}", 'No. of distinct rows in Source': f"{distinct_rowcount_source:,}",
+                            'No. of columns in Source': f"{colcount_source:,}",
+                            'No. of columns in Target': f"{colcount_target:,}",
+                            'No. of matched columns': f"{colcount_match:,}",
+                            'No. of mismatched columns': f"{colcount_mismatch:,}",
+                            'No. of rows in Source': f"{rowcount_source:,}",
+                            'No. of distinct rows in Source': f"{distinct_rowcount_source:,}",
                             'No. of duplicate rows in Source': f"{duplicate_rowcount_source:,}",
-                            'No. of rows in Target': f"{rowcount_target:,}", 'No. of distinct rows in Target': f"{distinct_rowcount_target:,}",
+                            'No. of rows in Target': f"{rowcount_target:,}",
+                            'No. of distinct rows in Target': f"{distinct_rowcount_target:,}",
                             'No. of duplicate rows in Target': f"{duplicate_rowcount_target:,}",
                             'No. of matched rows': f"{rowcount_match:,}",
                             'No. of mismatched rows': f"{rowcount_mismatch:,}",
@@ -631,8 +641,8 @@ class S2TTester:
             special_tgtdf = targetdf
 
             print("Comparing Fingerprints of Source and Target now...")
-            fingerprintcomp_obj = datacompy.SparkCompare(self.spark, special_srcdf, special_tgtdf,  \
-                                                        column_mapping=colmapping, join_columns=joincolumns)
+            fingerprintcomp_obj = datacompy.SparkCompare(self.spark, special_srcdf, special_tgtdf,
+                                                    column_mapping=colmapping, join_columns=joincolumns)
             fingerprintcomp_obj.report()
 
             rows_both_all = fingerprintcomp_obj.rows_both_all
