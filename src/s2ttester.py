@@ -470,10 +470,14 @@ class S2TTester:
             rowcount_only_target = rows_only_target.count()
             rowcount_mismatch = rows_mismatch.count()
             rowcount_match = rowcount_common - rowcount_mismatch
-            colcount_source = comparison_obj.columns_only_base.count()
-            colcount_target = comparison_obj.columns_only_compare.count()
-            colcount_match = comparison_obj.columns_in_both.count()
-            colcount_mismatch = comparison_obj.columns_compared.count()
+            col_only_source = comparison_obj.columns_only_base
+            colcount_source = len(col_only_source)
+            col_only_target = comparison_obj.columns_only_compare
+            colcount_target = len(col_only_target)
+            columns_match = comparison_obj.columns_in_both
+            colcount_match = len(columns_match)
+            columns_compared = comparison_obj.columns_compared
+            colcount_compared = len(columns_compared)
 
             rowcount_total_mismatch = rowcount_only_target + \
                 rowcount_only_source  # + rowcount_mismatch
@@ -488,10 +492,10 @@ class S2TTester:
                 test_result = "Passed"
 
             dict_results = {'Test Result': test_result,
-                            'No. of columns in Source': f"{colcount_source:,}",
-                            'No. of columns in Target': f"{colcount_target:,}",
                             'No. of matched columns': f"{colcount_match:,}",
-                            'No. of mismatched columns': f"{colcount_mismatch:,}",
+                            'No. of columns compared': f"{colcount_compared:,}",
+                            'No. of cols in Source but not in Target': f"{colcount_source:,}",
+                            'No. of cols in Target but not in Source': f"{colcount_target:,}",
                             'No. of rows in Source': f"{rowcount_source:,}",
                             'No. of distinct rows in Source': f"{distinct_rowcount_source:,}",
                             'No. of duplicate rows in Source': f"{duplicate_rowcount_source:,}",
