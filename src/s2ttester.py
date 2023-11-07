@@ -238,7 +238,6 @@ class S2TTester:
                         dict_testresults['No. of rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
                 elif testcasetype == "duplicate":
-
                     df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
                         dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
@@ -950,16 +949,16 @@ class S2TTester:
 
 if __name__ == "__main__":
     spark = createsparksession()
-    testcasesrunlist=[]
+    testcasesrunlist = []
     protocol_file_path = sys.argv[1]
     testtype = sys.argv[2]
     temporaryrunlist=sys.argv[3].rstrip()
     if "," in sys.argv[3]:
-        testcasesrunlist=temporaryrunlist.split(",")
+        testcasesrunlist = temporaryrunlist.split(",")
     else:
         testcasesrunlist.append(temporaryrunlist)
     log_info(f"Protocol Config path :{protocol_file_path}")
     log_info(f"TestType: {testtype}")
     log_info(f"TestCasesRunList: {testcasesrunlist}")
     testerobj = S2TTester(spark)
-    testerobj.starttestexecute(protocol_file_path, testtype,testcasesrunlist)
+    testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
