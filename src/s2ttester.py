@@ -35,8 +35,8 @@ def createsparksession():
     
     for i in tqdm(range(100), desc="Building Spark Session...", ncols=100):
         spark = SparkSession.builder.config(conf=myconf).getOrCreate()
-        spark.sparkContext.setLogLevel('WARN')
 
+    spark.sparkContext.setLogLevel('WARN')
     log_info("Spark Session Configuration items are listed below -")
     configs = myconf.getAll()
     # configs = spark.sparkContext.getConf().getAll()
