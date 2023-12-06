@@ -251,7 +251,7 @@ class S2TAutoLoadScripts:
     
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
-    autoScriptFile = "/app/test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
+    autoScriptFile = "test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
 
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
