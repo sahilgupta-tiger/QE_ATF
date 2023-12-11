@@ -1,0 +1,3 @@
+readdatadf=spark.read.format('delimitedfile').option('delimiter',,).option('header','true').load('/app/test/data/source/ar_properties.csv')
+readdatadf.createOrReplaceTempView('dataview')
+spark.sql("SELECT src.ad_type as ad_type, src.bathrooms as bathrooms, src.bedrooms as bedrooms, src.created_on as created_on, src.currency as currency, src.end_date as end_date, src.id as id, src.l1 as l1, src.l2 as l2, src.l3 as l3, src.l4 as l4, src.l5 as l5, src.l6 as l6, src.lat as lat, src.lon as lon, src.price as price, src.price_period as price_period, src.property_type as property_type, src.rooms as rooms, src.surface_covered as surface_covered, src.surface_total as surface_total, src.title as title FROM dataview src  ")

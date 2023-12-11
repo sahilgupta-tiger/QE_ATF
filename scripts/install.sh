@@ -4,3 +4,4 @@ pip install fpdf
 pip install openpyxl
 pip install fsspec
 pip install tqdm
+pip install IPython

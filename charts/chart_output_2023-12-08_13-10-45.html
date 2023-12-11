@@ -1,0 +1,58 @@
+
+        <html>
+        <head>
+            <title>Test Results</title>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                }}
+                h1, h2 {{
+                    color: #333333;
+                    text-align: center;
+                }}
+                #summary-section {{
+                    background-color: #f9f9f9;
+                    padding: 20px;
+                    margin-bottom: 30px;
+                    border-radius: 5px;
+                }}
+                p {{
+                    color: #666666;
+                    margin: 5px 0;
+                }}
+                #piechart {{
+                    width: 900px;
+                    height: 500px;
+                    margin: 0 auto;
+                }}
+            </style>
+
+        </head>
+        <body>
+            <h1>Summary</h1>
+            <h2><b>1. Protocol Run Parameters</b></h2>
+            <p><span style='font-weight:bold'>Application Name</span> : sample</p><p><span style='font-weight:bold'>Test Protocol Name</span> : DBTablesDemo</p><p><span style='font-weight:bold'>Test Protocol Version</span> : 1</p><p><span style='font-weight:bold'>Test Environment</span> : dev</p><p><span style='font-weight:bold'>Test Protocol Start Time</span> : 08-Dec-2023 13:08:08 UTC</p><p><span style='font-weight:bold'>Test Protocol End Time</span> : 08-Dec-2023 13:10:45 UTC</p><p><span style='font-weight:bold'>Total Protocol Run Time</span> : 0:02:36</p><p><span style='font-weight:bold'>Total No of Test Cases</span> : 1</p><p><span style='font-weight:bold'>No of Test Cases Passed</span> : 1</p><p><span style='font-weight:bold'>No of Test Cases Failed</span> : 0</p>
+            <h2><b>Additional Data</b></h2>
+            <p><span style='font-weight:bold'>Application Name</span> : sample</p><p><span style='font-weight:bold'>Test Protocol Name</span> : DBTablesDemo</p><p><span style='font-weight:bold'>Test Protocol Version</span> : 1</p><p><span style='font-weight:bold'>Test Environment</span> : dev</p><p><span style='font-weight:bold'>Test Protocol Start Time</span> : 08-Dec-2023 13:08:08 UTC</p><p><span style='font-weight:bold'>Test Protocol End Time</span> : 08-Dec-2023 13:10:45 UTC</p><p><span style='font-weight:bold'>Total Protocol Run Time</span> : 0:02:36</p><p><span style='font-weight:bold'>Total No of Test Cases</span> : 1</p><p><span style='font-weight:bold'>No of Test Cases Passed</span> : 1</p><p><span style='font-weight:bold'>No of Test Cases Failed</span> : 0</p>
+        <h1>Test Results Chart</h1>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([['Task', 'Hours per Day'], ['Passed', 11], ['Failed', 2]]);
+
+                var options = {
+                    title: 'Test Results'
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+                chart.draw(data, options);
+            }
+        </script>
+
+        <div id="piechart" style="width: 900px; height: 500px;"></div>
+    

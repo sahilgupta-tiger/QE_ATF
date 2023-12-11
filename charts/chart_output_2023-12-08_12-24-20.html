@@ -1,0 +1,30 @@
+
+        <html>
+        <head>
+            <title>Test Results</title>
+        </head>
+        <body>
+            <h1>Summary</h1>
+            <h2><b>Protocol Run Parameters</b></h2>
+            <p>Application Name : sample</p><p>Test Protocol Name : DBTablesDemo</p><p>Test Protocol Version : 1</p><p>Test Environment : dev</p><p>Test Protocol Start Time : 08-Dec-2023 12:23:22 UTC</p><p>Test Protocol End Time : 08-Dec-2023 12:24:20 UTC</p><p>Total Protocol Run Time : 0:00:58</p><p>Total No of Test Cases : 1</p><p>No of Test Cases Passed : 1</p><p>No of Test Cases Failed : 0</p>
+        <h1>Test Results Chart</h1>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([['Task', 'Hours per Day'], ['Passed', 11], ['Failed', 2]]);
+
+                var options = {
+                    title: 'Test Results'
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+                chart.draw(data, options);
+            }
+        </script>
+
+        <div id="piechart" style="width: 900px; height: 500px;"></div>
+    

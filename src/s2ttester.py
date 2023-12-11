@@ -7,6 +7,7 @@ from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_cls_pdfformatting import generatePDF
+from atf.common.atf_read_sh_data import get_data_from_sh_scripts
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
@@ -90,6 +91,7 @@ class S2TTester:
                 dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype,testcasesrunlist)
             self.generate_protocol_summary_report(
                 df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time,testcasetype)
+            get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time,testcasetype)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:
@@ -898,6 +900,7 @@ class S2TTester:
 
     def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time,testcasetype):
         pdfobj_protocol = generatePDF()
+        #get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time,testcasetype)
         comparison_type = testcasetype + " comparison"
         pdfobj_protocol.write_text(protocolreportheader, 'report header')
         pdfobj_protocol.write_text(protocol_run_details['Test Protocol Name'], 'subheading')
@@ -922,7 +925,7 @@ class S2TTester:
                     df_protocol_summary_temp = None
             else:
                 df_protocol_summary_temp = None
-
+            log_info(df_protocol_summary_temp)
             pdfobj_protocol.create_table_details(
                 df_protocol_summary_temp, table_type)
             sno = sno + 1
