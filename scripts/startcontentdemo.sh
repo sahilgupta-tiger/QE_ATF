@@ -1,1 +1,0 @@
-bash testingstart.sh /app/test/testprotocol/testprotocol.xlsx content $1

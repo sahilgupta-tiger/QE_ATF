@@ -1,16 +1,11 @@
 from IPython.display import HTML
-from datetime import datetime
-from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
-from tabulate import tabulate
+from src.atf.common.atf_common_functions import *
 import pandas as pd
-# Your test results data
-def get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time,testcasetype):
-    test_results = {
-        'Passed': 11,
-        'Failed': 2
-        # Add your data here
-    }
-    log_info("Printing protcol")
+
+
+def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time, testcasetype):
+
+    log_info("Printing Results from Protcol below ---")
     log_info(df_protocol_summary.show())
     log_info(protocol_run_details)
     log_info(protocol_run_params)
@@ -20,19 +15,18 @@ def get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol
     protocol_run_params_html = ""
     protocol_run_details_html = ""
 
-    # Replace "No." with "Number" in each column name
-    #df_protocol_summary.columns = df_protocol_summary.columns.str.replace('No.', 'Number')
-
     for key, value in protocol_run_params.items():
         protocol_run_params_html += f"<p><span style='font-weight:bold'>{key}</span> : {value}</p>"
-
 
     for key, value in protocol_run_details.items():
         protocol_run_details_html += f"<p><span style='font-weight:bold'>{key}</span> : {value}</p>"
 
-
     # Create the data table for Google Chart
     data_table = [['Task', 'Hours per Day']]
+    test_results = {
+        "Passed": 11,
+        "Failed": 2
+    }
     for label, value in test_results.items():
         data_table.append([label, value])
 
@@ -47,8 +41,7 @@ def get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol
     chart_code = f"""
         <html>
         <head>
-            <title>Test Results</title>
-            
+            <title>DATF Test Run Report</title>
         </head>
         <body>
             <h1>Summary</h1>
@@ -61,11 +54,10 @@ def get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol
         </html>
     """
     # Display the chart
-    #HTML(chart_code)
-    timestamp=datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_path=f"/app/charts/chart_output_{timestamp}.html"
+    file_path = f"/app/charts/chart_report_{created_time}.html"
 
     with open(file_path, 'w') as file:
         file.write(chart_code)
+    log_info(f"Chart generated at: {file_path}")
 
-    print(f"Chart saved at: {file_path}")
+

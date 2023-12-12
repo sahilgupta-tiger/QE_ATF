@@ -7,7 +7,7 @@ from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_cls_pdfformatting import generatePDF
-from atf.common.atf_read_sh_data import get_data_from_sh_scripts
+from atf.common.atf_cls_results_chart import generate_results_charts
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
@@ -91,7 +91,7 @@ class S2TTester:
                 dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype,testcasesrunlist)
             self.generate_protocol_summary_report(
                 df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time,testcasetype)
-            get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time,testcasetype)
+            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:
@@ -953,10 +953,10 @@ class S2TTester:
 if __name__ == "__main__":
     spark = createsparksession()
     testcasesrunlist = []
-    protocol_file_path = sys.argv[1]
-    testtype = sys.argv[2]
-    temporaryrunlist=sys.argv[3].rstrip()
-    if "," in sys.argv[3]:
+    protocol_file_path = "/app/test/testprotocol/testprotocol.xlsx"
+    testtype = sys.argv[1]
+    temporaryrunlist=sys.argv[2].rstrip()
+    if "," in sys.argv[2]:
         testcasesrunlist = temporaryrunlist.split(",")
     else:
         testcasesrunlist.append(temporaryrunlist)
