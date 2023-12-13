@@ -53,7 +53,8 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
         </html>
     """
     # Create the HTML file
-    html_file_path = f"/app/test/results/charts/chart_report_{created_time}.html"
+    html_file_name = f"chart_report_{created_time}.html"
+    html_file_path = f"/app/test/results/charts/{html_file_name}"
 
     with open(html_file_path, 'w') as file:
         file.write(chart_code)
@@ -73,6 +74,7 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
     shutil.copytree(output_path, final_report_path, dirs_exist_ok=True)
     shutil.copy(html_file_path, final_report_path)
+    os.rename(fr"{final_report_path}/{html_file_name}", fr"{final_report_path}/datfreport.html")
     log_info(f"Reports copied over to: {final_report_path}")
 
 
