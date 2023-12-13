@@ -17,30 +17,33 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     log_info(output_path)
     log_info(created_time)
     log_info(testcasetype)
-    protocol_run_params_html = ""
-    protocol_run_details_html = ""
+    protocol_run_params_html = "<p>"
+    protocol_run_details_html = "<p>"
 
     for key, value in protocol_run_params.items():
         protocol_run_params_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
+    protocol_run_params_html += "</p>"
 
     for key, value in protocol_run_details.items():
         protocol_run_details_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
+    protocol_run_details_html += "</p>"
 
     # Construct the JavaScript code for Google Chart
-    chart_code = f"""
+    chart_code = fr"""
         <html>
         <head>
             <title>DATF Test Run Report</title>
+
         </head>
         <body>
             <h1>DATF Test Summary</h1>
-            <h2><b>1. Protocol Run Summary</b></h2>
+            <h2><b>1. Protocol Test Results</b></h2>
+            {build_table(df_pd_summary,'orange_dark')}
+            <h2><b>2. Protocol Run Details</b></h2>
             {protocol_run_details_html}
-            <h2><b>2. Protocol Run Parameters</b></h2>
+            <h2><b>3. Protocol Run Parameters</b></h2>
             {protocol_run_params_html}
-            <h2><b>3. Protocol Test Results</b></h2>
-            {build_table(df_pd_summary,'orange_light')}
-
+            
         </body>
         </html>
     """
