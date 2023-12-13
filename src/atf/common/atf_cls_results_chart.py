@@ -6,69 +6,7 @@ import pandas as pd
 from atf.common.atf_common_functions import log_info, log_error
 
 
-class GetSetPDFpath:
-    def __init__(self):
-        self.summary_pdf_path = ""
-        self.combined_pdf_path = ""
-
-    # function to get value of summary and combined pdf
-    def get_summary(self):
-        return self.summary_pdf_path
-
-    def get_combined(self):
-        return self.combined_pdf_path
-
-    # function to set value of summary and combined pdf
-    def set_summary(self, a):
-        self.summary_pdf_path = a
-
-    def set_combined(self, b):
-        self.combined_pdf_path = b
-
-    # function to delete _age attribute
-    def del_summary(self):
-        del self.summary_pdf_path
-
-    def del_combined(self):
-        del self.combined_pdf_path
-
-    summary = property(get_summary, set_summary, del_summary)
-    combined = property(get_combined, set_combined, del_combined)
-
-
-def create_html_report(chart_code, created_time, output_path):
-    # Create the HTML file
-    html_file_name = f"chart_report_{created_time}.html"
-    html_file_path = f"/app/test/results/charts/{html_file_name}"
-
-    with open(html_file_path, 'w') as file:
-        file.write(chart_code)
-    log_info(f"Chart generated at: {html_file_path}")
-
-    # copy all current reports to single folder after emptying it
-    final_report_path = "/app/utils/reports"
-    for filename in os.listdir(final_report_path):
-        file_path = os.path.join(final_report_path, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            log_info('Failed to delete %s. Reason: %s' % (file_path, e))
-
-    pdfnames = GetSetPDFpath()
-    summary_file = pdfnames.summary_pdf_path.replace(output_path, '')
-    combined_file = pdfnames.combined_pdf_path.replace(output_path, '')
-    shutil.copytree(output_path, final_report_path, dirs_exist_ok=True)
-    shutil.copy(html_file_path, final_report_path)
-    os.rename(fr"{final_report_path}/{html_file_name}", fr"{final_report_path}/datfreport.html")
-    os.rename(fr"{final_report_path}{summary_file}", fr"{final_report_path}/datf_summary.pdf")
-    os.rename(fr"{final_report_path}{combined_file}", fr"{final_report_path}/datf_combined.pdf")
-    log_info(f"Reports copied over to: {final_report_path}")
-
-
-def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, output_path, combined_path):
+def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, output_path, combined_path, summary_path):
 
     log_info("Printing Results from Protcol below ---")
     # converting pyspark dataframe to pandas dataframe for html rendering
@@ -87,15 +25,6 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
     for key, value in protocol_run_details.items():
         protocol_run_details_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
-
-    # Create the data table for Google Chart
-    data_table = [['Task', 'Hours per Day']]
-    test_results = {
-        "Passed": 11,
-        "Failed": 2
-    }
-    for label, value in test_results.items():
-        data_table.append([label, value])
 
     # Construct the JavaScript code for Google Chart
     chart_code = f"""
@@ -116,12 +45,40 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
         </html>
     """
     # do not delete below function calls, very important!
-    name = GetSetPDFpath()
-    name.combined = combined_path
-    create_html_report(chart_code, created_time, output_path)
+    create_html_report(chart_code, created_time, output_path, combined_path, summary_path)
 
 
+def create_html_report(chart_code, created_time, output_path, combined_path, summary_path):
+    # Create the HTML file
+    html_file_name = f"chart_report_{created_time}.html"
+    html_file_path = f"/app/test/results/charts/{html_file_name}"
 
+    with open(html_file_path, 'w') as file:
+        file.write(chart_code)
+    log_info(f"Chart generated at: {html_file_path}")
 
+    # copy all current reports to single folder after emptying it
+    final_report_path = "/app/utils/reports"
+    for filename in os.listdir(final_report_path):
+        file_path = os.path.join(final_report_path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            log_info('Failed to delete %s. Reason: %s' % (file_path, e))
+
+    log_info(f"Summary PDF Path: {summary_path}")
+    log_info(f"Combined PDF Path: {combined_path}")
+    summary_file = summary_path.replace(output_path, '')
+    combined_file = combined_path.replace(output_path, '')
+    log_info(f"File Names : {summary_file} | {combined_file}")
+    shutil.copytree(output_path, final_report_path, dirs_exist_ok=True)
+    shutil.copy(html_file_path, final_report_path)
+    os.rename(fr"{final_report_path}/{html_file_name}", fr"{final_report_path}/datfreport.html")
+    os.rename(fr"{final_report_path}/{summary_file}", fr"{final_report_path}/datf_summary.pdf")
+    os.rename(fr"{final_report_path}/{combined_file}", fr"{final_report_path}/datf_combined.pdf")
+    log_info(f"Reports copied over to: {final_report_path}")
 
 
