@@ -11,6 +11,7 @@ from atf.common.atf_cls_results_chart import generate_results_charts
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
+from atf.common.atf_cls_results_chart import GetSetPDFpath
 import os
 import datacompy
 import sys
@@ -88,10 +89,11 @@ class S2TTester:
                 "_" + created_time + ".pdf"
 
             df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
-                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype,testcasesrunlist)
+                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype, testcasesrunlist)
             self.generate_protocol_summary_report(
-                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time,testcasetype)
-            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
+                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
+            # generate HTML report ** new function **
+            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:
@@ -932,6 +934,9 @@ class S2TTester:
             protocol_run_details['Test Protocol Name'] + \
             "_" + created_time+".pdf"
         pdfobj_protocol.pdf.output(protocol_output_path, 'F')
+        # set the summary pdf path in setter property
+        nameobj = GetSetPDFpath()
+        nameobj.summary = protocol_output_path
         log_info("Protocol Summary PDF Generated")
 
     def concat_keys(self, df, key_cols_list):
