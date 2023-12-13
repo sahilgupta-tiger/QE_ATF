@@ -11,7 +11,6 @@ from atf.common.atf_cls_results_chart import generate_results_charts
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
-from atf.common.atf_cls_results_chart import GetSetPDFpath
 import os
 import datacompy
 import sys

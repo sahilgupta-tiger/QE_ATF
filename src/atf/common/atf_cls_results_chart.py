@@ -44,7 +44,7 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
         </body>
         </html>
     """
-    # do not delete below function calls, very important!
+    # do not delete or modify below function, very important!
     create_html_report(chart_code, created_time, output_path, combined_path, summary_path)
 
 
