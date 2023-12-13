@@ -900,7 +900,6 @@ class S2TTester:
 
     def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time,testcasetype):
         pdfobj_protocol = generatePDF()
-        #get_data_from_sh_scripts(df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time,testcasetype)
         comparison_type = testcasetype + " comparison"
         pdfobj_protocol.write_text(protocolreportheader, 'report header')
         pdfobj_protocol.write_text(protocol_run_details['Test Protocol Name'], 'subheading')
@@ -925,7 +924,6 @@ class S2TTester:
                     df_protocol_summary_temp = None
             else:
                 df_protocol_summary_temp = None
-            log_info(df_protocol_summary_temp)
             pdfobj_protocol.create_table_details(
                 df_protocol_summary_temp, table_type)
             sno = sno + 1
