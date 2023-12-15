@@ -14,16 +14,13 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     log_info(df_pd_summary.to_string(index=False))
     log_info(protocol_run_details)
     log_info(protocol_run_params)
-    log_info(output_path)
-    log_info(created_time)
-    log_info(testcasetype)
-    protocol_run_params_html = "<p>"
-    protocol_run_details_html = "<p>"
 
+    protocol_run_params_html = "<p>"
     for key, value in protocol_run_params.items():
         protocol_run_params_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
     protocol_run_params_html += "</p>"
 
+    protocol_run_details_html = "<p>"
     for key, value in protocol_run_details.items():
         protocol_run_details_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
     protocol_run_details_html += "</p>"
@@ -72,16 +69,13 @@ def create_html_report(chart_code, created_time, output_path, combined_path, sum
         except Exception as e:
             log_info('Failed to delete %s. Reason: %s' % (file_path, e))
 
-    log_info(f"Summary PDF Path: {summary_path}")
-    log_info(f"Combined PDF Path: {combined_path}")
     summary_file = summary_path.replace(output_path, '')
     combined_file = combined_path.replace(output_path, '')
-    log_info(f"File Names : {summary_file} | {combined_file}")
     shutil.copytree(output_path, final_report_path, dirs_exist_ok=True)
     shutil.copy(html_file_path, final_report_path)
+    # rename files for Archiving Artefacts within CT Pipeline integration
     os.rename(fr"{final_report_path}/{html_file_name}", fr"{final_report_path}/datfreport.html")
     os.rename(fr"{final_report_path}/{summary_file}", fr"{final_report_path}/datf_summary.pdf")
     os.rename(fr"{final_report_path}/{combined_file}", fr"{final_report_path}/datf_combined.pdf")
     log_info(f"Reports copied over to: {final_report_path}")
-
 
