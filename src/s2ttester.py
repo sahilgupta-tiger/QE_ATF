@@ -18,8 +18,11 @@ import traceback
 
 def createsparksession():
 
+    jdbcJarFiles = [os.path.join("/app/test/jdbcdriver", x) for x in os.listdir("/app/test/jdbcdriver")]
+
     myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
+            .set("spark.jars", ",".join(jdbcJarFiles)) \
             .set("spark.executor.instances", "18") \
             .set("spark.executor.cores", "8") \
             .set("spark.executor.memory", "6g") \
