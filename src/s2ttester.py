@@ -8,6 +8,7 @@ from atf.common.atf_common_functions import read_protocol_file, log_error, log_i
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_cls_pdfformatting import generatePDF
 from atf.common.atf_cls_results_chart import generate_results_charts
+from atf.common.atf_cls_results_chart_updated import generate_results_charts_updated
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
@@ -58,7 +59,8 @@ class S2TTester:
                 f"Reading the Protocol file details from {protocol_file_path}")
             dict_protocol, df_testcases = read_protocol_file(
                 protocol_file_path)
-
+            log_info("dict protocol is")
+            log_info(dict_protocol)
             # "test_case_type", "count", ["count","duplicate","content"]
             # s3_path = get_connection_config(s3_conn_name)
             # s3_path = s3_path['BUCKETNAME']
@@ -89,10 +91,12 @@ class S2TTester:
 
             df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
                 dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype, testcasesrunlist)
+
             summary_output_path = self.generate_protocol_summary_report(
                 df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
             # generate HTML report ** new function **
             generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
+            #generate_results_charts_updated(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:
@@ -302,7 +306,6 @@ class S2TTester:
         protocol_run_params = {"Protocol File Path": protocol_file_path,
                                "Testcases Executed": testcases_run_list, "Testcase Type": testcasetype}
 
-        log_info("Protocol Testcases Executions Completed")
         return df_protocol_summary, protocol_run_details, protocol_run_params
     
 
