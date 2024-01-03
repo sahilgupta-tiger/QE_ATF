@@ -95,8 +95,8 @@ class S2TTester:
             summary_output_path = self.generate_protocol_summary_report(
                 df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
             # generate HTML report ** new function **
-            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
-            #generate_results_charts_updated(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
+            #generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
+            generate_results_charts_updated(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:

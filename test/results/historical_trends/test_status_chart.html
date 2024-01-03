@@ -8,28 +8,6 @@
         google.charts.setOnLoadCallback(drawCharts);
 
         function drawCharts() {
-          // Drawing Pie Chart for Test Case Status
-          var statusData = google.visualization.arrayToDataTable([
-            ['Status', 'Count'],
-            ['passed', 2],
-        ['failed', 1],
-        ['broken', 1],
-
-          ]);
-
-          var statusOptions = {
-            title: 'Test Case Status',
-            pieHole: 0.4,
-            slices: {
-              0: {color: 'green'}, // Green color for 'passed'
-              1: {color: 'red'},   // Red color for 'failed'
-              2: {color: 'orange'},// Orange color for 'broken'
-            }
-          };
-
-          var statusChart = new google.visualization.PieChart(document.getElementById('status_chart'));
-          statusChart.draw(statusData, statusOptions);
-
           // Drawing Bar Chart for Test Case Execution Time Intervals
           var timeData = new google.visualization.DataTable();
           timeData.addColumn('string', 'Time Intervals');
@@ -38,9 +16,9 @@
 
           timeData.addRows([
             ['0s-20s', 0, 'No test cases'],
-        ['20s-40s', 1, 'Test A'],
-        ['40s-1m', 2, 'Test C<br>Test D'],
-        ['1m+', 1, 'Test B'],
+        ['20s-40s', 0, 'No test cases'],
+        ['40s-1m', 0, 'No test cases'],
+        ['1m+', 1, 'testcase5_csv_parquet_match'],
 
           ]);
 
@@ -63,7 +41,6 @@
       </script>
     </head>
     <body>
-      <div id="status_chart" style="width: 900px; height: 500px; display: inline-block;"></div>
       <div id="time_chart" style="width: 900px; height: 500px; display: inline-block;"></div>
     </body>
     </html>

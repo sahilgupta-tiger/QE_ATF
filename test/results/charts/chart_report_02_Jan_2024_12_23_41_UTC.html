@@ -1,0 +1,86 @@
+
+        <html>
+        <head>
+            <title>DATF Test Run Report</title>
+
+        </head>
+        <body>
+            <h1>DATF Test Summary</h1>
+            <h2><b>1. Protocol Test Results</b></h2>
+            <p><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Testcase Name</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Source</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Target</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Test Result</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Reason</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Runtime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase5_csv_parquet_match</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:01:13</td>
+    </tr>
+  </tbody>
+</table></p>
+            <h2><b>2. Protocol Run Details</b></h2>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DBTablesDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 02-Jan-2024 12:23:42 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 02-Jan-2024 12:24:56 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:01:14<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 0<br></p>
+            <h2><b>3. Protocol Run Parameters</b></h2>
+            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcases Executed</span><span class='tab'></span>: testcase5_csv_parquet_match<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: count<br></p>
+            
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+          // Drawing Bar Chart for Test Case Execution Time Intervals
+          var timeData = new google.visualization.DataTable();
+          timeData.addColumn('string', 'Time Intervals');
+          timeData.addColumn('number', 'Number of Test Cases');
+          timeData.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
+
+          timeData.addRows([
+            ['0s-20s', 0, 'No test cases'],
+        ['20s-40s', 0, 'No test cases'],
+        ['40s-1m', 0, 'No test cases'],
+        ['1m+', 1, 'testcase5_csv_parquet_match'],
+
+          ]);
+
+          var timeOptions = {
+            title: 'Test Case Execution Time Intervals',
+            chartArea: {width: '50%'},
+            hAxis: {
+              title: 'Number of Test Cases',
+              minValue: 0,
+            },
+            vAxis: {
+              title: 'Time Intervals',
+            },
+            tooltip: { isHtml: true }
+          };
+
+          var timeChart = new google.visualization.BarChart(document.getElementById('time_chart'));
+          timeChart.draw(timeData, timeOptions);
+        }
+      </script>
+    </head>
+    <body>
+      <div id="time_chart" style="width: 900px; height: 500px; display: inline-block;"></div>
+    </body>
+    </html>
+      <!-- Include the historical chart HTML content here -->
+            
+        </body>
+        </html>
+    

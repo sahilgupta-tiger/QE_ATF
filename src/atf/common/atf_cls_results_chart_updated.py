@@ -13,7 +13,7 @@ import sqlite3
 from tabulate import tabulate
 from collections import defaultdict
 import plotly.graph_objects as go
-
+from datetime import datetime
 
 def generate_results_charts_updated(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, output_path, combined_path, summary_path):
 
@@ -28,11 +28,20 @@ def generate_results_charts_updated(df_protocol_summary, protocol_run_details, p
     log_info(df_pd_summary.to_string(index=False))
     log_info(protocol_run_details)
     log_info(protocol_run_params)
-
-    his_df=store_results_into_db(df_pd_summary, protocol_run_details)
-    log_info("Results from db")
-    log_info(his_df)
-    create_historical_trends_report(df_pd_summary)
+    new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
+    # Displaying the new DataFrame
+    log_info(new_df)
+    log_info(protocol_run_details)
+    protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
+    # Add 'Test Protocol Start Time' column with the same value for all rows
+    new_df['Test Protocol Start Time'] = protocol_start_time
+    log_info("updated df")
+    log_info(new_df)
+    #his_df=store_results_into_db(df_pd_summary, protocol_run_details)
+    #log_info("Results from db")
+    #log_info(his_df)
+    duration_chart_html =create_duration_chart(new_df)
+    pie_chart_html = generate_pie_chart_html(new_df)
     protocol_run_params_html = "<p>"
     for key, value in protocol_run_params.items():
         protocol_run_params_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
@@ -49,6 +58,20 @@ def generate_results_charts_updated(df_protocol_summary, protocol_run_details, p
         <html>
         <head>
             <title>DATF Test Run Report</title>
+            <style>
+                /* Define a CSS style for the headers */
+                h2, h3, h4 {{
+                    font-size: 18px;
+                    font-family: Arial, sans-serif;
+                    /* Add other styles as needed */
+                }}
+                /* Style to display elements side by side */
+                .flex-container {{
+                    display: flex;
+                    justify-content: space-between;
+                }}
+
+            </style>
 
         </head>
         <body>
@@ -59,6 +82,20 @@ def generate_results_charts_updated(df_protocol_summary, protocol_run_details, p
             {protocol_run_details_html}
             <h2><b>3. Protocol Run Parameters</b></h2>
             {protocol_run_params_html}
+            <div class="flex-container">
+                <div>
+                    <h3><b>4. Durations</b></h3>
+                    {duration_chart_html}  <!-- Include the historical chart HTML content here -->
+                </div>
+                <div>
+                    <h3><b>5. Status</b></h3>
+                    <div>
+                        {pie_chart_html}  <!-- Embed the pie chart here -->
+                    </div>
+                </div>
+            </div>
+
+            
             
         </body>
         </html>
@@ -110,11 +147,6 @@ def store_results_into_db(df_pd_summary,protocol_run_details):
     # Add 'Test Protocol Start Time' column with the same value for all rows
     new_df['Test Protocol Start Time'] = protocol_start_time
 
-    # Get the index for the new row
-    '''new_index = len(new_df)-1
-
-    # Update the DataFrame with the new 'Test Protocol Start Time' value at the specific index
-    new_df.loc[new_index, 'Test Protocol Start Time'] = protocol_run_details['Test Protocol Start Time']'''
     log_info("Updated dataframe is")
     log_info(new_df)
     conn = sqlite3.connect('SQLITE_Sample.db')
@@ -129,31 +161,13 @@ def store_results_into_db(df_pd_summary,protocol_run_details):
     conn.close()
     return df_from_db
    
-def create_historical_trends_report():
+def create_duration_chart(new_df):
 
-    #data_from_db = data_from_db[['Testcase Name', 'Test Result', 'Runtime']]
-    #log_info("checking")
-    #log_info(data_from_db)
+    new_df = new_df[['Testcase Name', 'Test Result', 'Runtime']]
+    log_info("checking")
+    log_info(new_df)
+    log_info(tabulate(new_df, headers='keys', tablefmt='psql'))
 
-       # Sample data (replace this with your fetched data from the database)
-    data_from_db = [
-        {'testcase': 'Test A', 'status': 'passed', 'duration': 35},
-        {'testcase': 'Test B', 'status': 'failed', 'duration': 75},
-        {'testcase': 'Test C', 'status': 'broken', 'duration': 40},
-        {'testcase': 'Test D', 'status': 'passed', 'duration': 50},
-        # Add more data here...
-    ]
-
-    # Processing data to count statuses
-    status_count_per_testcase = {}
-
-    for entry in data_from_db:
-        status = entry['status']
-        if status not in status_count_per_testcase:
-            status_count_per_testcase[status] = 0
-        status_count_per_testcase[status] += 1
-
-    # Processing data to categorize test cases based on execution time intervals
     time_intervals = {
         '0s-20s': {'count': 0, 'testcases': []},
         '20s-40s': {'count': 0, 'testcases': []},
@@ -161,20 +175,24 @@ def create_historical_trends_report():
         '1m+': {'count': 0, 'testcases': []},
     }
 
-    for entry in data_from_db:
-        duration = entry['duration']
-        if duration < 20:
+    # Converting runtime strings to duration in seconds
+    for index, row in new_df.iterrows():
+        runtime_str = row['Runtime']
+        runtime_obj = datetime.strptime(runtime_str, '%H:%M:%S')
+        duration_seconds = runtime_obj.hour * 3600 + runtime_obj.minute * 60 + runtime_obj.second
+
+        if duration_seconds < 20:
             time_intervals['0s-20s']['count'] += 1
-            time_intervals['0s-20s']['testcases'].append(entry['testcase'])
-        elif 20 <= duration < 40:
+            time_intervals['0s-20s']['testcases'].append(row['Testcase Name'])
+        elif 20 <= duration_seconds < 40:
             time_intervals['20s-40s']['count'] += 1
-            time_intervals['20s-40s']['testcases'].append(entry['testcase'])
-        elif 40 <= duration < 60:
+            time_intervals['20s-40s']['testcases'].append(row['Testcase Name'])
+        elif 40 <= duration_seconds < 60:
             time_intervals['40s-1m']['count'] += 1
-            time_intervals['40s-1m']['testcases'].append(entry['testcase'])
+            time_intervals['40s-1m']['testcases'].append(row['Testcase Name'])
         else:
             time_intervals['1m+']['count'] += 1
-            time_intervals['1m+']['testcases'].append(entry['testcase'])
+            time_intervals['1m+']['testcases'].append(row['Testcase Name'])
 
     # Generating HTML file with Google Charts
     html_content = '''
@@ -187,31 +205,6 @@ def create_historical_trends_report():
         google.charts.setOnLoadCallback(drawCharts);
 
         function drawCharts() {
-          // Drawing Pie Chart for Test Case Status
-          var statusData = google.visualization.arrayToDataTable([
-            ['Status', 'Count'],
-    '''
-
-    # Adding data rows for each status
-    for status, count in status_count_per_testcase.items():
-        html_content += f"        ['{status}', {count}],\n"
-
-    html_content += '''
-          ]);
-
-          var statusOptions = {
-            title: 'Test Case Status',
-            pieHole: 0.4,
-            slices: {
-              0: {color: 'green'}, // Green color for 'passed'
-              1: {color: 'red'},   // Red color for 'failed'
-              2: {color: 'orange'},// Orange color for 'broken'
-            }
-          };
-
-          var statusChart = new google.visualization.PieChart(document.getElementById('status_chart'));
-          statusChart.draw(statusData, statusOptions);
-
           // Drawing Bar Chart for Test Case Execution Time Intervals
           var timeData = new google.visualization.DataTable();
           timeData.addColumn('string', 'Time Intervals');
@@ -230,13 +223,14 @@ def create_historical_trends_report():
 
           var timeOptions = {
             title: 'Test Case Execution Time Intervals',
-            chartArea: {width: '50%'},
+            chartArea: {width: '40%'},
             hAxis: {
               title: 'Number of Test Cases',
               minValue: 0,
             },
             vAxis: {
               title: 'Time Intervals',
+              textStyle: { fontSize: 12 }
             },
             tooltip: { isHtml: true }
           };
@@ -247,14 +241,54 @@ def create_historical_trends_report():
       </script>
     </head>
     <body>
-      <div id="status_chart" style="width: 900px; height: 500px; display: inline-block;"></div>
-      <div id="time_chart" style="width: 900px; height: 500px; display: inline-block;"></div>
+      <div id="time_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
     </body>
     </html>
     '''
-    file_path = f"/app/test/results/historical_trends/test_status_chart.html"
+    return html_content  # Return the generated HTML content
+
+    '''file_path = f"/app/test/results/historical_trends/test_status_chart.html"
+
     # Writing HTML content to a file
     with open(file_path, 'w') as html_file:
         html_file.write(html_content)
 
-    print("HTML file generated successfully!")
+    print("HTML file generated successfully!")'''
+    
+def generate_pie_chart_html(dataframe):
+    result_counts = dataframe['Test Result'].value_counts()
+
+    labels = result_counts.index.tolist()
+    sizes = result_counts.values.tolist()
+    colors = ['green', 'red', 'yellow']
+    
+    # Get the test case names for each test result
+    testcase_names = [dataframe[dataframe['Test Result'] == label]['Testcase Name'].iloc[0] for label in labels]
+    explode = tuple(0.1 if i == 0 else 0 for i in range(len(labels)))
+    '''def func(pct, allvals):
+        absolute = int(pct / 100. * sum(allvals))
+        return f"{absolute}\n{testcase_names.pop(0)}"'''
+
+    plt.figure(figsize=(6, 6))
+    patches, texts, autotexts = plt.pie(sizes, explode=explode, labels=labels, colors=colors,
+                                        autopct='%1.1f%%', startangle=140)
+    # Generate tooltip information
+    tooltip_info = [f'<area alt="{testcase}" title="{testcase}" shape="circle" coords="{str(pie.center[0])},{str(pie.center[1])},{str(pie.r*2)}" />' 
+                    for pie, testcase in zip(patches, testcase_names)]
+
+    plt.axis('equal')
+    plt.title('Test Results Distribution')
+
+    image_stream = BytesIO()
+    plt.savefig(image_stream, format='png')
+    image_stream.seek(0)
+
+    image_base64 = base64.b64encode(image_stream.getvalue()).decode('utf-8')
+    chart_image_tag = f'''
+        <img src="data:image/png;base64,{image_base64}" usemap="#testcase_map" alt="Test Results Pie Chart">
+        <map name="testcase_map">
+            {''.join(tooltip_info)}
+        </map>
+    '''
+
+    return chart_image_tag
