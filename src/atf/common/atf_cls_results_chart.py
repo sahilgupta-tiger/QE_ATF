@@ -100,7 +100,6 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
                 h2, h3, h4 {{
                     font-size: 18px;
                     font-family: Arial, sans-serif;
-                    /* Add other styles as needed */
                 }}
                 /* Style to display elements side by side */
                 .flex-container {{
