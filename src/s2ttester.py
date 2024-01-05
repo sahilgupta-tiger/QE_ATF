@@ -8,7 +8,6 @@ from atf.common.atf_common_functions import read_protocol_file, log_error, log_i
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_cls_pdfformatting import generatePDF
 from atf.common.atf_cls_results_chart import generate_results_charts
-from atf.common.atf_cls_results_chart_updated import generate_results_charts_updated
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
@@ -95,8 +94,7 @@ class S2TTester:
             summary_output_path = self.generate_protocol_summary_report(
                 df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
             # generate HTML report ** new function **
-            #generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
-            generate_results_charts_updated(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
+            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:

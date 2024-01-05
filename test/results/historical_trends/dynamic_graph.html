@@ -1,0 +1,86 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Dynamic Bar Graph with Filters</title>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </head>
+    <body>
+      <div>
+        <label for="filter">Select Filter:</label>
+        <select id="filter" onchange="updateGraph()">
+          <option value="count">Count</option>
+          <option value="duplicate">Duplicate</option>
+          <option value="check">Check</option>
+        </select>
+      </div>
+      <div id="chart_div"></div>
+
+      <script type="text/javascript">
+        google.charts.load('current', { packages: ['corechart'], callback: drawChart });
+
+        function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Category', 'Value'],
+            ['Category A', 10],
+            ['Category B', 20],
+            ['Category C', 15]
+          ]);
+
+          var options = {
+            title: 'Bar Graph based on Filter',
+          };
+
+          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        }
+
+        function updateGraph() {
+          var selectedFilter = document.getElementById('filter').value;
+          var newData;
+
+          // Logic to generate data based on selected filter
+          switch (selectedFilter) {
+            case 'count':
+              newData = [
+                ['Category', 'Value'],
+                ['Category A', 15],
+                ['Category B', 25],
+                ['Category C', 20]
+              ];
+              break;
+            case 'duplicate':
+              newData = [
+                ['Category', 'Value'],
+                ['Category A', 5],
+                ['Category B', 10],
+                ['Category C', 5]
+              ];
+              break;
+            case 'check':
+              newData = [
+                ['Category', 'Value'],
+                ['Category A', 8],
+                ['Category B', 18],
+                ['Category C', 12]
+              ];
+              break;
+            default:
+              newData = [
+                ['Category', 'Value']
+              ];
+              break;
+          }
+
+          var data = google.visualization.arrayToDataTable(newData);
+          var options = {
+            title: 'Bar Graph based on Filter',
+          };
+
+          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        }
+      </script>
+    </body>
+    </html>
+    
