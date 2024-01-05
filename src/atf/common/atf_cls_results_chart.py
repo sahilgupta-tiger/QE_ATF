@@ -76,8 +76,8 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     duration_chart_html =create_duration_chart(new_df)
     pie_chart_html = generate_pie_chart_html(new_df)
     # Call the method to generate and save the HTML content
-    historical_trends()
-    #historical_trends_revised(count_df,duplicate_df,content_df)
+    #historical_trends()
+    historical_trends_revised(count_df,duplicate_df,content_df)
 
     protocol_run_params_html = "<p>"
     for key, value in protocol_run_params.items():
@@ -447,3 +447,89 @@ def historical_trends():
     with open(file_path, 'w') as file:
         file.write(html_content)
     
+def historical_trends_revised(count_df, duplicate_df, content_df):
+    count_data = count_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
+    duplicate_data = duplicate_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
+    content_data = content_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Dynamic Bar Graph with Filters</title>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </head>
+    <body>
+      <div>
+        <label for="filter">Select Filter:</label>
+        <select id="filter" onchange="updateGraph()">
+          <option value="count">Count</option>
+          <option value="duplicate">Duplicate</option>
+          <option value="content">Content</option>
+        </select>
+      </div>
+      <div id="chart_div"></div>
+
+      <script type="text/javascript">
+        google.charts.load('current', {{ packages: ['corechart'], callback: drawChart }});
+
+        var countData = {count_data};
+        var duplicateData = {duplicate_data};
+        var contentData = {content_data};
+
+        function drawChart() {{
+          var data = google.visualization.arrayToDataTable([
+            ['Test Result', 'Count'],
+            ...countData
+          ]);
+
+          var options = {{
+            title: 'Bar Graph based on Filter',
+            // Other chart options
+          }};
+
+          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        }}
+
+        function updateGraph() {{
+          var selectedFilter = document.getElementById('filter').value;
+          var newData;
+
+          switch (selectedFilter) {{
+            case 'count':
+              newData = countData;
+              break;
+            case 'duplicate':
+              newData = duplicateData;
+              break;
+            case 'content':
+              newData = contentData;
+              break;
+            default:
+              newData = countData;
+              break;
+          }}
+
+          var data = google.visualization.arrayToDataTable([
+            ['Test Result', 'Count'],
+            ...newData
+          ]);
+
+          var options = {{
+            title: 'Bar Graph based on Filter',
+            // Other chart options
+          }};
+
+          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        }}
+      </script>
+    </body>
+    </html>
+    """
+
+    file_path = f"/app/test/results/historical_trends/dynamic_graph.html"
+
+    with open(file_path, 'w') as file:
+        file.write(html_content)
