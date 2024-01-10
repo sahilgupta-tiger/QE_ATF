@@ -5,15 +5,12 @@ from pretty_html_table import build_table
 import pandas as pd
 import matplotlib.pyplot as plt
 from atf.common.atf_common_functions import log_info, log_error
-#import pymssql
-#from sqlalchemy import create_engine
 import base64
 from io import BytesIO
 import sqlite3
 from tabulate import tabulate
-from collections import defaultdict
-import plotly.graph_objects as go
 from datetime import datetime
+
 
 def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, output_path, combined_path, summary_path):
 
