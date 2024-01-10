@@ -19,27 +19,23 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     df_pd_summary = df_protocol_summary.toPandas()
     colors = {'Passed': 'green', 'Failed': 'red', 'Broken': 'yellow'}
 
-    log_info(df_pd_summary)
     log_info(df_pd_summary.to_string(index=False))
     log_info(protocol_run_details)
     log_info(protocol_run_params)
     new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
     # Displaying the new DataFrame
     log_info(new_df)
-    log_info(protocol_run_details)
     protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
     # Add 'Test Protocol Start Time' column with the same value for all rows
     new_df['Test Protocol Start Time'] = protocol_start_time
-    log_info("updated df")
-    log_info(new_df)
-    his_df=store_results_into_db(df_pd_summary, protocol_run_details, protocol_run_params)
+    his_df = store_results_into_db(df_pd_summary, protocol_run_details, protocol_run_params)
     log_info("Results from db")
     log_info(his_df)
     
     test_results_count = his_df['Test Result'].value_counts()
     log_info("Test results count is")
     log_info(test_results_count)
-        # Creating the trends graph
+    # Creating the trends graph
     plt.figure(figsize=(8, 6))
     plt.bar(test_results_count.index, test_results_count.values, color=[colors[result] for result in test_results_count.index])
     plt.xlabel('Test Result')
@@ -58,22 +54,9 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     duplicate_df = his_df[his_df['Testcase Type'] == 'duplicate']
     content_df = his_df[his_df['Testcase Type'] == 'content']
 
-    # Example: Printing the data in the count DataFrame
-    log_info("Count DataFrame:")
-    log_info(count_df)
-
-    # Example: Printing the data in the duplicate DataFrame
-    log_info("\nDuplicate DataFrame:")
-    log_info(duplicate_df)
-
-    # Example: Printing the data in the content DataFrame
-    log_info("\nContent DataFrame:")
-    log_info(content_df)
-    
-    duration_chart_html =create_duration_chart(new_df)
+    duration_chart_html = create_duration_chart(new_df)
     pie_chart_html = generate_pie_chart_html(new_df)
     # Call the method to generate and save the HTML content
-    #historical_trends()
     historical_trends_revised(count_df,duplicate_df,content_df)
 
     protocol_run_params_html = "<p>"
@@ -108,38 +91,32 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
         </head>
         <body>
-            <h1>DATF Test Summary</h1>
-            <h2><b>1. Protocol Test Results</b></h2>
-            {build_table(df_pd_summary,'orange_dark')}
-            <h2><b>2. Protocol Run Details</b></h2>
-            {protocol_run_details_html}
-            <h2><b>3. Protocol Run Parameters</b></h2>
-            {protocol_run_params_html}
-            <div class="flex-container">
+            <h1>DATF Test Summary</h1>\
+            <div class="flex-container">\
                 <div>
-                    <h3><b>4. Durations</b></h3>
-                    {duration_chart_html}  <!-- Include the historical chart HTML content here -->
-                </div>
-                <div>
-                    <h3><b>5. Status</b></h3>
+                    <h3><b>1. Status</b></h3>
                     <div>
                         {pie_chart_html}  <!-- Embed the pie chart here -->
                     </div>
                 </div>
+                <div>
+                    <h3><b>2. Durations</b></h3>
+                    {duration_chart_html}  <!-- Include the historical chart HTML content here -->
+                </div>
             </div>
-            <h2><b>6. Trends of Test Results</b></h2>
-            <img src="data:image/png;base64,{image_base64}" alt="Trends Graph">    
-
-
-            
-            
+            <h2><b>2. Protocol Test Results</b></h2>
+            {build_table(df_pd_summary,'orange_dark')}
+            <h2><b>3. Protocol Run Details</b></h2>
+            {protocol_run_details_html}
+            <h2><b>4. Protocol Run Parameters</b></h2>
+            {protocol_run_params_html}
+           
         </body>
         </html>
     """
-    
-
     # do not delete or modify below function, very important!
     create_html_report(chart_code, created_time, output_path, combined_path, summary_path)
+
 
 def create_html_report(chart_code, created_time, output_path, combined_path, summary_path):
     # Create the HTML file
@@ -172,9 +149,9 @@ def create_html_report(chart_code, created_time, output_path, combined_path, sum
     os.rename(fr"{final_report_path}/{combined_file}", fr"{final_report_path}/datf_combined.pdf")
     log_info(f"Reports copied over to: {final_report_path}")
 
-def store_results_into_db(df_pd_summary,protocol_run_details, protocol_run_params):
 
-    #log_info(df_pd_summary)
+def store_results_into_db(df_pd_summary, protocol_run_details, protocol_run_params):
+
     new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
     # Displaying the new DataFrame
     log_info(new_df)
@@ -217,7 +194,8 @@ def store_results_into_db(df_pd_summary,protocol_run_details, protocol_run_param
     log_info(df_from_db)
     conn.close()
     return df_from_db
-   
+
+
 def create_duration_chart(new_df):
 
     new_df = new_df[['Testcase Name', 'Test Result', 'Runtime']]
@@ -226,10 +204,10 @@ def create_duration_chart(new_df):
     log_info(tabulate(new_df, headers='keys', tablefmt='psql'))
 
     time_intervals = {
-        '0s-20s': {'count': 0, 'testcases': []},
-        '20s-40s': {'count': 0, 'testcases': []},
-        '40s-1m': {'count': 0, 'testcases': []},
-        '1m+': {'count': 0, 'testcases': []},
+        '0s-30s': {'count': 0, 'testcases': []},
+        '30s-50s': {'count': 0, 'testcases': []},
+        '50s-2m': {'count': 0, 'testcases': []},
+        '2m+': {'count': 0, 'testcases': []},
     }
 
     # Converting runtime strings to duration in seconds
@@ -238,18 +216,18 @@ def create_duration_chart(new_df):
         runtime_obj = datetime.strptime(runtime_str, '%H:%M:%S')
         duration_seconds = runtime_obj.hour * 3600 + runtime_obj.minute * 60 + runtime_obj.second
 
-        if duration_seconds < 20:
-            time_intervals['0s-20s']['count'] += 1
-            time_intervals['0s-20s']['testcases'].append(row['Testcase Name'])
-        elif 20 <= duration_seconds < 40:
-            time_intervals['20s-40s']['count'] += 1
-            time_intervals['20s-40s']['testcases'].append(row['Testcase Name'])
-        elif 40 <= duration_seconds < 60:
-            time_intervals['40s-1m']['count'] += 1
-            time_intervals['40s-1m']['testcases'].append(row['Testcase Name'])
+        if duration_seconds < 30:
+            time_intervals['0s-30s']['count'] += 1
+            time_intervals['0s-30s']['testcases'].append(row['Testcase Name'])
+        elif 30 <= duration_seconds < 50:
+            time_intervals['30s-50s']['count'] += 1
+            time_intervals['30s-50s']['testcases'].append(row['Testcase Name'])
+        elif 50 <= duration_seconds < 120:
+            time_intervals['50s-2m']['count'] += 1
+            time_intervals['50s-2m']['testcases'].append(row['Testcase Name'])
         else:
-            time_intervals['1m+']['count'] += 1
-            time_intervals['1m+']['testcases'].append(row['Testcase Name'])
+            time_intervals['2m+']['count'] += 1
+            time_intervals['2m+']['testcases'].append(row['Testcase Name'])
 
     # Generating HTML file with Google Charts
     html_content = '''
@@ -304,13 +282,6 @@ def create_duration_chart(new_df):
     '''
     return html_content  # Return the generated HTML content
 
-    '''file_path = f"/app/test/results/historical_trends/test_status_chart.html"
-
-    # Writing HTML content to a file
-    with open(file_path, 'w') as html_file:
-        html_file.write(html_content)
-
-    print("HTML file generated successfully!")'''
     
 def generate_pie_chart_html(dataframe):
     result_counts = dataframe['Test Result'].value_counts()
@@ -322,9 +293,6 @@ def generate_pie_chart_html(dataframe):
     # Get the test case names for each test result
     testcase_names = [dataframe[dataframe['Test Result'] == label]['Testcase Name'].iloc[0] for label in labels]
     explode = tuple(0.1 if i == 0 else 0 for i in range(len(labels)))
-    '''def func(pct, allvals):
-        absolute = int(pct / 100. * sum(allvals))
-        return f"{absolute}\n{testcase_names.pop(0)}"'''
 
     plt.figure(figsize=(6, 6))
     patches, texts, autotexts = plt.pie(sizes, explode=explode, labels=labels, colors=colors,
@@ -350,99 +318,7 @@ def generate_pie_chart_html(dataframe):
 
     return chart_image_tag
 
-def historical_trends():
-    html_content = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Dynamic Bar Graph with Filters</title>
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    </head>
-    <body>
-      <div>
-        <label for="filter">Select Filter:</label>
-        <select id="filter" onchange="updateGraph()">
-          <option value="count">Count</option>
-          <option value="duplicate">Duplicate</option>
-          <option value="check">Check</option>
-        </select>
-      </div>
-      <div id="chart_div"></div>
 
-      <script type="text/javascript">
-        google.charts.load('current', { packages: ['corechart'], callback: drawChart });
-
-        function drawChart() {
-          var data = google.visualization.arrayToDataTable([
-            ['Category', 'Value'],
-            ['Category A', 10],
-            ['Category B', 20],
-            ['Category C', 15]
-          ]);
-
-          var options = {
-            title: 'Bar Graph based on Filter',
-          };
-
-          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
-          chart.draw(data, options);
-        }
-
-        function updateGraph() {
-          var selectedFilter = document.getElementById('filter').value;
-          var newData;
-
-          // Logic to generate data based on selected filter
-          switch (selectedFilter) {
-            case 'count':
-              newData = [
-                ['Category', 'Value'],
-                ['Category A', 15],
-                ['Category B', 25],
-                ['Category C', 20]
-              ];
-              break;
-            case 'duplicate':
-              newData = [
-                ['Category', 'Value'],
-                ['Category A', 5],
-                ['Category B', 10],
-                ['Category C', 5]
-              ];
-              break;
-            case 'check':
-              newData = [
-                ['Category', 'Value'],
-                ['Category A', 8],
-                ['Category B', 18],
-                ['Category C', 12]
-              ];
-              break;
-            default:
-              newData = [
-                ['Category', 'Value']
-              ];
-              break;
-          }
-
-          var data = google.visualization.arrayToDataTable(newData);
-          var options = {
-            title: 'Bar Graph based on Filter',
-          };
-
-          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
-          chart.draw(data, options);
-        }
-      </script>
-    </body>
-    </html>
-    """
-
-    file_path = f"/app/test/results/historical_trends/dynamic_graph.html"
-
-    with open(file_path, 'w') as file:
-        file.write(html_content)
-    
 def historical_trends_revised(count_df, duplicate_df, content_df):
     count_data = count_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
     duplicate_data = duplicate_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
@@ -525,7 +401,10 @@ def historical_trends_revised(count_df, duplicate_df, content_df):
     </html>
     """
 
-    file_path = f"/app/test/results/historical_trends/dynamic_graph.html"
+    file_path = f"/app/test/results/trends/datf_trend_report.html"
 
-    with open(file_path, 'w') as file:
+    with open(file_path, 'w+') as file:
         file.write(html_content)
+    final_report_path = "/app/utils/reports"
+    shutil.copy(file_path, final_report_path)
+
