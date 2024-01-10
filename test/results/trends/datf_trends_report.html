@@ -1,0 +1,76 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Dynamic Bar Graph with Filters</title>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </head>
+    <body>
+      <div>
+        <label for="filter">Select Filter:</label>
+        <select id="filter" onchange="updateGraph()">
+          <option value="count">Count</option>
+          <option value="duplicate">Duplicate</option>
+          <option value="content">Content</option>
+        </select>
+      </div>
+      <div id="chart_div"></div>
+
+      <script type="text/javascript">
+        google.charts.load('current', { packages: ['corechart'], callback: drawChart });
+
+        var countData = [['Failed', 1], ['Passed', 2]];
+        var duplicateData = [];
+        var contentData = [['Passed', 2]];
+
+        function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Test Result', 'Count'],
+            ...countData
+          ]);
+
+          var options = {
+            title: 'Bar Graph based on Filter',
+            // Other chart options
+          };
+
+          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        }
+
+        function updateGraph() {
+          var selectedFilter = document.getElementById('filter').value;
+          var newData;
+
+          switch (selectedFilter) {
+            case 'count':
+              newData = countData;
+              break;
+            case 'duplicate':
+              newData = duplicateData;
+              break;
+            case 'content':
+              newData = contentData;
+              break;
+            default:
+              newData = countData;
+              break;
+          }
+
+          var data = google.visualization.arrayToDataTable([
+            ['Test Result', 'Count'],
+            ...newData
+          ]);
+
+          var options = {
+            title: 'Bar Graph based on Filter',
+            // Other chart options
+          };
+
+          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        }
+      </script>
+    </body>
+    </html>
+    

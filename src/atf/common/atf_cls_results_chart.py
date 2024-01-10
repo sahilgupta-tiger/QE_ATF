@@ -17,47 +17,19 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     log_info("Printing Results from Protcol below ---")
     # converting pyspark dataframe to pandas dataframe for html rendering
     df_pd_summary = df_protocol_summary.toPandas()
-    colors = {'Passed': 'green', 'Failed': 'red', 'Broken': 'yellow'}
 
-    log_info(df_pd_summary.to_string(index=False))
+    print(tabulate(df_pd_summary, headers='keys', tablefmt='psql'))
     log_info(protocol_run_details)
     log_info(protocol_run_params)
+    # Creating a New DataFrame for Pie Chart and Duration Chart
     new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
-    # Displaying the new DataFrame
-    log_info(new_df)
     protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
     # Add 'Test Protocol Start Time' column with the same value for all rows
     new_df['Test Protocol Start Time'] = protocol_start_time
-    his_df = store_results_into_db(df_pd_summary, protocol_run_details, protocol_run_params)
-    log_info("Results from db")
-    log_info(his_df)
-    
-    test_results_count = his_df['Test Result'].value_counts()
-    log_info("Test results count is")
-    log_info(test_results_count)
-    # Creating the trends graph
-    plt.figure(figsize=(8, 6))
-    plt.bar(test_results_count.index, test_results_count.values, color=[colors[result] for result in test_results_count.index])
-    plt.xlabel('Test Result')
-    plt.ylabel('Number of Test Cases')
-    plt.title('TREND')
-    plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
-    
-    # Save the graph as a base64-encoded string
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-    # Creating separate DataFrames for each 'Testcase Type'
-    count_df = his_df[his_df['Testcase Type'] == 'count']
-    duplicate_df = his_df[his_df['Testcase Type'] == 'duplicate']
-    content_df = his_df[his_df['Testcase Type'] == 'content']
-
+    # Call methods to generate the pie chart and duration chart
     duration_chart_html = create_duration_chart(new_df)
     pie_chart_html = generate_pie_chart_html(new_df)
-    # Call the method to generate and save the HTML content
-    historical_trends_revised(count_df,duplicate_df,content_df)
 
     protocol_run_params_html = "<p>"
     for key, value in protocol_run_params.items():
@@ -68,7 +40,6 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     for key, value in protocol_run_details.items():
         protocol_run_details_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
     protocol_run_details_html += "</p>"
-
 
     # Construct the JavaScript code for Google Chart
     chart_code = fr"""
@@ -91,17 +62,17 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
         </head>
         <body>
-            <h1>DATF Test Summary</h1>\
-            <div class="flex-container">\
+            <h1>DATF Test Summary</h1>
+            <div class="flex-container">
                 <div>
-                    <h3><b>1. Status</b></h3>
+                    <h3><b>1. Overall Status</b></h3>
                     <div>
                         {pie_chart_html}  <!-- Embed the pie chart here -->
                     </div>
                 </div>
                 <div>
-                    <h3><b>2. Durations</b></h3>
-                    {duration_chart_html}  <!-- Include the historical chart HTML content here -->
+                    <h3><b>2. Duration Summary</b></h3>
+                    {duration_chart_html}  <!-- Include the duration chart here -->
                 </div>
             </div>
             <h2><b>2. Protocol Test Results</b></h2>
@@ -114,11 +85,20 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
         </body>
         </html>
     """
-    # do not delete or modify below function, very important!
-    create_html_report(chart_code, created_time, output_path, combined_path, summary_path)
+
+    # Save all resutlts in a SQLITE3 DB which can be used for Dashboards as well
+    his_df = store_results_into_db(df_pd_summary, protocol_run_details, testcasetype)
+    log_info("Results from db:")
+    log_info(his_df)
+
+    # Call the method to generate and save the Trends HTML content
+    trends_code = historical_trends(his_df)
+
+    # do not delete or modify below function, very important it needs to be LAST!
+    create_html_report(trends_code, chart_code, created_time, output_path, combined_path, summary_path)
 
 
-def create_html_report(chart_code, created_time, output_path, combined_path, summary_path):
+def create_html_report(trends_code, chart_code, created_time, output_path, combined_path, summary_path):
     # Create the HTML file
     html_file_name = f"chart_report_{created_time}.html"
     html_file_path = f"/app/test/results/charts/{html_file_name}"
@@ -126,6 +106,12 @@ def create_html_report(chart_code, created_time, output_path, combined_path, sum
     with open(html_file_path, 'w') as file:
         file.write(chart_code)
     log_info(f"Chart generated at: {html_file_path}")
+
+    trends_path = f"/app/test/results/trends/datf_trends_report.html"
+
+    with open(trends_path, 'w') as file:
+        file.write(trends_code)
+    log_info(f"Trends generated at: {trends_path}")
 
     # copy all current reports to single folder after emptying it
     final_report_path = "/app/utils/reports"
@@ -143,71 +129,23 @@ def create_html_report(chart_code, created_time, output_path, combined_path, sum
     combined_file = combined_path.replace(output_path, '')
     shutil.copytree(output_path, final_report_path, dirs_exist_ok=True)
     shutil.copy(html_file_path, final_report_path)
+    shutil.copy(trends_path, final_report_path)
     # rename files for Archiving Artefacts within CT Pipeline integration
     os.rename(fr"{final_report_path}/{html_file_name}", fr"{final_report_path}/datfreport.html")
     os.rename(fr"{final_report_path}/{summary_file}", fr"{final_report_path}/datf_summary.pdf")
     os.rename(fr"{final_report_path}/{combined_file}", fr"{final_report_path}/datf_combined.pdf")
-    log_info(f"Reports copied over to: {final_report_path}")
-
-
-def store_results_into_db(df_pd_summary, protocol_run_details, protocol_run_params):
-
-    new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
-    # Displaying the new DataFrame
-    log_info(new_df)
-    # Create DataFrame from the protocol_run_details dictionary
-    '''log_info(protocol_run_details)
-    protocol_data = pd.DataFrame([protocol_run_details])
-
-    log_info("Converting dictionary to dataframe")
-    log_info(protocol_data)
-    log_info(tabulate(protocol_data, headers='keys', tablefmt='psql'))
-    
-    # Create a new DataFrame with columns consistent with protocol_data
-    columns = ['Testcase Name', 'Test Result', 'Runtime']
-    new_data_from_df = pd.DataFrame(df_pd_summary.values, columns=columns)
-
-    # Append new_data_from_df to protocol_data
-    combined_df = pd.concat([protocol_data, new_data_from_df], ignore_index=True)
-    log_info("Combined df is")
-    # Display the combined DataFrame
-    log_info(combined_df)'''
-
-    # Add columns to protocol_df to match new_df columns
-    protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
-    testcase_type = protocol_run_params.get('Testcase Type', '')
-    
-    # Add 'Test Protocol Start Time' column with the same value for all rows
-    new_df['Test Protocol Start Time'] = protocol_start_time
-    new_df['Testcase Type'] = testcase_type
-
-    log_info("Updated dataframe is")
-    log_info(new_df)
-    conn = sqlite3.connect('SQLITE_Sample.db')
-    table_name = 'historical_trends'
-
-    new_df.to_sql(table_name, conn, if_exists='append', index=False)
-    query = f"SELECT * FROM {table_name}"
-    df_from_db = pd.read_sql_query(query, conn)
-    # Display the retrieved data
-    log_info("Data retrieved from db")
-    log_info(df_from_db)
-    conn.close()
-    return df_from_db
+    log_info(f"HTML & PDF Reports copied over to: {final_report_path}")
 
 
 def create_duration_chart(new_df):
 
     new_df = new_df[['Testcase Name', 'Test Result', 'Runtime']]
-    log_info("checking")
-    log_info(new_df)
-    log_info(tabulate(new_df, headers='keys', tablefmt='psql'))
 
     time_intervals = {
-        '0s-30s': {'count': 0, 'testcases': []},
-        '30s-50s': {'count': 0, 'testcases': []},
-        '50s-2m': {'count': 0, 'testcases': []},
-        '2m+': {'count': 0, 'testcases': []},
+        '0s-45s': {'count': 0, 'testcases': []},
+        '45s-2m': {'count': 0, 'testcases': []},
+        '2m-5m': {'count': 0, 'testcases': []},
+        '5m+': {'count': 0, 'testcases': []},
     }
 
     # Converting runtime strings to duration in seconds
@@ -216,18 +154,18 @@ def create_duration_chart(new_df):
         runtime_obj = datetime.strptime(runtime_str, '%H:%M:%S')
         duration_seconds = runtime_obj.hour * 3600 + runtime_obj.minute * 60 + runtime_obj.second
 
-        if duration_seconds < 30:
-            time_intervals['0s-30s']['count'] += 1
-            time_intervals['0s-30s']['testcases'].append(row['Testcase Name'])
-        elif 30 <= duration_seconds < 50:
-            time_intervals['30s-50s']['count'] += 1
-            time_intervals['30s-50s']['testcases'].append(row['Testcase Name'])
-        elif 50 <= duration_seconds < 120:
-            time_intervals['50s-2m']['count'] += 1
-            time_intervals['50s-2m']['testcases'].append(row['Testcase Name'])
+        if duration_seconds < 45:
+            time_intervals['0s-45s']['count'] += 1
+            time_intervals['0s-45s']['testcases'].append(row['Testcase Name'])
+        elif 45 <= duration_seconds < 120:
+            time_intervals['45s-2m']['count'] += 1
+            time_intervals['45s-2m']['testcases'].append(row['Testcase Name'])
+        elif 120 <= duration_seconds < 300:
+            time_intervals['2m-5m']['count'] += 1
+            time_intervals['2m-5m']['testcases'].append(row['Testcase Name'])
         else:
-            time_intervals['2m+']['count'] += 1
-            time_intervals['2m+']['testcases'].append(row['Testcase Name'])
+            time_intervals['5m+']['count'] += 1
+            time_intervals['5m+']['testcases'].append(row['Testcase Name'])
 
     # Generating HTML file with Google Charts
     html_content = '''
@@ -259,6 +197,7 @@ def create_duration_chart(new_df):
           var timeOptions = {
             title: 'Test Case Execution Time Intervals',
             chartArea: {width: '40%'},
+            legend: {position: 'none'},
             hAxis: {
               title: 'Number of Test Cases',
               minValue: 0,
@@ -280,7 +219,7 @@ def create_duration_chart(new_df):
     </body>
     </html>
     '''
-    return html_content  # Return the generated HTML content
+    return html_content  # Return the generated HTML code
 
     
 def generate_pie_chart_html(dataframe):
@@ -319,7 +258,13 @@ def generate_pie_chart_html(dataframe):
     return chart_image_tag
 
 
-def historical_trends_revised(count_df, duplicate_df, content_df):
+def historical_trends(his_df):
+
+    # Creating separate DataFrames for each 'Testcase Type'
+    count_df = his_df[his_df['Testcase Type'] == 'count']
+    duplicate_df = his_df[his_df['Testcase Type'] == 'duplicate']
+    content_df = his_df[his_df['Testcase Type'] == 'content']
+
     count_data = count_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
     duplicate_data = duplicate_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
     content_data = content_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
@@ -401,10 +346,33 @@ def historical_trends_revised(count_df, duplicate_df, content_df):
     </html>
     """
 
-    file_path = f"/app/test/results/trends/datf_trends_report.html"
+    return html_content
 
-    with open(file_path, 'w+') as file:
-        file.write(html_content)
-    final_report_path = "/app/utils/reports"
-    shutil.copy(file_path, final_report_path)
+
+def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype):
+
+    new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
+
+    # Add columns to protocol_df to match new_df columns
+    protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
+
+    # Add Start Time and Test Case Type column with the same value for all rows
+    new_df['Test Protocol Start Time'] = protocol_start_time
+    new_df['Testcase Type'] = testcasetype
+
+    # Connect to SQLITE DB and update the table if exists
+    conn = sqlite3.connect('/app/utils/DATF_SQLITE.db')
+    table_name = 'historical_trends'
+    new_df.to_sql(table_name, conn, if_exists='append', index=False)
+
+    # Filter data from DB using SQL and create a DF
+    query = f"SELECT * FROM {table_name}"
+    df_from_db = pd.read_sql_query(query, conn)
+
+    # Display the retrieved data
+    log_info("Data retrieved from db:")
+    print(tabulate(df_from_db, headers='keys', tablefmt='psql'))
+
+    conn.close()
+    return df_from_db
 
