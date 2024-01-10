@@ -401,7 +401,7 @@ def historical_trends_revised(count_df, duplicate_df, content_df):
     </html>
     """
 
-    file_path = f"/app/test/results/trends/datf_trend_report.html"
+    file_path = f"/app/test/results/trends/datf_trends_report.html"
 
     with open(file_path, 'w+') as file:
         file.write(html_content)
