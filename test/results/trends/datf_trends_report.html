@@ -2,16 +2,17 @@
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Dynamic Bar Graph with Filters</title>
+      <title>Historical Trends Dashboard</title>
       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
     <body>
+      <h1>Count of Test Cases Executed (All Time)</h1>
       <div>
-        <label for="filter">Select Filter:</label>
+        <label for="filter">Select Test Case Type Filter:</label>
         <select id="filter" onchange="updateGraph()">
-          <option value="count">Count</option>
-          <option value="duplicate">Duplicate</option>
-          <option value="content">Content</option>
+          <option value="count">Count of Rows</option>
+          <option value="duplicate">Find Duplicates</option>
+          <option value="content">Matching Contents</option>
         </select>
       </div>
       <div id="chart_div"></div>
@@ -20,7 +21,7 @@
         google.charts.load('current', { packages: ['corechart'], callback: drawChart });
 
         var countData = [['Failed', 1], ['Passed', 2]];
-        var duplicateData = [];
+        var duplicateData = [['Failed', 1], ['Passed', 1]];
         var contentData = [['Passed', 2]];
 
         function drawChart() {
@@ -31,6 +32,7 @@
 
           var options = {
             title: 'Bar Graph based on Filter',
+            legend: {position: 'none'},
             // Other chart options
           };
 
@@ -64,6 +66,7 @@
 
           var options = {
             title: 'Bar Graph based on Filter',
+            legend: {position: 'none'},
             // Other chart options
           };
 

@@ -18,9 +18,6 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     # converting pyspark dataframe to pandas dataframe for html rendering
     df_pd_summary = df_protocol_summary.toPandas()
 
-    print(tabulate(df_pd_summary, headers='keys', tablefmt='psql'))
-    log_info(protocol_run_details)
-    log_info(protocol_run_params)
     # Creating a New DataFrame for Pie Chart and Duration Chart
     new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
     protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
@@ -62,7 +59,7 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
         </head>
         <body>
-            <h1>DATF Test Summary</h1>
+            <h1>DATF Test Summary for TestCaseType - {testcasetype}</h1>
             <div class="flex-container">
                 <div>
                     <h3><b>1. Overall Status</b></h3>
@@ -88,8 +85,6 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
     # Save all resutlts in a SQLITE3 DB which can be used for Dashboards as well
     his_df = store_results_into_db(df_pd_summary, protocol_run_details, testcasetype)
-    log_info("Results from db:")
-    log_info(his_df)
 
     # Call the method to generate and save the Trends HTML content
     trends_code = historical_trends(his_df)
@@ -137,6 +132,34 @@ def create_html_report(trends_code, chart_code, created_time, output_path, combi
     log_info(f"HTML & PDF Reports copied over to: {final_report_path}")
 
 
+def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype):
+
+    new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
+
+    # Add columns to protocol_df to match new_df columns
+    protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
+
+    # Add Start Time and Test Case Type column with the same value for all rows
+    new_df['Test Protocol Start Time'] = protocol_start_time
+    new_df['Testcase Type'] = testcasetype
+
+    # Connect to SQLITE DB and update the table if exists
+    conn = sqlite3.connect('/app/utils/DATF_SQLITE.db')
+    table_name = 'historical_trends'
+    new_df.to_sql(table_name, conn, if_exists='append', index=False)
+
+    # Filter data from DB using SQL and create a DF
+    query = f"SELECT * FROM {table_name}"
+    df_from_db = pd.read_sql_query(query, conn)
+
+    # Display the retrieved data
+    log_info("Data retrieved from db:")
+    print(tabulate(df_from_db, headers='keys', tablefmt='psql'))
+
+    conn.close()
+    return df_from_db
+
+
 def create_duration_chart(new_df):
 
     new_df = new_df[['Testcase Name', 'Test Result', 'Runtime']]
@@ -151,21 +174,22 @@ def create_duration_chart(new_df):
     # Converting runtime strings to duration in seconds
     for index, row in new_df.iterrows():
         runtime_str = row['Runtime']
-        runtime_obj = datetime.strptime(runtime_str, '%H:%M:%S')
-        duration_seconds = runtime_obj.hour * 3600 + runtime_obj.minute * 60 + runtime_obj.second
+        if runtime_str != '':
+            runtime_obj = datetime.strptime(runtime_str, '%H:%M:%S')
+            duration_seconds = runtime_obj.hour * 3600 + runtime_obj.minute * 60 + runtime_obj.second
 
-        if duration_seconds < 45:
-            time_intervals['0s-45s']['count'] += 1
-            time_intervals['0s-45s']['testcases'].append(row['Testcase Name'])
-        elif 45 <= duration_seconds < 120:
-            time_intervals['45s-2m']['count'] += 1
-            time_intervals['45s-2m']['testcases'].append(row['Testcase Name'])
-        elif 120 <= duration_seconds < 300:
-            time_intervals['2m-5m']['count'] += 1
-            time_intervals['2m-5m']['testcases'].append(row['Testcase Name'])
-        else:
-            time_intervals['5m+']['count'] += 1
-            time_intervals['5m+']['testcases'].append(row['Testcase Name'])
+            if duration_seconds < 45:
+                time_intervals['0s-45s']['count'] += 1
+                time_intervals['0s-45s']['testcases'].append(row['Testcase Name'])
+            elif 45 <= duration_seconds < 120:
+                time_intervals['45s-2m']['count'] += 1
+                time_intervals['45s-2m']['testcases'].append(row['Testcase Name'])
+            elif 120 <= duration_seconds < 300:
+                time_intervals['2m-5m']['count'] += 1
+                time_intervals['2m-5m']['testcases'].append(row['Testcase Name'])
+            else:
+                time_intervals['5m+']['count'] += 1
+                time_intervals['5m+']['testcases'].append(row['Testcase Name'])
 
     # Generating HTML file with Google Charts
     html_content = '''
@@ -273,16 +297,17 @@ def historical_trends(his_df):
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Dynamic Bar Graph with Filters</title>
+      <title>Historical Trends Dashboard</title>
       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
     <body>
+      <h1>Count of Test Cases Executed (All Time)</h1>
       <div>
-        <label for="filter">Select Filter:</label>
+        <label for="filter">Select Test Case Type Filter:</label>
         <select id="filter" onchange="updateGraph()">
-          <option value="count">Count</option>
-          <option value="duplicate">Duplicate</option>
-          <option value="content">Content</option>
+          <option value="count">Count of Rows</option>
+          <option value="duplicate">Find Duplicates</option>
+          <option value="content">Matching Contents</option>
         </select>
       </div>
       <div id="chart_div"></div>
@@ -302,6 +327,7 @@ def historical_trends(his_df):
 
           var options = {{
             title: 'Bar Graph based on Filter',
+            legend: {{position: 'none'}},
             // Other chart options
           }};
 
@@ -335,6 +361,7 @@ def historical_trends(his_df):
 
           var options = {{
             title: 'Bar Graph based on Filter',
+            legend: {{position: 'none'}},
             // Other chart options
           }};
 
@@ -349,30 +376,5 @@ def historical_trends(his_df):
     return html_content
 
 
-def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype):
 
-    new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
-
-    # Add columns to protocol_df to match new_df columns
-    protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
-
-    # Add Start Time and Test Case Type column with the same value for all rows
-    new_df['Test Protocol Start Time'] = protocol_start_time
-    new_df['Testcase Type'] = testcasetype
-
-    # Connect to SQLITE DB and update the table if exists
-    conn = sqlite3.connect('/app/utils/DATF_SQLITE.db')
-    table_name = 'historical_trends'
-    new_df.to_sql(table_name, conn, if_exists='append', index=False)
-
-    # Filter data from DB using SQL and create a DF
-    query = f"SELECT * FROM {table_name}"
-    df_from_db = pd.read_sql_query(query, conn)
-
-    # Display the retrieved data
-    log_info("Data retrieved from db:")
-    print(tabulate(df_from_db, headers='keys', tablefmt='psql'))
-
-    conn.close()
-    return df_from_db
 
