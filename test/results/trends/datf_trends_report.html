@@ -6,11 +6,11 @@
       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
     <body>
-      <h1>Count of Test Cases Executed (All Time)</h1>
+      <h2>1. No. of Test Cases Executed (All Time)</h2>
       <div>
         <label for="filter">Select Test Case Type Filter:</label>
         <select id="filter" onchange="updateGraph()">
-          <option value="count">Count of Rows</option>
+          <option value="count">Row Counts</option>
           <option value="duplicate">Find Duplicates</option>
           <option value="content">Matching Contents</option>
         </select>
@@ -20,7 +20,7 @@
       <script type="text/javascript">
         google.charts.load('current', { packages: ['corechart'], callback: drawChart });
 
-        var countData = [['Failed', 1], ['Passed', 2]];
+        var countData = [['Failed', 3], ['Passed', 6]];
         var duplicateData = [['Failed', 1], ['Passed', 1]];
         var contentData = [['Passed', 2]];
 
@@ -33,6 +33,8 @@
           var options = {
             title: 'Bar Graph based on Filter',
             legend: {position: 'none'},
+            is3D: true,
+            colors: ['pink','teal'],
             // Other chart options
           };
 
@@ -67,6 +69,8 @@
           var options = {
             title: 'Bar Graph based on Filter',
             legend: {position: 'none'},
+            is3D: true,
+            colors: ['pink','teal'],
             // Other chart options
           };
 
@@ -74,6 +78,31 @@
           chart.draw(data, options);
         }
       </script>
+      
+      <h2>2. Historical Trends Graph (All Time)</h2>
+      <div id="trends_chart"></div>
+      
+        <script type="text/javascript">
+            google.charts.load('current', { packages: ['corechart'], callback: drawTrends });
+            
+            function drawTrends() {
+                var data = google.visualization.arrayToDataTable([
+                ['Test Result', 'Count'],
+                ...countData
+                ]);
+                
+                var options = {
+                title: 'Bar Graph based on Filter',
+                legend: {position: 'none'},
+                is3D: true,
+                colors: ['pink','teal'],
+                // Other chart options
+                };
+                
+                var chart = new google.visualization.BarChart(document.getElementById('trends_chart'));
+                chart.draw(data, options);
+            }
+        </script>
     </body>
     </html>
     

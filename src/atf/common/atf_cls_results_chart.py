@@ -59,7 +59,7 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
         </head>
         <body>
-            <h1>DATF Test Summary for TestCaseType - {testcasetype}</h1>
+            <h1>DATF Test Execution Summary</h1>
             <div class="flex-container">
                 <div>
                     <h3><b>1. Overall Status</b></h3>
@@ -293,6 +293,8 @@ def historical_trends(his_df):
     duplicate_data = duplicate_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
     content_data = content_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
 
+    trends_data = []
+
     html_content = f"""
     <!DOCTYPE html>
     <html>
@@ -301,11 +303,11 @@ def historical_trends(his_df):
       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
     <body>
-      <h1>Count of Test Cases Executed (All Time)</h1>
+      <h2>1. No. of Test Cases Executed (All Time)</h2>
       <div>
         <label for="filter">Select Test Case Type Filter:</label>
         <select id="filter" onchange="updateGraph()">
-          <option value="count">Count of Rows</option>
+          <option value="count">Row Counts</option>
           <option value="duplicate">Find Duplicates</option>
           <option value="content">Matching Contents</option>
         </select>
@@ -328,6 +330,8 @@ def historical_trends(his_df):
           var options = {{
             title: 'Bar Graph based on Filter',
             legend: {{position: 'none'}},
+            is3D: true,
+            colors: ['pink','teal'],
             // Other chart options
           }};
 
@@ -362,6 +366,8 @@ def historical_trends(his_df):
           var options = {{
             title: 'Bar Graph based on Filter',
             legend: {{position: 'none'}},
+            is3D: true,
+            colors: ['pink','teal'],
             // Other chart options
           }};
 
@@ -369,6 +375,32 @@ def historical_trends(his_df):
           chart.draw(data, options);
         }}
       </script>
+      
+      <h2>2. Historical Trends Graph (All Time)</h2>
+      <div id="trends_chart"></div>
+      
+        <script type="text/javascript">
+            google.charts.load('current', {{ packages: ['corechart'], callback: drawTrends }});
+            
+            var trendsData = {trends_data}
+            function drawTrends() {{
+                var data = google.visualization.arrayToDataTable([
+                ['Test Result', 'Count'],
+                ...trendsData
+                ]);
+                
+                var options = {{
+                    title : 'Monthly Coffee Production by Country',
+                    vAxis: {{title: 'Cups'}},
+                    hAxis: {{title: 'Month'}},
+                    seriesType: 'bars',
+                    series: {{5: {{type: 'line'}} }}
+                }};
+                
+                var chart = new google.visualization.ComboChart(document.getElementById('trends_chart'));
+                chart.draw(data, options);
+            }}
+        </script>
     </body>
     </html>
     """
