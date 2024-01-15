@@ -11,18 +11,17 @@ import sqlite3
 from tabulate import tabulate
 from datetime import datetime
 
+table_name = 'historical_trends'
+
 
 def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, output_path, combined_path, summary_path):
 
-    log_info("Printing Results from Protcol below ---")
+    log_info("Generating Charts and Trends from Results of the Protcol Execution")
     # converting pyspark dataframe to pandas dataframe for html rendering
     df_pd_summary = df_protocol_summary.toPandas()
 
     # Creating a New DataFrame for Pie Chart and Duration Chart
     new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
-    protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
-    # Add 'Test Protocol Start Time' column with the same value for all rows
-    new_df['Test Protocol Start Time'] = protocol_start_time
 
     # Call methods to generate the pie chart and duration chart
     duration_chart_html = create_duration_chart(new_df)
@@ -84,12 +83,12 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     """
 
     # Save all resutlts in a SQLITE3 DB which can be used for Dashboards as well
-    his_df = store_results_into_db(df_pd_summary, protocol_run_details, testcasetype)
+    store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, created_time)
 
     # Call the method to generate and save the Trends HTML content
-    trends_code = historical_trends(his_df)
+    trends_code = historical_trends()
 
-    # do not delete or modify below function, very important it needs to be LAST!
+    # Do not delete or modify below function, very important it needs to be LAST!
     create_html_report(trends_code, chart_code, created_time, output_path, combined_path, summary_path)
 
 
@@ -132,28 +131,36 @@ def create_html_report(trends_code, chart_code, created_time, output_path, combi
     log_info(f"HTML & PDF Reports copied over to: {final_report_path}")
 
 
-def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype):
+def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, created_time):
 
-    new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']]
+    new_df = df_pd_summary[['Testcase Name', 'Test Result', 'Runtime']].copy()
 
-    # Add columns to protocol_df to match new_df columns
+    # Grab values from protocol run details to insert into dataframe DB
     protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
+    protocol_end_time = protocol_run_details.get('Test Protocol End Time', '')
+    protocol_totalrun_time = protocol_run_details.get('Total Protocol Run Time', '')
 
-    # Add Start Time and Test Case Type column with the same value for all rows
-    new_df['Test Protocol Start Time'] = protocol_start_time
+    # Add Start Time, End Time, Created Time and Test Case Type column with the same value for all rows
     new_df['Testcase Type'] = testcasetype
+    new_df['Run Created Time'] = created_time
+    new_df['Protocol Start Time'] = protocol_start_time
+    new_df['Protocol End Time'] = protocol_end_time
+    new_df['Protocol Total Run Time'] = protocol_totalrun_time
 
     # Connect to SQLITE DB and update the table if exists
     conn = sqlite3.connect('/app/utils/DATF_SQLITE.db')
-    table_name = 'historical_trends'
     new_df.to_sql(table_name, conn, if_exists='append', index=False)
+    conn.close()
 
+
+def retrieve_from_db(sql_query):
+
+    conn = sqlite3.connect('/app/utils/DATF_SQLITE.db')
     # Filter data from DB using SQL and create a DF
-    query = f"SELECT * FROM {table_name}"
-    df_from_db = pd.read_sql_query(query, conn)
+    df_from_db = pd.read_sql_query(sql_query, conn)
 
     # Display the retrieved data
-    log_info("Data retrieved from db:")
+    log_info("Data retrieved from DB successfully.")
     print(tabulate(df_from_db, headers='keys', tablefmt='psql'))
 
     conn.close()
@@ -282,18 +289,30 @@ def generate_pie_chart_html(dataframe):
     return chart_image_tag
 
 
-def historical_trends(his_df):
+def historical_trends():
+
+    # Retrieve resutlts from the SQLITE3 DB
+    hist_query = f"SELECT * FROM {table_name} ORDER BY [Run Created Time] DESC"
+    his_df = retrieve_from_db(hist_query)
 
     # Creating separate DataFrames for each 'Testcase Type'
-    count_df = his_df[his_df['Testcase Type'] == 'count']
-    duplicate_df = his_df[his_df['Testcase Type'] == 'duplicate']
-    content_df = his_df[his_df['Testcase Type'] == 'content']
+    count_df = his_df[his_df['Testcase Type'] == 'count'].copy()
+    duplicate_df = his_df[his_df['Testcase Type'] == 'duplicate'].copy()
+    content_df = his_df[his_df['Testcase Type'] == 'content'].copy()
 
     count_data = count_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
     duplicate_data = duplicate_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
     content_data = content_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
 
-    trends_data = []
+    if len(count_data) > 1:
+        count_data[0].append('color:#DD4477')
+        count_data[1].append('color:#329262')
+    if len(duplicate_data) > 1:
+        duplicate_data[0].append('color:#DD4477')
+        duplicate_data[1].append('color:#329262')
+    if len(content_data) > 1:
+        content_data[0].append('color:#DD4477')
+        content_data[1].append('color:#329262')
 
     html_content = f"""
     <!DOCTYPE html>
@@ -305,10 +324,10 @@ def historical_trends(his_df):
     <body>
       <h2>1. No. of Test Cases Executed (All Time)</h2>
       <div>
-        <label for="filter">Select Test Case Type Filter:</label>
+        <label for="filter">Test Case Type Filter:</label>
         <select id="filter" onchange="updateGraph()">
-          <option value="count">Row Counts</option>
-          <option value="duplicate">Find Duplicates</option>
+          <option value="count">Counting Rows</option>
+          <option value="duplicate">Finding Duplicates</option>
           <option value="content">Matching Contents</option>
         </select>
       </div>
@@ -323,7 +342,7 @@ def historical_trends(his_df):
 
         function drawChart() {{
           var data = google.visualization.arrayToDataTable([
-            ['Test Result', 'Count'],
+            ['Test Result', 'Count', {{role:'style'}}],
             ...countData
           ]);
 
@@ -331,7 +350,6 @@ def historical_trends(his_df):
             title: 'Bar Graph based on Filter',
             legend: {{position: 'none'}},
             is3D: true,
-            colors: ['pink','teal'],
             // Other chart options
           }};
 
@@ -359,7 +377,7 @@ def historical_trends(his_df):
           }}
 
           var data = google.visualization.arrayToDataTable([
-            ['Test Result', 'Count'],
+            ['Test Result', 'Count', {{role:'style'}}],
             ...newData
           ]);
 
@@ -367,7 +385,6 @@ def historical_trends(his_df):
             title: 'Bar Graph based on Filter',
             legend: {{position: 'none'}},
             is3D: true,
-            colors: ['pink','teal'],
             // Other chart options
           }};
 
@@ -375,8 +392,22 @@ def historical_trends(his_df):
           chart.draw(data, options);
         }}
       </script>
-      
-      <h2>2. Historical Trends Graph (All Time)</h2>
+    """
+    trends_query = f'''
+        SELECT [Run Created Time] as "Created Time",
+        count(*) as "Total Executed",
+        sum(case when [Test Result] = 'Failed' then 1 else 0 end) as "Failed",
+        sum(case when [Test Result] = 'Passed' then 1 else 0 end) as "Passed",
+        ROUND((count(*)/2.1),2) as "Average Line"
+        FROM {table_name} GROUP BY [Run Created Time] 
+        ORDER BY [Run Created Time] DESC LIMIT 20;
+    '''
+
+    trends_df = retrieve_from_db(trends_query)
+    trends_data = trends_df.values.tolist()
+
+    html_content += f"""
+      <h2>2. Historical Trends Graph (Last 20 Runs)</h2>
       <div id="trends_chart"></div>
       
         <script type="text/javascript">
@@ -385,16 +416,16 @@ def historical_trends(his_df):
             var trendsData = {trends_data}
             function drawTrends() {{
                 var data = google.visualization.arrayToDataTable([
-                ['Test Result', 'Count'],
+                ['Created Time', 'Total Executed', 'Failed', 'Passed', 'Average Line'],
                 ...trendsData
                 ]);
                 
                 var options = {{
-                    title : 'Monthly Coffee Production by Country',
-                    vAxis: {{title: 'Cups'}},
-                    hAxis: {{title: 'Month'}},
+                    title : 'Trends Per Execution',
+                    vAxis: {{title: 'Results'}},
+                    hAxis: {{title: 'Timeline'}},
                     seriesType: 'bars',
-                    series: {{5: {{type: 'line'}} }}
+                    series: {{3: {{type: 'line'}}}}
                 }};
                 
                 var chart = new google.visualization.ComboChart(document.getElementById('trends_chart'));
