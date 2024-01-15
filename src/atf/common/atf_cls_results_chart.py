@@ -14,7 +14,8 @@ from datetime import datetime
 table_name = 'historical_trends'
 
 
-def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, output_path, combined_path, summary_path):
+def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time,
+                            testcasetype, output_path, combined_path, summary_path):
 
     log_info("Generating Charts and Trends from Results of the Protcol Execution")
     # converting pyspark dataframe to pandas dataframe for html rendering
@@ -161,7 +162,7 @@ def retrieve_from_db(sql_query):
 
     # Display the retrieved data
     log_info("Data retrieved from DB successfully.")
-    print(tabulate(df_from_db, headers='keys', tablefmt='psql'))
+    # print(tabulate(df_from_db, headers='keys', tablefmt='psql'))
 
     conn.close()
     return df_from_db
@@ -199,7 +200,7 @@ def create_duration_chart(new_df):
                 time_intervals['5m+']['testcases'].append(row['Testcase Name'])
 
     # Generating HTML file with Google Charts
-    html_content = '''
+    duration_html = '''
     <!DOCTYPE html>
     <html>
     <head>
@@ -220,14 +221,14 @@ def create_duration_chart(new_df):
 
     # Adding data rows for each time interval
     for interval, values in time_intervals.items():
-        html_content += f"        ['{interval}', {values['count']}, '{'<br>'.join(values['testcases']) if values['testcases'] else 'No test cases'}'],\n"
+        duration_html += f"        ['{interval}', {values['count']}, '{'<br>'.join(values['testcases']) if values['testcases'] else 'No test cases'}'],\n"
 
-    html_content += '''
+    duration_html += '''
           ]);
 
           var timeOptions = {
             title: 'Test Case Execution Time Intervals',
-            chartArea: {width: '40%'},
+            chartArea: {width: '50%'},
             legend: {position: 'none'},
             hAxis: {
               title: 'Number of Test Cases',
@@ -250,7 +251,7 @@ def create_duration_chart(new_df):
     </body>
     </html>
     '''
-    return html_content  # Return the generated HTML code
+    return duration_html  # Return the generated HTML code
 
     
 def generate_pie_chart_html(dataframe):
@@ -289,9 +290,67 @@ def generate_pie_chart_html(dataframe):
     return chart_image_tag
 
 
+def create_pie_chart(pie_df):
+    pass
+
+
 def historical_trends():
 
-    # Retrieve resutlts from the SQLITE3 DB
+    # Start the HTML page contents from here
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Historical Trends Dashboard</title>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </head>
+    <body>    
+    """
+
+    # the 1st graph
+    trends_query = f'''
+        SELECT [Run Created Time] as "Created Time",
+        count(*) as "Total",
+        sum(case when [Test Result] = 'Failed' then 1 else 0 end) as "Failed",
+        sum(case when [Test Result] = 'Passed' then 1 else 0 end) as "Passed",
+        ROUND((count(*)/2.1)+count(*),2) as "Average"
+        FROM {table_name} GROUP BY [Run Created Time] 
+        ORDER BY [Run Created Time] DESC LIMIT 20;
+    '''
+    trends_df = retrieve_from_db(trends_query)
+    print(tabulate(trends_df, headers='keys', tablefmt='psql'))
+    trends_data = trends_df.values.tolist()
+
+    html_content += f"""
+      <h2>1. Historical Trends Graph (Last 20 Runs)</h2>
+      <div id="trends_chart"></div>
+      
+        <script type="text/javascript">
+            google.charts.load('current', {{ packages: ['corechart'], callback: drawTrends }});
+            
+            var trendsData = {trends_data}
+            function drawTrends() {{
+                var data = google.visualization.arrayToDataTable([
+                ['Created Time', 'Total', 'Failed', 'Passed', 'Average'],
+                ...trendsData
+                ]);
+                
+                var options = {{
+                    vAxis: {{title: 'Results'}},
+                    hAxis: {{title: 'Timeline'}},
+                    legend: {{position: 'bottom', alignment: 'center', maxLines: 1}},
+                    isStacked: true,
+                    seriesType: 'bars',
+                    series: {{3: {{type: 'line'}}}}
+                }};
+                
+                var chart = new google.visualization.ComboChart(document.getElementById('trends_chart'));
+                chart.draw(data, options);
+            }}
+        </script>
+    """
+
+    # the 2nd graph
     hist_query = f"SELECT * FROM {table_name} ORDER BY [Run Created Time] DESC"
     his_df = retrieve_from_db(hist_query)
 
@@ -314,15 +373,8 @@ def historical_trends():
         content_data[0].append('color:#DD4477')
         content_data[1].append('color:#329262')
 
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Historical Trends Dashboard</title>
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    </head>
-    <body>
-      <h2>1. No. of Test Cases Executed (All Time)</h2>
+    html_content += f"""
+      <h2>2. No. of Test Cases Executed (All Time)</h2>
       <div>
         <label for="filter">Test Case Type Filter:</label>
         <select id="filter" onchange="updateGraph()">
@@ -349,6 +401,7 @@ def historical_trends():
           var options = {{
             title: 'Bar Graph based on Filter',
             legend: {{position: 'none'}},
+            hAxis: {{minValue: 0}},
             is3D: true,
             // Other chart options
           }};
@@ -384,6 +437,7 @@ def historical_trends():
           var options = {{
             title: 'Bar Graph based on Filter',
             legend: {{position: 'none'}},
+            hAxis: {{minValue: 0}},
             is3D: true,
             // Other chart options
           }};
@@ -393,45 +447,8 @@ def historical_trends():
         }}
       </script>
     """
-    trends_query = f'''
-        SELECT [Run Created Time] as "Created Time",
-        count(*) as "Total Executed",
-        sum(case when [Test Result] = 'Failed' then 1 else 0 end) as "Failed",
-        sum(case when [Test Result] = 'Passed' then 1 else 0 end) as "Passed",
-        ROUND((count(*)/2.1),2) as "Average Line"
-        FROM {table_name} GROUP BY [Run Created Time] 
-        ORDER BY [Run Created Time] DESC LIMIT 20;
-    '''
 
-    trends_df = retrieve_from_db(trends_query)
-    trends_data = trends_df.values.tolist()
-
-    html_content += f"""
-      <h2>2. Historical Trends Graph (Last 20 Runs)</h2>
-      <div id="trends_chart"></div>
-      
-        <script type="text/javascript">
-            google.charts.load('current', {{ packages: ['corechart'], callback: drawTrends }});
-            
-            var trendsData = {trends_data}
-            function drawTrends() {{
-                var data = google.visualization.arrayToDataTable([
-                ['Created Time', 'Total Executed', 'Failed', 'Passed', 'Average Line'],
-                ...trendsData
-                ]);
-                
-                var options = {{
-                    title : 'Trends Per Execution',
-                    vAxis: {{title: 'Results'}},
-                    hAxis: {{title: 'Timeline'}},
-                    seriesType: 'bars',
-                    series: {{3: {{type: 'line'}}}}
-                }};
-                
-                var chart = new google.visualization.ComboChart(document.getElementById('trends_chart'));
-                chart.draw(data, options);
-            }}
-        </script>
+    html_content += """
     </body>
     </html>
     """
