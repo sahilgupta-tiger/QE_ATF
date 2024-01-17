@@ -26,7 +26,7 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 
     # Call methods to generate the pie chart and duration chart
     duration_chart_html = create_duration_chart(new_df)
-    pie_chart_html = generate_pie_chart_html(new_df)
+    pie_chart_html = create_pie_chart(new_df)
 
     protocol_run_params_html = "<p>"
     for key, value in protocol_run_params.items():
@@ -170,7 +170,7 @@ def retrieve_from_db(sql_query):
 
 def create_duration_chart(new_df):
 
-    new_df = new_df[['Testcase Name', 'Test Result', 'Runtime']]
+    dur_df = new_df[['Testcase Name', 'Test Result', 'Runtime']].copy()
 
     time_intervals = {
         '0s-45s': {'count': 0, 'testcases': []},
@@ -180,7 +180,7 @@ def create_duration_chart(new_df):
     }
 
     # Converting runtime strings to duration in seconds
-    for index, row in new_df.iterrows():
+    for index, row in dur_df.iterrows():
         runtime_str = row['Runtime']
         if runtime_str != '':
             runtime_obj = datetime.strptime(runtime_str, '%H:%M:%S')
@@ -227,8 +227,7 @@ def create_duration_chart(new_df):
           ]);
 
           var timeOptions = {
-            title: 'Test Case Execution Time Intervals',
-            chartArea: {width: '50%'},
+            title: 'Test Execution Time Intervals',
             legend: {position: 'none'},
             hAxis: {
               title: 'Number of Test Cases',
@@ -253,45 +252,50 @@ def create_duration_chart(new_df):
     '''
     return duration_html  # Return the generated HTML code
 
-    
-def generate_pie_chart_html(dataframe):
-    result_counts = dataframe['Test Result'].value_counts()
 
-    labels = result_counts.index.tolist()
-    sizes = result_counts.values.tolist()
-    colors = ['green', 'red', 'yellow']
-    
-    # Get the test case names for each test result
-    testcase_names = [dataframe[dataframe['Test Result'] == label]['Testcase Name'].iloc[0] for label in labels]
-    explode = tuple(0.1 if i == 0 else 0 for i in range(len(labels)))
+def create_pie_chart(new_df):
 
-    plt.figure(figsize=(6, 6))
-    patches, texts, autotexts = plt.pie(sizes, explode=explode, labels=labels, colors=colors,
-                                        autopct='%1.1f%%', startangle=140)
-    # Generate tooltip information
-    tooltip_info = [f'<area alt="{testcase}" title="{testcase}" shape="circle" coords="{str(pie.center[0])},{str(pie.center[1])},{str(pie.r*2)}" />' 
-                    for pie, testcase in zip(patches, testcase_names)]
+    pie_df = new_df[['Test Result']].copy()
 
-    plt.axis('equal')
-    plt.title('Test Results Distribution')
-
-    image_stream = BytesIO()
-    plt.savefig(image_stream, format='png')
-    image_stream.seek(0)
-
-    image_base64 = base64.b64encode(image_stream.getvalue()).decode('utf-8')
-    chart_image_tag = f'''
-        <img src="data:image/png;base64,{image_base64}" usemap="#testcase_map" alt="Test Results Pie Chart">
-        <map name="testcase_map">
-            {''.join(tooltip_info)}
-        </map>
+    # Generating HTML file with Google Charts
+    pie_html = '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+        
     '''
+    pie_list_table = pie_df.groupby('Test Result').size().reset_index(name='Count').values.tolist()
+    columns = ['Status', 'Count']
+    pie_list_table.insert(0, columns)
 
-    return chart_image_tag
+    pie_html += f"        var pieChartData = {pie_list_table}\n"
+    pie_html += '''
+        function drawChart() {
+          // Drawing Pie Chart for Test Case Execution Results
+          var pieData = google.visualization.arrayToDataTable(pieChartData);       
+    
+          var pieOptions = {
+            title: 'Test Result Distribution',
+            is3D: true,
+            legend: 'none',
+            colors:['red','green']
+          };
 
-
-def create_pie_chart(pie_df):
-    pass
+          var pieChart = new google.visualization.PieChart(document.getElementById('pie_chart'));
+          pieChart.draw(pieData, pieOptions);
+        }
+      </script>
+    </head>
+    <body>
+      <div id="pie_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
+    </body>
+    </html>
+    '''
+    return pie_html  # Return the generated HTML code
 
 
 def historical_trends():
