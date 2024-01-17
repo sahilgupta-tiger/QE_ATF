@@ -1,12 +1,8 @@
-from IPython.display import HTML, display
 import shutil
 import os
 from pretty_html_table import build_table
 import pandas as pd
-import matplotlib.pyplot as plt
 from atf.common.atf_common_functions import log_info, log_error
-import base64
-from io import BytesIO
 import sqlite3
 from tabulate import tabulate
 from datetime import datetime
@@ -32,6 +28,9 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     for key, value in protocol_run_params.items():
         protocol_run_params_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
     protocol_run_params_html += "</p>"
+
+    # Removing a value from protocol run details
+    del protocol_run_details['Testcases Executed']
 
     protocol_run_details_html = "<p>"
     for key, value in protocol_run_details.items():
