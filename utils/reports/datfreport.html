@@ -32,7 +32,7 @@
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
         
-            var pieChartData = [['Status', 'Count'], ['Failed', 2], ['Passed', 3]]
+            var pieChartData = [['Status', 'Count'], ['Failed', 1]]
 
         function drawChart() {
           // Drawing Pie Chart for Test Case Execution Results
@@ -76,7 +76,7 @@
           timeData.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
           timeData.addRows([
-            ['0s-45s', 4, 'testcase16_parquet_parquet_mismatch_likeobject<br>testcase12_parquet_parquet_mismatch_manuel<br>testcase14_csv_parquet_mismatch_manuel<br>testcase15_parquet_parquet_match_likeobject'],
+            ['0s-45s', 1, 'testcase27_csv_csv_bigdata_match'],
         ['45s-2m', 0, 'No test cases'],
         ['2m-5m', 0, 'No test cases'],
         ['5m+', 0, 'No test cases'],
@@ -125,61 +125,21 @@
   </thead>
   <tbody>
     <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase16_parquet_parquet_mismatch_likeobject</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,169</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,169</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase27_csv_csv_bigdata_match</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">3,380,253</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,799,578</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">3,380,253</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,799,578</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Duplicates</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:05</td>
-    </tr>
-    <tr>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase13_csv_parquet_match_manuel</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Execution Error</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
-    </tr>
-    <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase12_parquet_parquet_mismatch_manuel</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">No Duplicates</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:40</td>
-    </tr>
-    <tr>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manuel</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">No Duplicates</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:18</td>
-    </tr>
-    <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase15_parquet_parquet_match_likeobject</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">No Duplicates</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:05</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:42</td>
     </tr>
   </tbody>
 </table></p>
             <h2><b>3. Protocol Run Details</b></h2>
-            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DBTablesDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 17-Jan-2024 13:16:49 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 17-Jan-2024 13:17:59 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:01:10<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 5<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 2<br></p>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DBTablesDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 18-Jan-2024 10:28:07 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 18-Jan-2024 10:28:49 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:42<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 0<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 1<br></p>
             <h2><b>4. Protocol Run Parameters</b></h2>
-            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcases Executed</span><span class='tab'></span>: testcase12_parquet_parquet_mismatch_manual,testcase13_csv_parquet_match_manuel,testcase14_csv_parquet_mismatch_manual,testcase15_parquet_parquet_match_likeobject,testcase16_parquet_parquet_mismatch_likeobject<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: duplicate<br></p>
+            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: duplicate<br></p>
            
         </body>
         </html>

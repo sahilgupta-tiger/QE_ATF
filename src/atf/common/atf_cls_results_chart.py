@@ -24,18 +24,18 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
     duration_chart_html = create_duration_chart(new_df)
     pie_chart_html = create_pie_chart(new_df)
 
-    protocol_run_params_html = "<p>"
-    for key, value in protocol_run_params.items():
-        protocol_run_params_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
-    protocol_run_params_html += "</p>"
-
-    # Removing a value from protocol run details
-    del protocol_run_details['Testcases Executed']
-
     protocol_run_details_html = "<p>"
     for key, value in protocol_run_details.items():
         protocol_run_details_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
     protocol_run_details_html += "</p>"
+
+    # Removing a value from protocol run parameters
+    del protocol_run_params['Testcases Executed']
+
+    protocol_run_params_html = "<p>"
+    for key, value in protocol_run_params.items():
+        protocol_run_params_html += f"<span style='font-weight:bold'>{key}</span><span class='tab'></span>: {value}<br>"
+    protocol_run_params_html += "</p>"
 
     # Construct the JavaScript code for Google Chart
     chart_code = fr"""
