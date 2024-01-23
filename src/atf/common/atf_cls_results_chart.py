@@ -281,7 +281,16 @@ def create_pie_chart(new_df):
             title: 'Test Result Distribution',
             is3D: true,
             legend: 'none',
-            colors:['red','green']
+        '''
+    pie_colors = "colors:['red','green']"
+    if len(pie_list_table) < 3:
+        if pie_list_table[1][0] == 'Passed':
+            pie_colors = "colors:['green']"
+        elif pie_list_table[1][0] == 'Failed':
+            pie_colors = "colors:['red']"
+
+    pie_html += f"           {pie_colors}\n"
+    pie_html += '''
           };
 
           var pieChart = new google.visualization.PieChart(document.getElementById('pie_chart'));
@@ -318,14 +327,14 @@ def historical_trends():
         sum(case when [Test Result] = 'Passed' then 1 else 0 end) as "Passed",
         ROUND((count(*)/2.1)+count(*),2) as "Average"
         FROM {table_name} GROUP BY [Run Created Time] 
-        ORDER BY [Run Created Time] DESC LIMIT 20;
+        ORDER BY [Run Created Time] DESC LIMIT 25;
     '''
     trends_df = retrieve_from_db(trends_query)
     print(tabulate(trends_df, headers='keys', tablefmt='psql'))
     trends_data = trends_df.values.tolist()
 
     html_content += f"""
-      <h2>1. Historical Trends Graph (Last 20 Runs)</h2>
+      <h2>1. Historical Trends Graph (Last 25 Runs)</h2>
       <div id="trends_chart"></div>
       
         <script type="text/javascript">
