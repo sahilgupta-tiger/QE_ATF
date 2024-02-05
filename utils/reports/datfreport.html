@@ -32,7 +32,7 @@
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
         
-            var pieChartData = [['Status', 'Count'], ['Passed', 1]]
+            var pieChartData = [['Status', 'Count'], ['Failed', 1], ['Passed', 5]]
 
         function drawChart() {
           // Drawing Pie Chart for Test Case Execution Results
@@ -42,7 +42,7 @@
             title: 'Test Result Distribution',
             is3D: true,
             legend: 'none',
-                   colors:['green']
+                   colors:['red','green']
 
           };
 
@@ -77,8 +77,8 @@
           timeData.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
           timeData.addRows([
-            ['0s-45s', 1, 'testcase14_csv_parquet_mismatch_manuel'],
-        ['45s-2m', 0, 'No test cases'],
+            ['0s-45s', 5, 'testcase12_parquet_parquet_mismatch_manuel<br>testcase14_csv_parquet_mismatch_manuel<br>testcase15_parquet_parquet_match_likeobject<br>testcase29_manual_sql_fullname<br>testcase28_manual_sql_notifications'],
+        ['45s-2m', 1, 'testcase9_json_parquet_match'],
         ['2m-5m', 0, 'No test cases'],
         ['5m+', 0, 'No test cases'],
 
@@ -116,9 +116,7 @@
     <tr style="text-align: right;">
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Testcase Name</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Source</th>
-      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Distinct Rows in Source</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Target</th>
-      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Distinct Rows in Target</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Test Result</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Reason</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Runtime</th>
@@ -126,21 +124,59 @@
   </thead>
   <tbody>
     <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manuel</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase9_json_parquet_match</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">No Duplicates</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:10</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:01:17</td>
+    </tr>
+    <tr>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase12_parquet_parquet_mismatch_manuel</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:26</td>
+    </tr>
+    <tr>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manuel</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:17</td>
+    </tr>
+    <tr>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase15_parquet_parquet_match_likeobject</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:04</td>
+    </tr>
+    <tr>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase29_manual_sql_fullname</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:07</td>
+    </tr>
+    <tr>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase28_manual_sql_notifications</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">4</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count mismatched</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:10</td>
     </tr>
   </tbody>
 </table></p>
             <h2><b>3. Protocol Run Details</b></h2>
-            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DBTablesDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 23-Jan-2024 13:10:48 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 23-Jan-2024 13:10:59 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:10<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 0<br></p>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DBTablesDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 02-Feb-2024 14:11:05 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 02-Feb-2024 14:13:30 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:02:25<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 6<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 5<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 1<br></p>
             <h2><b>4. Protocol Run Parameters</b></h2>
-            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: duplicate<br></p>
+            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: count<br></p>
            
         </body>
         </html>
