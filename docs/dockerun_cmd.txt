@@ -1,31 +1,24 @@
 --------------------------------------------------------------
 Docker Image creation with Spark download:
 ---------------------------------------------------------------
->> Create a extension-less file named 'dockerfile' in workspace and add below code into it:
-    FROM gcr.io/datamechanics/spark:platform-3.2-latest
-    ENV PYSPARK_MAJOR_PYTHON_VERSION=3
-    WORKDIR /app
-    COPY . .
+>> Download the docker image for PySpark
+    docker pull apache/spark-py:latest
 
->> Once this is complete use the Docker Run Command below:
-    docker run -it -v  C:/Workspaces/GitHub/QE_ATF/:/app  apache/spark-py bash
+>> Use the Docker Run Command to create a container with your workspace code:
+    docker run -dt -v  C:/Workspaces/GitHub/QE_ATF/:/app  --name DATF apache/spark-py bash
 
->> find and start shell scripting within an already running docker container
-    docker ps
-    ** copy the process id **
-    docker exec -ti -u root <processid> bash
+>> use container name to access bash
+    docker exec -ti -u root DATF bash
+
+>> within the folder "add/scripts" run a bash script
+    sh install.sh
     
-
 -------------------------------------------------------------------
 Start Execution with Test Cases either 'all' or seperated by comma:
 -------------------------------------------------------------------
 
-    sh startcontentdemo.sh <testcasenames>
+    sh testingstart.sh count <testcasenames>
 
-    sh startcountdemo.sh <testcasenames>
-    
-    sh startduplicatecheckdemo.sh <testcasenames>
+    sh testingstart.sh content <testcasenames>
 
-    sh startcontentdemo.sh all
-
-    sh startcountdemo.sh all
+    sh testingstart.sh duplicate <testcasenames>

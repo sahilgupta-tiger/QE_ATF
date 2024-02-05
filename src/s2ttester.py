@@ -7,6 +7,7 @@ from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_cls_pdfformatting import generatePDF
+from atf.common.atf_cls_results_chart import generate_results_charts
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
@@ -18,11 +19,8 @@ import traceback
 
 def createsparksession():
 
-    jdbcJarFiles = [os.path.join("/app/test/jdbcdriver", x) for x in os.listdir("/app/test/jdbcdriver")]
-
     myconf = SparkConf().setMaster("local[*]") \
             .setAppName('s2ttester') \
-            .set("spark.jars", ",".join(jdbcJarFiles)) \
             .set("spark.executor.instances", "18") \
             .set("spark.executor.cores", "8") \
             .set("spark.executor.memory", "6g") \
@@ -38,8 +36,8 @@ def createsparksession():
     
     for i in tqdm(range(100), desc="Building Spark Session...", ncols=100):
         spark = SparkSession.builder.config(conf=myconf).getOrCreate()
+        spark.sparkContext.setLogLevel('WARN')
 
-    spark.sparkContext.setLogLevel('WARN')
     log_info("Spark Session Configuration items are listed below -")
     configs = myconf.getAll()
     # configs = spark.sparkContext.getConf().getAll()
@@ -60,7 +58,8 @@ class S2TTester:
                 f"Reading the Protocol file details from {protocol_file_path}")
             dict_protocol, df_testcases = read_protocol_file(
                 protocol_file_path)
-
+            log_info("dict protocol is")
+            log_info(dict_protocol)
             # "test_case_type", "count", ["count","duplicate","content"]
             # s3_path = get_connection_config(s3_conn_name)
             # s3_path = s3_path['BUCKETNAME']
@@ -90,9 +89,12 @@ class S2TTester:
                 "_" + created_time + ".pdf"
 
             df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
-                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype,testcasesrunlist)
-            self.generate_protocol_summary_report(
-                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time,testcasetype)
+                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype, testcasesrunlist)
+
+            summary_output_path = self.generate_protocol_summary_report(
+                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
+            # generate HTML report ** new function **
+            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:
@@ -241,7 +243,6 @@ class S2TTester:
                         dict_testresults['No. of rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
                 elif testcasetype == "duplicate":
-
                     df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
                         dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
@@ -303,7 +304,6 @@ class S2TTester:
         protocol_run_params = {"Protocol File Path": protocol_file_path,
                                "Testcases Executed": testcases_run_list, "Testcase Type": testcasetype}
 
-        log_info("Protocol Testcases Executions Completed")
         return df_protocol_summary, protocol_run_details, protocol_run_params
     
 
@@ -742,6 +742,7 @@ class S2TTester:
         log_info(f"Data Compare Completed for TestingType - {testcasetype} ")
         return dict_compareoutput
 
+
     def generate_testcase_summary_report(self, dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj):
         if (compare_input['filedetails']["sourcefile"] is not None):
             file_details = compare_input['filedetails']
@@ -900,7 +901,8 @@ class S2TTester:
                 pdfobj.create_table_details(df_7)
         return pdfobj
 
-    def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time,testcasetype):
+
+    def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time, testcasetype):
         pdfobj_protocol = generatePDF()
         comparison_type = testcasetype + " comparison"
         pdfobj_protocol.write_text(protocolreportheader, 'report header')
@@ -926,7 +928,6 @@ class S2TTester:
                     df_protocol_summary_temp = None
             else:
                 df_protocol_summary_temp = None
-
             pdfobj_protocol.create_table_details(
                 df_protocol_summary_temp, table_type)
             sno = sno + 1
@@ -936,6 +937,8 @@ class S2TTester:
             "_" + created_time+".pdf"
         pdfobj_protocol.pdf.output(protocol_output_path, 'F')
         log_info("Protocol Summary PDF Generated")
+        return protocol_output_path
+
 
     def concat_keys(self, df, key_cols_list):
             keycols_name_temp = [i+'_temp' for i in key_cols_list]
@@ -953,16 +956,16 @@ class S2TTester:
 
 if __name__ == "__main__":
     spark = createsparksession()
-    testcasesrunlist=[]
+    testcasesrunlist = []
     protocol_file_path = "/app/test/testprotocol/testprotocol.xlsx"
     testtype = sys.argv[1]
     temporaryrunlist=sys.argv[2].rstrip()
     if "," in sys.argv[2]:
-        testcasesrunlist=temporaryrunlist.split(",")
+        testcasesrunlist = temporaryrunlist.split(",")
     else:
         testcasesrunlist.append(temporaryrunlist)
     log_info(f"Protocol Config path :{protocol_file_path}")
     log_info(f"TestType: {testtype}")
     log_info(f"TestCasesRunList: {testcasesrunlist}")
     testerobj = S2TTester(spark)
-    testerobj.starttestexecute(protocol_file_path, testtype,testcasesrunlist)
+    testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
