@@ -1,11 +1,11 @@
 {
     "connnectiontype":"snowsqldatabase",
-    "connectname":"python_snowflake_connection",
-    "url":"jdbc:snowflake://<account_identifier>.snowflakecomputing.com/",
-    "user":"user",
-    "account":"account_identifier",
-    "privateKey":"pkb",
-    "warehouse":"WAREHOUSE",
-    "database":"DATABASE",
-    "schema":"SCHEMA"
+    "connectname":"pyspark_snowflake_connection",
+    "url":"feglmwu-wbb76572.snowflakecomputing.com",
+    "user":"sg217tiger",
+    "password":"Root++0258",
+    "database":"DATFDEMO",
+    "schema":"TASFSOURCE",
+    "warehouse":"COMPUTE_WH",
+    "role": "accountadmin"
 }

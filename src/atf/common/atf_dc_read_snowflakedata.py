@@ -3,7 +3,8 @@
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,readconnectionconfig
-import os
+
+SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake"
 
 # COMMAND ----------
 
@@ -31,15 +32,18 @@ def read_snowflakedata(tc_datasource_config, spark):
   if len(datafilter) > 0:
     selectallcolqry = selectallcolqry + datafilter
 
-  df_snowflakedata = (spark.read
-                    .format("jdbc")
-                    .option("driver", "net.snowflake.client.jdbc.SnowflakeDriver")
-                    .option("url", connectionconfig['url'])
-                    .option("user", connectionconfig['user'])
-                    .option("privateKey", connectionconfig['privateKey'])
-                    .option("db", connectionconfig['database'])
-                    .option("warehouse", connectionconfig['warehouse'])
-                    .option("schema", connectionconfig['schema'])
+  sfOptions = {
+      "sfURL": connectionconfig['url'],
+      "sfUser": connectionconfig['user'],
+      "sfPassword": connectionconfig['password'],
+      "sfDatabase": connectionconfig['database'],
+      "sfSchema": connectionconfig['schema'],
+      "sfWarehouse": connectionconfig['warehouse'],
+      "autopushdown": "on"
+  }
+
+  df_snowflakedata = (spark.read.format(SNOWFLAKE_SOURCE_NAME)
+                    .option(sfOptions)
                     .option("query", selectallcolqry)
                     .load())
   
