@@ -5,7 +5,7 @@
     "user":"sg217tiger",
     "password":"Root++0258",
     "database":"DATFDEMO",
-    "schema":"TASFSOURCE",
+    "schema":"TASFSCHEMA",
     "warehouse":"COMPUTE_WH",
     "role": "accountadmin"
 }
