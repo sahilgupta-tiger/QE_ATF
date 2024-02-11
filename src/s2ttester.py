@@ -41,6 +41,8 @@ def createsparksession():
     log_info("Spark Session Configuration items are listed below -")
     configs = myconf.getAll()
     # configs = spark.sparkContext.getConf().getAll()
+    log_info('Spark Version :' + spark.version)
+    log_info('SparkContext Version :' + spark.sparkContext.version)
     for item in configs:
         log_info(item)
     return spark
