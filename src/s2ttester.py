@@ -1,6 +1,6 @@
-from pyspark.sql.functions import *
-from pyspark.sql import SparkSession
-from pyspark.conf import SparkConf
+import snowflake.snowpark as snowpark
+from snowflake.snowpark.functions import col
+from snowflake.snowpark import Session
 from tqdm import tqdm
 import pandas as pd
 from datetime import datetime
@@ -19,33 +19,23 @@ import traceback
 
 def createsparksession():
 
-    myconf = SparkConf().setMaster("local[*]") \
-            .setAppName('s2ttester') \
-            .set("spark.executor.instances", "18") \
-            .set("spark.executor.cores", "8") \
-            .set("spark.executor.memory", "6g") \
-            .set("spark.default.parallelism", "56") \
-            .set("spark.sql.shuffle.partitions", "250") \
-            .set("spark.memory.offHeap.enabled", "true") \
-            .set("spark.memory.offHeap.size", "2g") \
-            .set("spark.memory.fraction", "0.8") \
-            .set("spark.memory.storageFraction", "0.6") \
-            .set("spark.sql.debug.maxToStringFields", "300") \
-            .set("spark.sql.legacy.timeParserPolicy", "LEGACY") \
-            .set("spark.sql.autoBroadcastJoinThreshold", "-1")
-    
-    for i in tqdm(range(100), desc="Building Spark Session...", ncols=100):
-        spark = SparkSession.builder.config(conf=myconf).getOrCreate()
-        spark.sparkContext.setLogLevel('WARN')
+    connection_parameters = {
+        "account": "feglmwu-wbb76572",
+        "user": "sg217tiger",
+        "password": "Root++0258",
+        "role": "ACCOUNTADMIN",
+        "warehouse": "COMPUTE_WH",
+        "database": "DATFDEMO",
+        "schema": "TASFSCHEMA"
+    }
 
-    log_info("Spark Session Configuration items are listed below -")
-    configs = myconf.getAll()
-    # configs = spark.sparkContext.getConf().getAll()
-    log_info('Spark Version :' + spark.version)
-    log_info('SparkContext Version :' + spark.sparkContext.version)
-    for item in configs:
-        log_info(item)
-    return spark
+    for i in tqdm(range(100), desc="Building Snowpark Session...", ncols=100):
+        session = Session.builder.configs(connection_parameters).create()
+
+    log_info("Snowpark Session Configuration items are listed below -")
+    for key, value in connection_parameters.items():
+        log_info(key+" : "+value)
+    return session
 
 
 class S2TTester:
@@ -457,10 +447,7 @@ class S2TTester:
         if (testcasetype == 'content'):
             
             print("Comparing Contents of Source and Target now...(this may take a while)...")
-            comparison_obj = datacompy.SparkCompare(self.spark, sourcedf, targetdf,  \
-                                                    column_mapping=colmapping, \
-                                                    join_columns=joincolumns, \
-                                                    cache_intermediates=True)
+            comparison_obj = datacompy.Compare(self, sourcedf, targetdf, joincolumns, df1_name='src1', df2_name='tgt2')
             #comparison_obj.report()
             distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
             distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
@@ -959,7 +946,7 @@ class S2TTester:
 if __name__ == "__main__":
     spark = createsparksession()
     testcasesrunlist = []
-    protocol_file_path = "/app/test/testprotocol/testprotocol.xlsx"
+    protocol_file_path = "test\\testprotocol\\testprotocol.xlsx"
     testtype = sys.argv[1]
     temporaryrunlist=sys.argv[2].rstrip()
     if "," in sys.argv[2]:

@@ -125,6 +125,6 @@ def debugexit():
   exit()
 
 def readconnectionconfig(connectionname):
-  connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
+  connection_config=json.load(open("test\\connections\\"+connectionname+".json"))
   print(connection_config)
   return connection_config

@@ -1,15 +1,8 @@
 # Databricks notebook source
 # DBTITLE 1,Import Required Libraries
-from pyspark.sql.functions import * 
-from pyspark.sql.types import *
-from pyspark import Row
-from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
+from snowflake.snowpark.functions import *
+from snowflake.snowpark.types import *
 from atf.common.atf_dc_read_datasources import read_data
-from datetime import datetime
-from sys import *
-import time
-import pandas as pd
-import os
 
 # COMMAND ----------
 
@@ -251,7 +244,7 @@ class S2TAutoLoadScripts:
     
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
-    autoScriptFile = "/app/test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
+    autoScriptFile = "test\\sql\\" + autoscriptpath + '\\' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
 
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:

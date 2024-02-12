@@ -1,7 +1,5 @@
 # Databricks notebook source
 # DBTITLE 1, Import Required Libraries
-from pyspark.sql.functions import * 
-from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info, readconnectionconfig
 
 SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake"
@@ -32,26 +30,7 @@ def read_snowflakedata(tc_datasource_config, spark):
   if len(datafilter) > 0:
     selectallcolqry = selectallcolqry + datafilter
 
-  sfOptions = {
-      "sfURL": connectionconfig['url'],
-      "sfUser": connectionconfig['user'],
-      "sfPassword": connectionconfig['password'],
-      "sfDatabase": connectionconfig['database'],
-      "sfSchema": connectionconfig['schema'],
-      "sfWarehouse": connectionconfig['warehouse'],
-      "autopushdown": "on"
-  }
-
-  df_snowflakedata = (spark.read.format(SNOWFLAKE_SOURCE_NAME)
-                    .option("sfURL", connectionconfig['url'])
-                    .option("sfUser", connectionconfig['user'])
-                    .option("sfPassword", connectionconfig['password'])
-                    .option("sfDatabase", connectionconfig['database'])
-                    .option("sfSchema", connectionconfig['schema'])
-                    .option("sfWarehouse", connectionconfig['warehouse'])
-                    .option("autopushdown", "on")
-                    .option("query", selectallcolqry)
-                    .load())
+  df_snowflakedata = (spark.sql(selectallcolqry))
   
   columns = df_snowflakedata.columns
   columnlist = list(set(columns) - set(exclude_cols))

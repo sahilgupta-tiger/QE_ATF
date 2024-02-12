@@ -95,20 +95,20 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 def create_html_report(trends_code, chart_code, created_time, output_path, combined_path, summary_path):
     # Create the HTML file
     html_file_name = f"chart_report_{created_time}.html"
-    html_file_path = f"/app/test/results/charts/{html_file_name}"
+    html_file_path = f"test\\results\\charts\\{html_file_name}"
 
     with open(html_file_path, 'w') as file:
         file.write(chart_code)
     log_info(f"Chart generated at: {html_file_path}")
 
-    trends_path = f"/app/test/results/trends/datf_trends_report.html"
+    trends_path = f"test\\results\\trends\\datf_trends_report.html"
 
     with open(trends_path, 'w') as file:
         file.write(trends_code)
     log_info(f"Trends generated at: {trends_path}")
 
     # copy all current reports to single folder after emptying it
-    final_report_path = "/app/utils/reports"
+    final_report_path = "utils\\reports"
     for filename in os.listdir(final_report_path):
         file_path = os.path.join(final_report_path, filename)
         try:
@@ -125,9 +125,9 @@ def create_html_report(trends_code, chart_code, created_time, output_path, combi
     shutil.copy(html_file_path, final_report_path)
     shutil.copy(trends_path, final_report_path)
     # rename files for Archiving Artefacts within CT Pipeline integration
-    os.rename(fr"{final_report_path}/{html_file_name}", fr"{final_report_path}/datfreport.html")
-    os.rename(fr"{final_report_path}/{summary_file}", fr"{final_report_path}/datf_summary.pdf")
-    os.rename(fr"{final_report_path}/{combined_file}", fr"{final_report_path}/datf_combined.pdf")
+    os.rename(fr"{final_report_path}\{html_file_name}", fr"{final_report_path}\datfreport.html")
+    os.rename(fr"{final_report_path}\{summary_file}", fr"{final_report_path}\datf_summary.pdf")
+    os.rename(fr"{final_report_path}\{combined_file}", fr"{final_report_path}\datf_combined.pdf")
     log_info(f"HTML & PDF Reports copied over to: {final_report_path}")
 
 
@@ -148,14 +148,14 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
     new_df['Protocol Total Run Time'] = protocol_totalrun_time
 
     # Connect to SQLITE DB and update the table if exists
-    conn = sqlite3.connect('/app/utils/DATF_SQLITE.db')
+    conn = sqlite3.connect('utils\\DATF_SQLITE.db')
     new_df.to_sql(table_name, conn, if_exists='append', index=False)
     conn.close()
 
 
 def retrieve_from_db(sql_query):
 
-    conn = sqlite3.connect('/app/utils/DATF_SQLITE.db')
+    conn = sqlite3.connect('utils\\DATF_SQLITE.db')
     # Filter data from DB using SQL and create a DF
     df_from_db = pd.read_sql_query(sql_query, conn)
 

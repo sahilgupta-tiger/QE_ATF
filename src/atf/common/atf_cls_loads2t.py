@@ -1,12 +1,7 @@
 # Databricks notebook source
 # DBTITLE 1,Import Required Libraries
-from pyspark.sql.functions import * 
-from pyspark.sql.types import *
-from pyspark import Row
-from pyspark.sql.types import StructType,StructField, StringType, IntegerType,DoubleType,DateType
-from datetime import datetime
-from sys import *
-import time
+from snowflake.snowpark.functions import *
+from snowflake.snowpark.types import *
 import pandas as pd
 from openpyxl import load_workbook
 
