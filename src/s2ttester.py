@@ -971,3 +971,4 @@ if __name__ == "__main__":
     log_info(f"TestCasesRunList: {testcasesrunlist}")
     testerobj = S2TTester(spark)
     testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
+    spark.close()
