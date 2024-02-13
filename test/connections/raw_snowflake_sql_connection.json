@@ -1,7 +1,7 @@
 {
     "connnectiontype":"snowsqldatabase",
     "connectname":"pyspark_snowflake_connection",
-    "url":"feglmwu-wbb76572.snowflakecomputing.com",
+    "account":"feglmwu-wbb76572",
     "user":"sg217tiger",
     "password":"Root++0258",
     "database":"DATFDEMO",

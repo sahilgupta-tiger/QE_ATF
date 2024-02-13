@@ -15,19 +15,12 @@ import os
 import datacompy
 import sys
 import traceback
+import json
 
 
 def createsparksession():
 
-    connection_parameters = {
-        "account": "feglmwu-wbb76572",
-        "user": "sg217tiger",
-        "password": "Root++0258",
-        "role": "ACCOUNTADMIN",
-        "warehouse": "COMPUTE_WH",
-        "database": "DATFDEMO",
-        "schema": "TASFSCHEMA"
-    }
+    connection_parameters = json.load(open("test\\connections\\raw_snowflake_sql_connection.json"))
 
     for i in tqdm(range(100), desc="Building Snowpark Session...", ncols=100):
         session = Session.builder.configs(connection_parameters).create()
@@ -286,7 +279,7 @@ class S2TTester:
             testcasesfailed = len(
                 df_protocol_summary[df_protocol_summary["Test Result"] == "Failed"])
             df_protocol_summary = df_protocol_summary.sort_values('Reason')
-            df_protocol_summary = spark.createDataFrame(df_protocol_summary)
+            df_protocol_summary = spark.create_dataframe(df_protocol_summary)
         else:
             log_info("No testcase executed.")
             df_protocol_summary = None
@@ -601,7 +594,7 @@ class S2TTester:
                 if (len(df_match_summary) == 0):
                     df_match_summary = None
                 else:
-                    df_match_summary = spark.createDataFrame(df_match_summary)
+                    df_match_summary = spark.create_dataframe(df_match_summary)
 
         elif (testcasetype == "duplicate"):
             distinct_rowcount_source = sourcedf.select(
@@ -723,7 +716,7 @@ class S2TTester:
             if (len(df_match_summary) == 0):
                 df_match_summary = None
             else:
-                df_match_summary = spark.createDataFrame(df_match_summary)
+                df_match_summary = spark.create_dataframe(df_match_summary)
 
             dict_results = {
                 'Test Result': test_result, 'No. of KPIs in Source': f"{rowcount_source:,}", 'No. of KPIs in Target': f"{rowcount_target:,}"
@@ -963,3 +956,4 @@ if __name__ == "__main__":
     log_info(f"TestCasesRunList: {testcasesrunlist}")
     testerobj = S2TTester(spark)
     testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
+    spark.close()

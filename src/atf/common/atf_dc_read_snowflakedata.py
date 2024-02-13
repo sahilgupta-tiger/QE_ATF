@@ -30,7 +30,7 @@ def read_snowflakedata(tc_datasource_config, spark):
   if len(datafilter) > 0:
     selectallcolqry = selectallcolqry + datafilter
 
-  df_snowflakedata = (spark.sql(selectallcolqry))
+  df_snowflakedata = spark.table(resourcename)
   
   columns = df_snowflakedata.columns
   columnlist = list(set(columns) - set(exclude_cols))
@@ -39,10 +39,13 @@ def read_snowflakedata(tc_datasource_config, spark):
   columnlist = ','.join(columnlist)
 
   df_snowflakedata.create_or_replace_temp_view("snowflakeview")
-  selectcolqry = "SELECT " + columnlist + " FROM snowflakeview"
-  selectcolqry_ret = "SELECT " + columnlist + f" FROM {resourcename}"
+  selectcolqry = "SELECT " + columnlist + " FROM snowflakeview" + datafilter
+  selectcolqry_ret = "SELECT " + columnlist + f" FROM {resourcename} {datafilter}"
   df_out = spark.sql(selectcolqry)
   df_out.printSchema()
   df_out.show()
+  df_ret = df_out.copy()
+  del [df_snowflakedata]
+  del [df_out]
   log_info("Returning the DataFrame from read_snowflakedata Function")
-  return df_out, selectcolqry_ret
+  return df_ret, selectcolqry_ret

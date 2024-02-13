@@ -1,9 +1,0 @@
-{
-    "connnectiontype":"jdbcdatabase",
-    "connectname":"raw_jdbcdatabase_connection",
-    "host":"lifesciencedemodb.ctpjbleh0qtd.us-east-1.rds.amazonaws.com",
-    "port":"3306",
-    "database":"patients_db",
-    "user":"admin",
-    "password":"myadmin1234"
-}
