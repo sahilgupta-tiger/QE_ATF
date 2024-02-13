@@ -34,7 +34,12 @@ def createsparksession():
 
     log_info("Snowpark Session Configuration items are listed below -")
     for key, value in connection_parameters.items():
-        log_info(key+" : "+value)
+        if key == "user":
+            pass
+        elif key == "password":
+            pass
+        else:
+            log_info(key+" : "+value)
     return session
 
 

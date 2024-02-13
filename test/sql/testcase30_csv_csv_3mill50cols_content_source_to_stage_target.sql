@@ -1,3 +1,0 @@
-readdatadf=spark.read.format('delimitedfile').option('delimiter',,).option('header','true').load('/app/test/data/target/ar_properties_50.csv')
-readdatadf.createOrReplaceTempView('dataview')
-spark.sql("SELECT ad_type, adtype1, adtype2, adtype3, adtype4, adtype5, bathrooms, baths, bedrooms, built_up, carpet_area, children, created_on, currency, denomination, dining, discount_price, end_date, id, l1, l2, l3, l4, l5, l6, lat, living, lockin_period, lon, master, price, price_period, property_type, proptype1, proptype2, proptype3, proptype4, proptype5, rate_card, retail_price, rooms, super_built, surface_covered, surface_total, title, walltowall, washrooms FROM dataview tgt ")

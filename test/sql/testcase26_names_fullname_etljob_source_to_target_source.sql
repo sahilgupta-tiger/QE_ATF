@@ -1,1 +1,0 @@
-spark.sql("SELECT NVL(PREFIX,'')||' '||NVL(FIRST,'')||' '||NVL(LAST,'')||' '||NVL(SUFFIX,'') as FULLNAME, src.BIRTHDATE as BIRTHDATE, cast(src.FIRST as None) as FIRST, src.GENDER as GENDER, src.ID as ID, src.LAST as LAST, src.PREFIX as PREFIX, src.PREFIX as PREFIX, src.STATE as STATE, src.SUFFIX as SUFFIX FROM OracleDemoTiger.sys.orc_patients_db src  ")

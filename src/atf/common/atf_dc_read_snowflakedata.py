@@ -38,7 +38,7 @@ def read_snowflakedata(tc_datasource_config, spark):
   
   columnlist = ','.join(columnlist)
 
-  df_snowflakedata.createOrReplaceTempView("snowflakeview")
+  df_snowflakedata.create_or_replace_temp_view("snowflakeview")
   selectcolqry = "SELECT " + columnlist + " FROM snowflakeview"
   selectcolqry_ret = "SELECT " + columnlist + f" FROM {resourcename}"
   df_out = spark.sql(selectcolqry)
