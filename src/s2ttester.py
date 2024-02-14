@@ -442,30 +442,26 @@ class S2TTester:
         rowcount_target = targetdf.count()
 
         if (testcasetype == 'content'):
-            
+            sourcedf = sourcedf.to_pandas()
+            targetdf = targetdf.to_pandas()
             print("Comparing Contents of Source and Target now...(this may take a while)...")
-            comparison_obj = datacompy.Compare(self, sourcedf, targetdf, join_columns=joincolumns)
-            comparison_obj.report()
-            distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
-            distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
-            duplicate_rowcount_source = rowcount_source - distinct_rowcount_source
-            duplicate_rowcount_target = rowcount_target - distinct_rowcount_target
-            rows_both_all = comparison_obj.rows_both_all
-            rows_mismatch = comparison_obj.rows_both_mismatch
-            rows_only_source = comparison_obj.rows_only_base
-            rows_only_target = comparison_obj.rows_only_compare
-            rowcount_common = comparison_obj.common_row_count
+            comparison_obj = datacompy.Compare(sourcedf, targetdf, join_columns=joincolumns)
+            print(comparison_obj.report())
+
+            rowcount_match = comparison_obj.count_matching_rows()
+            rows_only_source = comparison_obj.df1_unq_rows
+            rows_only_target = comparison_obj.df2_unq_rows
             rowcount_only_source = rows_only_source.count()
             rowcount_only_target = rows_only_target.count()
-            rowcount_mismatch = rows_mismatch.count()
-            rowcount_match = rowcount_common - rowcount_mismatch
-            col_only_source = comparison_obj.columns_only_base
+            rowcount_mismatch = rowcount_source - rowcount_match
+
+            col_only_source = comparison_obj.df1_unq_columns()
             colcount_source = len(col_only_source)
-            col_only_target = comparison_obj.columns_only_compare
+            col_only_target = comparison_obj.df2_unq_columns()
             colcount_target = len(col_only_target)
-            columns_match = comparison_obj.columns_in_both
+            columns_match = comparison_obj.column_stats
             colcount_match = len(columns_match)
-            columns_compared = comparison_obj.columns_compared
+            columns_compared = comparison_obj.intersect_columns()
             colcount_compared = len(columns_compared)
 
             rowcount_total_mismatch = rowcount_only_target + \
@@ -486,24 +482,25 @@ class S2TTester:
                             'No. of cols in Source but not in Target': f"{colcount_source:,}",
                             'No. of cols in Target but not in Source': f"{colcount_target:,}",
                             'No. of rows in Source': f"{rowcount_source:,}",
-                            'No. of distinct rows in Source': f"{distinct_rowcount_source:,}",
-                            'No. of duplicate rows in Source': f"{duplicate_rowcount_source:,}",
                             'No. of rows in Target': f"{rowcount_target:,}",
-                            'No. of distinct rows in Target': f"{distinct_rowcount_target:,}",
-                            'No. of duplicate rows in Target': f"{duplicate_rowcount_target:,}",
                             'No. of matched rows': f"{rowcount_match:,}",
                             'No. of mismatched rows': f"{rowcount_mismatch:,}",
-                            'No. of rows in Source but not in Target': f"{rowcount_only_source:,}",
-                            'No. of rows in Target but not in Source': f"{rowcount_only_target:,}"
+                            'No. of rows in Source but not in Target': f"{str(rowcount_only_source)}",
+                            'No. of rows in Target but not in Source': f"{str(rowcount_only_target)}"
                             }
 
 
             dict_no_of_rows = {'No. of rows in Source': rowcount_source,
                                'No. of rows in Target': rowcount_target}
 
-            if rows_only_source.rdd.isEmpty() and rows_only_target.rdd.isEmpty():
+            sourcedf = spark.create_dataframe(sourcedf)
+            targetdf = spark.create_dataframe(targetdf)
+            rows_mismatch = sourcedf.subtract(targetdf)
+            rows_both_all = sourcedf.natural_join(targetdf)
+
+            if rows_only_source.empty and rows_only_target.empty:
                 rows_both_all = None
-            if rows_mismatch.rdd.isEmpty():
+            if rows_mismatch.count() == 0:
                 rows_mismatch = None
                 sample_mismatch = None
             else:
@@ -513,7 +510,7 @@ class S2TTester:
                     sample_mismatch, joincolumns)
                 sample_mismatch = sample_mismatch.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_source.rdd.isEmpty():
+            if rows_only_source.empty:
                 rows_only_source = None
                 sample_source_only = None
             else:
@@ -523,7 +520,7 @@ class S2TTester:
                     sample_source_only, joincolumns)
                 sample_source_only = sample_source_only.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_target.rdd.isEmpty():
+            if rows_only_target.empty:
                 rows_only_target = None
                 sample_target_only = None
             else:
@@ -626,99 +623,6 @@ class S2TTester:
                 log_info("Test Case Failed - Count mismatched")
             dict_results = {
                 'Test Result': test_result, 'No. of rows in Source': f"{rowcount_source:,}", 'No. of rows in Target': f"{rowcount_target:,}"
-            }
-            rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
-
-        elif (testcasetype == "fingerprint"):
-            special_srcdf = sourcedf
-            special_tgtdf = targetdf
-
-            print("Comparing Fingerprints of Source and Target now...")
-            fingerprintcomp_obj = datacompy.SparkCompare(self.spark, special_srcdf, special_tgtdf,
-                                                    column_mapping=colmapping, join_columns=joincolumns)
-            fingerprintcomp_obj.report()
-
-            rows_both_all = fingerprintcomp_obj.rows_both_all
-            rows_mismatch = fingerprintcomp_obj.rows_both_mismatch
-            rows_only_source = fingerprintcomp_obj.rows_only_base
-            rows_only_target = fingerprintcomp_obj.rows_only_compare
-            rowcount_common = fingerprintcomp_obj.common_row_count
-            rowcount_only_source = rows_only_source.count()
-            rowcount_only_target = rows_only_target.count()
-            rowcount_mismatch = rows_mismatch.count()
-            rowcount_match = rowcount_common - rowcount_mismatch
-            if (rowcount_mismatch == 0 or rowcount_only_target == 0 or rowcount_only_source == 0):
-                test_result = "Passed"
-                result_desc = "Fingerprint matched"
-                log_info("Test Case Passed - KPIs matched")
-            else:
-                test_result = "Failed"
-                result_desc = "Fingerprint mismatched"
-                log_info("Test Case Failed - KPIs mismatched")
-
-            if rows_both_all == None:
-                df_match_summary = None
-
-            else:
-                df = rows_both_all
-                #col_list = df.columns
-                if len(colmapping) == 0:
-                    column_mapping = {
-                        i: i for i in sourcedf.columns if i not in joincolumns}
-                    collist = [
-                        i for i in sourcedf.columns if i not in joincolumns]
-                else:
-                    column_mapping = dict(colmapping)
-                    collist = [
-                        i for i in sourcedf.columns if i not in joincolumns]
-
-                    for column in collist:
-
-                        base_col = column + "_base"
-                        compare_col = column + "_compare"
-                        match_col = column + "_match"
-                        sel_col_list = []
-                        sel_col_list = joincolumns.copy()
-                        sel_col_list.append(base_col)
-                        sel_col_list.append(compare_col)
-                        key_cols = joincolumns.copy()
-
-                        filter_false = match_col + " == False"
-                        filter_true = match_col + " == True"
-
-                        mismatch = df.select(match_col).filter(
-                            filter_false).count()
-                        if (mismatch == 0):
-                            continue
-
-                        match = df.select(match_col).filter(filter_true).count()
-                        dict_match_summary[column] = [match, mismatch]
-
-                        df_details = df.select(sel_col_list).filter(filter_false).withColumnRenamed(
-                            base_col, "Source value").withColumnRenamed(compare_col, "Target value").distinct().limit(limit)
-
-                        df_details, concat_list = self.concat_keys(
-                            df_details, key_cols)
-                        df_details = df_details.select(
-                            concat(*concat_list).alias("Key Columns"), "Source value", "Target value")
-
-                        dict_match_details[column] = df_details
-
-                list_match_summary = []
-                for k, v in dict_match_summary.items():
-                    list_match_summary.append(
-                        [k, column_mapping[k], rowcount_source, rowcount_target, rowcount_match, v[0], v[1]])
-
-                df_match_summary = pd.DataFrame(list_match_summary, columns=[
-                                                "Source Column Name", "Target Column Name", "Rows in Source", "Rows in Target", "Rows with Common Keys", "Rows Matched", "Rows Mismatch"])
-
-            if (len(df_match_summary) == 0):
-                df_match_summary = None
-            else:
-                df_match_summary = spark.create_dataframe(df_match_summary)
-
-            dict_results = {
-                'Test Result': test_result, 'No. of KPIs in Source': f"{rowcount_source:,}", 'No. of KPIs in Target': f"{rowcount_target:,}"
             }
             rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
 

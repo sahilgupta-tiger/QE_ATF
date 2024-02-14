@@ -151,7 +151,7 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
     new_df['Protocol Start Time'] = protocol_start_time
     new_df['Protocol End Time'] = protocol_end_time
     new_df['Protocol Total Run Time'] = protocol_totalrun_time
-    new_df['DB Stored Time'] = time_records_stored_in_db
+    new_df['DB Stored Time'] = time_stored_in_db
 
     # Connect to SQLITE DB and update the table if exists
     conn = sqlite3.connect('utils\\DATF_SQLITE.db')
