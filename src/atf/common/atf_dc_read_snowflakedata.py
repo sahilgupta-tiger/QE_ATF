@@ -44,7 +44,7 @@ def read_snowflakedata(tc_datasource_config, spark):
   df_out = spark.sql(selectcolqry)
   df_out.printSchema()
   df_out.show()
-  df_ret = df_out.copy()
+  df_ret = df_out.cache_result()
   del [df_snowflakedata]
   del [df_out]
   log_info("Returning the DataFrame from read_snowflakedata Function")

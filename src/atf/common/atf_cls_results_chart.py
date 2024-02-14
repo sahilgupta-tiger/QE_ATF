@@ -1,5 +1,7 @@
 import shutil
 import os
+
+import pytz
 from pretty_html_table import build_table
 import pandas as pd
 from atf.common.atf_common_functions import log_info, log_error
@@ -139,6 +141,9 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
     protocol_start_time = protocol_run_details.get('Test Protocol Start Time', '')
     protocol_end_time = protocol_run_details.get('Test Protocol End Time', '')
     protocol_totalrun_time = protocol_run_details.get('Total Protocol Run Time', '')
+    utctimezone = pytz.timezone("UTC")
+    timenow = datetime.now(utctimezone)
+    time_stored_in_db = str(timenow.astimezone(utctimezone))
 
     # Add Start Time, End Time, Created Time and Test Case Type column with the same value for all rows
     new_df['Testcase Type'] = testcasetype
@@ -146,10 +151,12 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
     new_df['Protocol Start Time'] = protocol_start_time
     new_df['Protocol End Time'] = protocol_end_time
     new_df['Protocol Total Run Time'] = protocol_totalrun_time
+    new_df['DB Stored Time'] = time_records_stored_in_db
 
     # Connect to SQLITE DB and update the table if exists
     conn = sqlite3.connect('utils\\DATF_SQLITE.db')
     new_df.to_sql(table_name, conn, if_exists='append', index=False)
+    log_info("Data stored into DB successfully at: "+time_stored_in_db)
     conn.close()
 
 
@@ -327,7 +334,7 @@ def historical_trends():
         sum(case when [Test Result] = 'Passed' then 1 else 0 end) as "Passed",
         ROUND((count(*)/2.1)+count(*),2) as "Average"
         FROM {table_name} GROUP BY [Run Created Time] 
-        ORDER BY [Run Created Time] DESC LIMIT 25;
+        ORDER BY [DB Stored Time] DESC LIMIT 25;
     '''
     trends_df = retrieve_from_db(trends_query)
     print(tabulate(trends_df, headers='keys', tablefmt='psql'))
@@ -363,7 +370,7 @@ def historical_trends():
     """
 
     # the 2nd graph
-    hist_query = f"SELECT * FROM {table_name} ORDER BY [Run Created Time] DESC"
+    hist_query = f"SELECT * FROM {table_name} ORDER BY [DB Stored Time] DESC"
     his_df = retrieve_from_db(hist_query)
 
     # Creating separate DataFrames for each 'Testcase Type'
