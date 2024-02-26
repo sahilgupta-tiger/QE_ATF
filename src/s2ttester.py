@@ -455,8 +455,8 @@ class S2TTester:
             rowcount_match = comparison_obj.count_matching_rows()
             rows_only_source = comparison_obj.df1_unq_rows
             rows_only_target = comparison_obj.df2_unq_rows
-            rowcount_only_source = rows_only_source.count()
-            rowcount_only_target = rows_only_target.count()
+            rowcount_only_source = len(rows_only_source)
+            rowcount_only_target = len(rows_only_target)
             rowcount_mismatch = rowcount_source - rowcount_match
 
             col_only_source = comparison_obj.df1_unq_columns()
