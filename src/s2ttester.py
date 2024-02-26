@@ -1,8 +1,7 @@
 import pytz
 import snowflake.snowpark as snowpark
-from snowflake.snowpark.functions import col
+from snowflake.snowpark.functions import *
 from snowflake.snowpark import Session
-from tqdm import tqdm
 import pandas as pd
 from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
@@ -20,16 +19,21 @@ import json
 
 utctimezone = pytz.timezone("UTC")
 
+
 def createsparksession():
 
     connection_parameters = json.load(open("test\\connections\\raw_snowflake_sql_connection.json"))
 
-    for i in tqdm(range(100), desc="Building Snowpark Session...", ncols=100):
-        session = Session.builder.configs(connection_parameters).create()
+    session = Session.builder.configs(connection_parameters).create()
+    log_info("!!! Snowpark Session Created !!!")
 
     log_info("Snowpark Session Configuration items are listed below -")
     for key, value in connection_parameters.items():
-        if key != "user" or key != "password":
+        if key == "user":
+            pass
+        elif key == "password":
+            pass
+        else:
             log_info(key+" : "+value)
     return session
 
@@ -446,7 +450,7 @@ class S2TTester:
             targetdf = targetdf.to_pandas()
             print("Comparing Contents of Source and Target now...(this may take a while)...")
             comparison_obj = datacompy.Compare(sourcedf, targetdf, join_columns=joincolumns)
-            print(comparison_obj.report())
+            # print(comparison_obj.report())
 
             rowcount_match = comparison_obj.count_matching_rows()
             rows_only_source = comparison_obj.df1_unq_rows
@@ -495,10 +499,12 @@ class S2TTester:
 
             sourcedf = spark.create_dataframe(sourcedf)
             targetdf = spark.create_dataframe(targetdf)
+            rows_only_source = spark.create_dataframe(rows_only_source)
+            rows_only_target = spark.create_dataframe(rows_only_target)
             rows_mismatch = sourcedf.subtract(targetdf)
-            rows_both_all = sourcedf.natural_join(targetdf)
+            rows_both_all = sourcedf.join(targetdf)
 
-            if rows_only_source.empty and rows_only_target.empty:
+            if rows_only_source.count() == 0 and rows_only_target.count() == 0:
                 rows_both_all = None
             if rows_mismatch.count() == 0:
                 rows_mismatch = None
@@ -510,7 +516,7 @@ class S2TTester:
                     sample_mismatch, joincolumns)
                 sample_mismatch = sample_mismatch.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_source.empty:
+            if rows_only_source.count() == 0:
                 rows_only_source = None
                 sample_source_only = None
             else:
@@ -520,7 +526,7 @@ class S2TTester:
                     sample_source_only, joincolumns)
                 sample_source_only = sample_source_only.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_target.empty:
+            if rows_only_target.count() == 0:
                 rows_only_target = None
                 sample_target_only = None
             else:
@@ -546,7 +552,7 @@ class S2TTester:
                     column_mapping = dict(colmapping)
                     collist = [
                         i for i in sourcedf.columns if i not in joincolumns]
-
+                '''
                 for column in collist:
 
                     base_col = column + "_base"
@@ -578,7 +584,7 @@ class S2TTester:
                         concat(*concat_list).alias("Key Columns"), "Source value", "Target value")
 
                     dict_match_details[column] = df_details
-
+                '''
                 list_match_summary = []
                 for k, v in dict_match_summary.items():
                     list_match_summary.append(
@@ -829,19 +835,19 @@ class S2TTester:
         log_info("Protocol Summary PDF Generated")
         return protocol_output_path
 
-
     def concat_keys(self, df, key_cols_list):
-            keycols_name_temp = [i+'_temp' for i in key_cols_list]
-            keycols_val_temp = [j+'=' if i == 0 else ', ' +
-                                j+'= ' for i, j in enumerate(key_cols_list)]
-            for i in range(len(keycols_name_temp)):
-                df = df.withColumn(keycols_name_temp[i], lit(keycols_val_temp[i]))
+        keycols_name_temp = [i+'_temp' for i in key_cols_list]
+        keycols_val_temp = [j+'=' if i == 0 else ', ' +
+                            j+'= ' for i, j in enumerate(key_cols_list)]
 
-            concat_key_cols = []
-            for i, j in zip(keycols_name_temp, key_cols_list):
-                concat_key_cols.append(i)
-                concat_key_cols.append(j)
-            return df, concat_key_cols
+        for i in range(len(keycols_name_temp)):
+            df = df.withColumn(keycols_name_temp[i], lit(keycols_val_temp[i]))
+
+        concat_key_cols = []
+        for i, j in zip(keycols_name_temp, key_cols_list):
+            concat_key_cols.append(i)
+            concat_key_cols.append(j)
+        return df, concat_key_cols
 
 
 if __name__ == "__main__":
@@ -860,3 +866,5 @@ if __name__ == "__main__":
     testerobj = S2TTester(spark)
     testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
     spark.close()
+    log_info("!!! Snowpark Session Terminated !!!")
+
