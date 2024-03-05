@@ -15,6 +15,9 @@ import os
 import datacompy
 import sys
 import traceback
+import pytz
+
+utctimezone = pytz.timezone("UTC")
 
 
 def createsparksession():
@@ -71,8 +74,8 @@ class S2TTester:
             #   str(dict_protocol['protocol_results_path'])
 
             results_path = str(dict_protocol['protocol_results_path'])
-            created_time = str(datetime.astimezone(
-                datetime.now()).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
+            timenow = datetime.now(utctimezone)
+            created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
             # folder_s3 = results_path + str(dict_protocol['protocol_name']) + \
             # '/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
             folder_s3 = results_path + \
@@ -105,7 +108,7 @@ class S2TTester:
     def execute_protocol(self, dict_protocol, df_testcases, output_path, combined_testcase_output_path, testcasetype,testcasesrunlist):
 
         log_info("Protocol Testcases Execution Started")
-        protocol_starttime = datetime.now()
+        protocol_starttime = datetime.now(utctimezone)
         # auto_script_path = generate_autoscript_path(combined_testcase_output_path)
         auto_script_path = ""
         if testcasetype == "count":
@@ -172,16 +175,16 @@ class S2TTester:
                 # rel_target_path = testcase_details['targetpath']
                 # testcase_details['targetpath'] = s3_path + testcase_details['targetpath']
                 # testcase_details['targetpath'] = testcase_details['targetpath']
-                testcase_starttime = datetime.now()
+                testcase_starttime = datetime.now(utctimezone)
 
                 log_info(f"{row['test_case_name']}: Reading Source and Target Data based on TestCase Configuration:  {test_case_name}")
-                # log_info('[{}]: Test Case Config Path {}'.format(str(datetime.astimezone(datetime.now()).strftime("%d-%b-%Y_%H:%M:%S_%Z")).lstrip().rstrip(), test_case_mnt_src_path))
+
                 compare_input = self.execute_testcase(testcase_details, auto_script_path, testcasetype)
 
                 log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
                 dict_compareoutput = self.compare_data(compare_input, testcasetype)
 
-                testcase_endtime = datetime.now()
+                testcase_endtime = datetime.now(utctimezone)
                 testcase_exectime = testcase_endtime - testcase_starttime
                 testcase_exectime = str(testcase_exectime).split('.')[0]
                 log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
@@ -189,10 +192,10 @@ class S2TTester:
 
                 log_info(
                     f"{row['test_case_name']}: Test Results PDF Generation for Test Case Started for {test_case_name}")
-                testcase_starttime = datetime.astimezone(
-                    testcase_starttime).strftime("%d-%b-%Y %H:%M:%S %Z")
-                testcase_endtime = datetime.astimezone(
-                    testcase_endtime).strftime("%d-%b-%Y %H:%M:%S %Z")
+                testcase_starttime = testcase_starttime.astimezone(
+                    utctimezone).strftime("%d-%b-%Y %H:%M:%S %Z")
+                testcase_endtime = testcase_endtime.astimezone(
+                    utctimezone).strftime("%d-%b-%Y %H:%M:%S %Z")
                 # testcase_exectime = testcase_exectime.strftime("%H:%M:%S")
 
                 dict_runsummary = {'Application Name': dict_protocol['protocol_application_name'], 'Protocol Name': dict_protocol['protocol_name'],
@@ -271,15 +274,15 @@ class S2TTester:
         pdfobj_combined_testcase.pdf.output(
             combined_testcase_output_path, 'F')  # generate combined pdf
         log_info("Combined Test Case PDF Generated")
-        protocol_endtime = datetime.now()
+        protocol_endtime = datetime.now(utctimezone)
         protocol_exectime = protocol_endtime - protocol_starttime
         protocol_exectime = str(protocol_exectime).split('.')[0]
         log_info(
             f"Protocol {dict_protocol['protocol_name']} executed in {protocol_exectime}")
-        protocol_starttime = datetime.astimezone(
-            protocol_starttime).strftime("%d-%b-%Y %H:%M:%S %Z")
-        protocol_endtime = datetime.astimezone(
-            protocol_endtime).strftime("%d-%b-%Y %H:%M:%S %Z")
+        protocol_starttime = protocol_starttime.astimezone(
+            utctimezone).strftime("%d-%b-%Y %H:%M:%S %Z")
+        protocol_endtime = protocol_endtime.astimezone(
+            utctimezone).strftime("%d-%b-%Y %H:%M:%S %Z")
 
         totaltestcases = 0
         testcasespassed = 0
