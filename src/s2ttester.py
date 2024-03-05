@@ -771,6 +771,7 @@ class S2TTester:
             pdfobj.write_text(mismatch_heading, 'section heading')
             pdfobj.write_text(
                 '5.1 Keys in source but not in target', 'section heading')
+            print(sample_source_only.show())
             pdfobj.create_table_details(sample_source_only, 'mismatch')
             pdfobj.write_text(
                 '5.2 Keys in target but not in source', 'section heading')
