@@ -15,9 +15,7 @@ import os
 import datacompy
 import sys
 import traceback
-import pytz
-
-utctimezone = pytz.timezone("UTC")
+from constants import *
 
 
 def createsparksession():
@@ -962,7 +960,7 @@ class S2TTester:
 if __name__ == "__main__":
     spark = createsparksession()
     testcasesrunlist = []
-    protocol_file_path = "/app/test/testprotocol/testprotocol.xlsx"
+    protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
     testtype = sys.argv[1]
     temporaryrunlist=sys.argv[2].rstrip()
     if "," in sys.argv[2]:

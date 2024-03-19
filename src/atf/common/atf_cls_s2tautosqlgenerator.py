@@ -5,11 +5,7 @@ from pyspark.sql.types import *
 from pyspark import Row
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
 from atf.common.atf_dc_read_datasources import read_data
-from datetime import datetime
-from sys import *
-import time
-import pandas as pd
-import os
+from constants import *
 
 # COMMAND ----------
 
@@ -251,7 +247,7 @@ class S2TAutoLoadScripts:
     
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
-    autoScriptFile = "/app/test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
+    autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
 
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
