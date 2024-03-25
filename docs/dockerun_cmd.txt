@@ -2,16 +2,21 @@
 Docker Image creation with Spark download:
 ---------------------------------------------------------------
 >> Download the docker image for PySpark
-    docker pull apache/spark-py:latest
+docker pull apache/spark-py:latest
 
 >> Use the Docker Run Command to create a container with your workspace code:
-    docker run -dt -v  C:/Workspaces/GitHub/QE_ATF/:/app  --name DATF apache/spark-py bash
+docker run -dt -v  C:/Workspaces/GitHub/QE_ATF/:/app  --name DATF apache/spark-py bash
+
+>> find and start shell scripting within an already running docker container
+docker ps
+** copy the process id **
+docker exec -ti -u root <processid> bash
 
 >> use container name to access bash
-    docker exec -ti -u root DATF bash
+docker exec -ti -u root DATF bash
 
->> within the folder "add/scripts" run a bash script
-    sh install.sh
+>> within the folder "app/scripts" run a bash script
+sh install.sh
     
 -------------------------------------------------------------------
 Start Execution with Test Cases either 'all' or seperated by comma:
