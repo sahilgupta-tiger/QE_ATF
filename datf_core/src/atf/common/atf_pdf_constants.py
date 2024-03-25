@@ -1,0 +1,18 @@
+# Databricks notebook source
+# DBTITLE 1,PDF Constants
+protocolreportheader = 'PROTOCOL SUMMARY REPORT'
+testcasereportheader = 'TESTCASE SUMMARY REPORT'
+testsubheading = "TESTCASE "
+execfaillist_subheading = '1. List of testcases failed to execute'
+protocolrunparams = "1. Protocol Run Parameters"
+protocoltestcaseheader = '2. Test Protocol Run Summary'
+testresultheader = '3. Test Result Summary'
+testcasereportheader = 'TESTCASE SUMMARY REPORT'
+rundetails_subheading = '1. Run Summary'
+configdetails_subheading = '2. Configuration Details'
+testresults_subheading = '3. Test Results Summary'
+mismatch_heading = '4. Column Mismatch Details'
+datatypemismatch_subheading = '4.1 Datatype Mismatch Details'
+datatypematch_subheading = '5. Column Match Details'
+columnsS2Tonly = '4.2 Columns in S2T but not in target'
+columnstargetonly = '4.3 Columns in target but not in S2T'
