@@ -24,20 +24,6 @@ def createsparksession():
     myconf = SparkConf().setMaster("local[*]").setAppName('s2ttester')
     for key, val in conf_dict.items():
         myconf.set(key, val)
-    '''
-    .set("spark.executor.instances", "18") \
-    .set("spark.executor.cores", "8") \
-    .set("spark.executor.memory", "6g") \
-    .set("spark.default.parallelism", "56") \
-    .set("spark.sql.shuffle.partitions", "250") \
-    .set("spark.memory.offHeap.enabled", "true") \
-    .set("spark.memory.offHeap.size", "2g") \
-    .set("spark.memory.fraction", "0.8") \
-    .set("spark.memory.storageFraction", "0.6") \
-    .set("spark.sql.debug.maxToStringFields", "300") \
-    .set("spark.sql.legacy.timeParserPolicy", "LEGACY") \
-    .set("spark.sql.autoBroadcastJoinThreshold", "-1")
-    '''
     
     spark = SparkSession.builder.config(conf=myconf).getOrCreate()
     spark.sparkContext.setLogLevel('WARN')

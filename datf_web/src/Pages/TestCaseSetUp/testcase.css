@@ -1,0 +1,118 @@
+.sub-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.sql-btn {
+    background: #707070 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    border: none;
+    opacity: 1;
+    top: 72px;
+    left: 979px;
+    width: 104px;
+    height: 30px;
+    color: white;
+    margin-right: 10px;
+}
+
+.mapping-btn {
+    top: 72px;
+    left: 1103px;
+    width: 137px;
+    height: 30px;
+    /* UI Properties */
+    background: #707070 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    margin-right: 10px;
+    /* display: flex; */
+    justify-content: center;
+
+}
+
+.execute-btn {
+    top: 72px;
+    left: 1260px;
+    width: 86px;
+    height: 30px;
+    background: #F7901D 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    border: none;
+    opacity: 1;
+    color: white;
+}
+
+.radio-btn {
+    margin: 10px;
+
+}
+
+.dbData {
+    display: flex;
+    color: #F7901D;
+}
+
+.no-underline {
+    text-decoration: none;
+    color: '#0CA8F2';
+
+}
+
+.disabled-button {
+    opacity: 0.5;
+}
+
+.select-btn {
+    margin: 8px;
+    padding: 5px;
+    align-items: center;
+    border-radius: 5px;
+    border: 2px solid #F7901D;
+    opacity: 1;
+    color: #F7901D;
+    background-color: white;
+    width: 93px;
+    height: 30px;
+}
+
+option {
+    background-color: white;
+    color: #312E2D;
+    font: normal normal normal 20px/50px Articulat CF;
+    line-height: 1.5;
+}
+
+option:hover {
+    background-color: white;
+    color: #F7901D;
+}
+
+.testCases {
+    height: 470px;
+    background: #F7F3EF 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    margin: 10px;
+    padding: 10px;
+    overflow: auto;
+}
+
+.selected-testcase {
+    text-align: center;
+    font: normal bold medium 14px/14px Articulat CF;
+    color: #312E2D;
+    margin: 10px;
+    font-weight: 600;
+    /* width: 142px; */
+    height: 25px;
+}
+.list-item{
+    list-style: none;
+    font: normal normal normal 14px/30px Articulat CF;
+    color: #707070;
+}
+.all-delete{
+height: 15px;
+width: 15px;
+}
