@@ -32,7 +32,7 @@
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
         
-            var pieChartData = [['Status', 'Count'], ['Passed', 1]]
+            var pieChartData = [['Status', 'Count'], ['Passed', 2]]
 
         function drawChart() {
           // Drawing Pie Chart for Test Case Execution Results
@@ -77,7 +77,7 @@
           timeData.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
           timeData.addRows([
-            ['0s-45s', 1, 'testcase14_csv_parquet_mismatch_manuel'],
+            ['0s-45s', 2, 'testcase28_manual_sql_notifications<br>testcase29_manual_sql_fullname'],
         ['45s-2m', 0, 'No test cases'],
         ['2m-5m', 0, 'No test cases'],
         ['5m+', 0, 'No test cases'],
@@ -124,17 +124,25 @@
   </thead>
   <tbody>
     <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manuel</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase28_manual_sql_notifications</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">2</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">2</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:22</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:09</td>
+    </tr>
+    <tr>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase29_manual_sql_fullname</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:01</td>
     </tr>
   </tbody>
 </table></p>
             <h2><b>3. Protocol Run Details</b></h2>
-            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 25-Mar-2024 16:03:36 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 25-Mar-2024 16:03:59 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:22<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 0<br></p>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 27-Mar-2024 04:23:38 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 27-Mar-2024 04:23:50 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:11<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 0<br></p>
             <h2><b>4. Protocol Run Parameters</b></h2>
             <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: count<br></p>
            
