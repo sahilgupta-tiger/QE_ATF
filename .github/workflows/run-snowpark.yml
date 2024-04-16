@@ -2,7 +2,11 @@
 
 name: Snowpark DATF
 
-on: workflow_dispatch
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
 
 permissions:
   contents: read
@@ -24,4 +28,4 @@ jobs:
           pip install -r scripts/install.txt
       - name: Test Snowpark
         run: |
-          scripts/testingstart.bat count all
+          scripts/testingstart.bat $test-type $test-names

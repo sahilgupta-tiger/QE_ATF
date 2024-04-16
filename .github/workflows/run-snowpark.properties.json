@@ -1,0 +1,10 @@
+{
+  "name": "Snowpark DATF",
+  "description": "Demo for the DATF tool (Snowpark Edition) running on GitHub Actions Workflows.",
+  "categories": [
+    "Python"
+  ],
+  "default-branch": "datf_snowpark",
+  "test-type": "count",
+  "test-names": "all"
+}
