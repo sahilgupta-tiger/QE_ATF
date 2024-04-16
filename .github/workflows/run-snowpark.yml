@@ -1,5 +1,5 @@
 # Manually Trigger Github Actions workflow to execute Snowpark code
-name: Test Snowpark DATF
+name: snowpark_execution
 
 on:
   push:
@@ -36,4 +36,4 @@ jobs:
           test_results: "utils/reports"
           keep_reports: 20
           gh_pages: just_reporting
-          subfolder: reports
+          subfolder: results
