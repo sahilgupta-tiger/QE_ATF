@@ -33,7 +33,7 @@ jobs:
       - name: DATF Reporting
         uses: PavanMudigonda/html-reporter-github-pages@v1.3
         with:
-          test_results: "utils/reports"
+          test_results: "utils"
           keep_reports: 20
           gh_pages: just_reporting
           subfolder: results
