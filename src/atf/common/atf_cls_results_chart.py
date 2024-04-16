@@ -104,6 +104,7 @@ def create_html_report(trends_code, chart_code, created_time, output_path, combi
     log_info(f"Chart generated at: {html_file_path}")
 
     trends_path = f"test\\results\\trends\\datf_trends_report.html"
+    index_path = f"utils\\index.html"
 
     with open(trends_path, 'w') as file:
         file.write(trends_code)
@@ -126,6 +127,7 @@ def create_html_report(trends_code, chart_code, created_time, output_path, combi
     shutil.copytree(output_path, final_report_path, dirs_exist_ok=True)
     shutil.copy(html_file_path, final_report_path)
     shutil.copy(trends_path, final_report_path)
+    shutil.copy(index_path, final_report_path)
     # rename files for Archiving Artefacts within CT Pipeline integration
     os.rename(fr"{final_report_path}\{html_file_name}", fr"{final_report_path}\datfreport.html")
     os.rename(fr"{final_report_path}\{summary_file}", fr"{final_report_path}\datf_summary.pdf")
