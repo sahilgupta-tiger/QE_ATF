@@ -9,7 +9,7 @@ on:
     branches: [ "datf_snowpark" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Get Code
+        uses: actions/checkout@v3
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
@@ -28,4 +29,4 @@ jobs:
           pip install -r scripts/install.txt
       - name: Test Snowpark
         run: |
-          scripts/testingstart.bat $test-type $test-names
+          scripts/testingstart.bat count all
