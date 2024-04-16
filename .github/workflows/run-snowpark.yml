@@ -33,10 +33,7 @@ jobs:
       - name: DATF Reporting
         uses: PavanMudigonda/html-reporter-github-pages@v1.3
         with:
-          test_results: utils/reports
+          test_results: "utils/reports"
           keep_reports: 20
-          gh_pages: github-pages
-          subfolder: execution
-          tool_name: results
-          workflow_name: ${{ github.workflow }}
-          env: QA
+          gh_pages: just_reporting
+          subfolder: reports
