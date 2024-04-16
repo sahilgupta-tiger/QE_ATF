@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Get Code
@@ -31,9 +31,9 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "utils/reports"
+          path: "utils/reports/datfreport.html"
 
-  deploy-coverage:
+  deploy-pages:
     runs-on: ubuntu-latest
     needs: test
 
