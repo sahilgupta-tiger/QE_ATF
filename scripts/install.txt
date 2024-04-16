@@ -1,9 +1,9 @@
-pip install datacompy
-pip install pandas
-pip install fpdf
-pip install openpyxl
-pip install fsspec
-pip install pretty-html-table
-pip install tabulate
-pip install snowflake-snowpark-python
-pip install snowflake-snowpark-python[pandas]
+datacompy
+pandas
+fpdf
+openpyxl
+fsspec
+pretty-html-table
+tabulate
+snowflake-snowpark-python
+snowflake-snowpark-python[pandas]
