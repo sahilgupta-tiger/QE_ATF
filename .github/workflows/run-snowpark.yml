@@ -4,9 +4,9 @@ name: Snowpark DATF
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ "datf_snowpark" ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ "datf_snowpark" ]
 
 permissions:
   contents: read
