@@ -1,7 +1,7 @@
 # Manually Trigger Github Actions workflow to execute Snowpark code
 name: Test Snowpark DATF
 
-on: workflow_dispatch
+on: workflow_call
 
 permissions:
   contents: write
