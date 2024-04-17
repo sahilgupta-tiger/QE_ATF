@@ -4,6 +4,7 @@ name: snowpark_execution
 on:
   push:
     branches: [ "datf_snowpark" ]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,7 +12,6 @@ permissions:
 jobs:
   test:
     runs-on: windows-latest
-
     steps:
       - name: Get Code
         uses: actions/checkout@v3
@@ -26,14 +26,23 @@ jobs:
       - name: Test Snowpark
         run: |
           sh scripts/testingstart.sh count all
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
         with:
+          name: dist-files
           path: "utils/reports"
-      - name: DATF Reporting
-        uses: PavanMudigonda/html-reporter-github-pages@v1.3
+
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Build Artifacts
+        uses: actions/download-artifact@v3
         with:
-          test_results: "utils/reports"
-          keep_reports: 20
-          gh_pages: just_reporting
-          subfolder: results
+          name: dist-files
+      - name: DATF Reporting
+        run: |
+          echo "Displaying the reports..."
+          ls
+          
+
