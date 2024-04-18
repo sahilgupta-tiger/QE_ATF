@@ -6,6 +6,10 @@ on:
     branches: [ "datf_snowpark" ]
   workflow_dispatch:
 
+env:
+  TEST_TYPE: count
+  TEST_NAMES: all
+
 permissions:
   contents: write
 
@@ -25,7 +29,7 @@ jobs:
           pip install -r scripts/install.txt
       - name: Test Snowpark
         run: |
-          sh scripts/testingstart.sh count all
+          sh scripts/testingstart.sh $env:TEST_TYPE $env:TEST_NAMES
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -40,9 +44,18 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist-files
-      - name: DATF Reporting
+      - name: List Report Files
         run: |
           echo "Displaying the reports..."
           ls
-          
+      - name: HTML website to PDF converter
+        uses: ferdinandkeller/html-to-pdf-action@v1
+        with:
+          source-path: './dist-files'
+          destination-path: './render.pdf'
+      - name: Upload PDF Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: output
+          path: "./render.pdf"
 
