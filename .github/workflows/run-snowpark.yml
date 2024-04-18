@@ -31,7 +31,7 @@ jobs:
         run: |
           sh scripts/testingstart.sh $env:TEST_TYPE $env:TEST_NAMES
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist-files
           path: "utils/reports"
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: dist-files
       - name: List Report Files
@@ -51,11 +51,11 @@ jobs:
       - name: HTML website to PDF converter
         uses: ferdinandkeller/html-to-pdf-action@v1
         with:
-          source-path: './dist-files'
-          destination-path: './render.pdf'
+          source-path: 'dist-files'
+          destination-path: 'output.pdf'
       - name: Upload PDF Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: output
-          path: "./render.pdf"
+          path: "output.pdf"
 

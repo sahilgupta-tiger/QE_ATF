@@ -336,14 +336,14 @@ def historical_trends():
         sum(case when [Test Result] = 'Passed' then 1 else 0 end) as "Passed",
         ROUND((count(*)/2.1)+count(*),2) as "Average"
         FROM {table_name} GROUP BY [Run Created Time] 
-        ORDER BY [DB Stored Time] DESC LIMIT 25;
+        ORDER BY [DB Stored Time] DESC LIMIT 40;
     '''
     trends_df = retrieve_from_db(trends_query)
     print(tabulate(trends_df, headers='keys', tablefmt='psql'))
     trends_data = trends_df.values.tolist()
 
     html_content += f"""
-      <h2>1. Historical Trends Graph (Last 25 Runs)</h2>
+      <h2>1. Historical Trends Graph (Last 40 Runs)</h2>
       <div id="trends_chart"></div>
       
         <script type="text/javascript">
@@ -362,7 +362,7 @@ def historical_trends():
                     legend: {{position: 'bottom', alignment: 'center', maxLines: 1}},
                     isStacked: true,
                     seriesType: 'bars',
-                    series: {{3: {{type: 'line'}}}}
+                    series: {{3: {{type: 'line', curveType: 'function'}}}}
                 }};
                 
                 var chart = new google.visualization.ComboChart(document.getElementById('trends_chart'));
