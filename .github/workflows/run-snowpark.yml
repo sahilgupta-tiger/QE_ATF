@@ -48,6 +48,7 @@ jobs:
         run: |
           echo "Displaying the reports..."
           ls
+          mkdir pdfs
       - name: Report html to pdf
         uses: LukaszLapaj/html-to-pdf-action@master
         with:
