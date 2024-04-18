@@ -15,18 +15,14 @@ import sys
 import traceback
 import json
 from constants import *
-from cryptography.fernet import Fernet
+
 
 
 
 def createsparksession():
 
     connection_parameters = json.load(open(conn_file_name))
-    encrypted = str.encode(connection_parameters["password"])
-    fer = Fernet(cryptokey)
-    decrypted = fer.decrypt(encrypted).decode('utf-8')
-    print(decrypted)
-    connection_parameters['password'] = decrypted
+    connection_parameters['password'] = decryptcredentials(connection_parameters['password'])
     session = Session.builder.configs(connection_parameters).create()
     log_info("!!! Snowpark Session Created !!!")
 
