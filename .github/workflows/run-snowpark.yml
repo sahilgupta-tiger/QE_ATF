@@ -8,7 +8,7 @@ on:
 
 env:
   TEST_TYPE: count
-  TEST_NAMES: all
+  TEST_NAMES: testcase23_snowflake_snowflake_match
 
 permissions:
   contents: write
@@ -51,7 +51,7 @@ jobs:
       - name: html to pdf
         uses: LukaszLapaj/html-to-pdf-action@master
         with:
-          htmlFile: ./dist-files/index.html
+          htmlFile: ./index.html
           outputFile: ./output.pdf
           pdfOptions: '{"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
       - name: Upload PDF Artifact
