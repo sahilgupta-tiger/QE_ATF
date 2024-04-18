@@ -358,7 +358,7 @@ def historical_trends():
                     legend: {{position: 'bottom', alignment: 'center', maxLines: 1}},
                     isStacked: true,
                     seriesType: 'bars',
-                    series: {{3: {{type: 'line'}}}}
+                    series: {{3: {{type: 'line', curveType: 'function'}}}}
                 }};
                 
                 var chart = new google.visualization.ComboChart(document.getElementById('trends_chart'));
