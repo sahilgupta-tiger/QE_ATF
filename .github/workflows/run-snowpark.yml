@@ -48,15 +48,20 @@ jobs:
         run: |
           echo "Displaying the reports..."
           ls
-      - name: html to pdf
+      - name: Report html to pdf
         uses: LukaszLapaj/html-to-pdf-action@master
         with:
-          htmlFile: ./index.html
-          outputFile: ./output.pdf
-          pdfOptions: '{"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+          htmlFile: ./datfreport.html
+          outputFile: ./pdfs/datfreport.pdf
+          pdfOptions: '{"landscape": true}'
+      - name: Trends html to pdf
+        uses: LukaszLapaj/html-to-pdf-action@master
+        with:
+          htmlFile: ./datf_trends_report.html
+          outputFile: ./pdfs/datftrends.pdf
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: output
-          path: ./output.pdf
+          name: reports
+          path: ./pdfs
 
