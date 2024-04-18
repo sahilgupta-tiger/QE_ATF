@@ -48,14 +48,15 @@ jobs:
         run: |
           echo "Displaying the reports..."
           ls
-      - name: HTML website to PDF converter
-        uses: ferdinandkeller/html-to-pdf-action@v1
+      - name: html to pdf
+        uses: LukaszLapaj/html-to-pdf-action@master
         with:
-          source-path: 'dist-files'
-          destination-path: 'output.pdf'
+          htmlFile: ./dist-files/index.html
+          outputFile: ./output.pdf
+          pdfOptions: '{"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
         with:
           name: output
-          path: "output.pdf"
+          path: ./output.pdf
 
