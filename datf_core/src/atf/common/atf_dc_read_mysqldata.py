@@ -2,6 +2,8 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,readconnectionconfig
+from src.constants import decryptcredential
+
 
 def read_mysqldata(tc_datasource_config,spark):
   log_info("Reading from Mysql Table")
@@ -17,9 +19,9 @@ def read_mysqldata(tc_datasource_config,spark):
                   .option("driver","com.mysql.jdbc.Driver")
                   .option("url", connectionurl)
                   .option("user", connectionconfig['user'])
-                  .option("password", connectionconfig['password'])
-                  .option("useSSL", "false") \
-                  .option("ssl", "false") \
+                  .option("password", decryptcredential(connectionconfig['password']))
+                  .option("useSSL", "false")
+                  .option("ssl", "false")
                   .option("query", query)
                   .load())
   columns = df.columns

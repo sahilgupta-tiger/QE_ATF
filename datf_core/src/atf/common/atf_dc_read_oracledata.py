@@ -3,6 +3,7 @@
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info, readconnectionconfig
+from src.constants import decryptcredential
 import os
 # COMMAND ----------
 
@@ -35,7 +36,7 @@ def read_oracledata(tc_datasource_config, spark):
                         .option("driver", "oracle.jdbc.driver.OracleDriver")
                         .option("url", connectionconfig['url'])
                         .option("user", connectionconfig['user'])
-                        .option("password", connectionconfig['password'])
+                        .option("password", decryptcredential(connectionconfig['password']))
                         .option("query", selectmanualqry)
                         .option("oracle.jdbc.timezoneAsRegion", "false")
                         .load())

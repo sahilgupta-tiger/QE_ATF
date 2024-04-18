@@ -4,6 +4,7 @@
 constants.py
 """
 import pytz
+from cryptography.fernet import Fernet
 
 root_path = '/app/'
 table_name = 'historical_trends'
@@ -23,3 +24,12 @@ conf_JSON = """ {
     "spark.sql.legacy.timeParserPolicy": "LEGACY",
     "spark.sql.autoBroadcastJoinThreshold": "-1"
 } """
+
+
+def decryptcredential(encodedstring):
+    cryptokey = b'K_QLpmYNUy6iHP4m73k2Q2brMfFy2nmJJK61HlSOTQI='
+    encrypted = str.encode(encodedstring)
+    fer = Fernet(cryptokey)
+    decrypted = fer.decrypt(encrypted).decode('utf-8')
+    return decrypted
+

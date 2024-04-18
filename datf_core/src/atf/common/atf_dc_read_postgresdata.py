@@ -3,6 +3,7 @@
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,readconnectionconfig
+from src.constants import decryptcredential
 import os
 # COMMAND ----------
 
@@ -33,11 +34,11 @@ def read_postgresdata(tc_datasource_config, spark):
   
   df_postgresdata = (spark.read
                     .format("jdbc")
-                    .option("driver", "org.postgresql.Driver") \
-                    .option("url", connectionconfig['url']) \
-                    .option("dbtable", resourcename) \
-                    .option("user", connectionconfig['user']) \
-                    .option("password", connectionconfig['password']) \
+                    .option("driver", "org.postgresql.Driver")
+                    .option("url", connectionconfig['url'])
+                    .option("dbtable", resourcename)
+                    .option("user", connectionconfig['user'])
+                    .option("password", decryptcredential(connectionconfig['password']))
                     .load())
                     
   columns = df_postgresdata.columns

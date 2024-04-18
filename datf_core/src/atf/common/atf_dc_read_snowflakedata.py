@@ -3,6 +3,7 @@
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info, readconnectionconfig
+from src.constants import decryptcredential
 
 SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake"
 
@@ -35,7 +36,7 @@ def read_snowflakedata(tc_datasource_config, spark):
   sfOptions = {
       "sfURL": connectionconfig['url'],
       "sfUser": connectionconfig['user'],
-      "sfPassword": connectionconfig['password'],
+      "sfPassword": decryptcredential(connectionconfig['password']),
       "sfDatabase": connectionconfig['database'],
       "sfSchema": connectionconfig['schema'],
       "sfWarehouse": connectionconfig['warehouse'],

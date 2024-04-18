@@ -3,5 +3,5 @@
     "connectname":"postgresql_jdbc_connection",
     "url":"jdbc:postgresql://host.docker.internal:5432/pgsqldemo",
     "user":"admin",
-    "password":"tiger@123"
+    "password":"gAAAAABmIRr_p4i7oA6Hsp1i5B9sXyYNuahgCYBYJT-vdh0FMaUpHYVPQE_w5CILmdDe0nHer78Ic7S7kdlw5TwxL__SxUsvxw=="
 }
