@@ -4,3 +4,4 @@ datf_core/test/data/target/ar_properties.csv
 # production
 .idea
 /build
+datf_web/node_modules
