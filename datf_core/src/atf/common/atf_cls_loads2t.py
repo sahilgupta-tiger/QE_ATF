@@ -152,21 +152,21 @@ class LoadS2T:
     self.schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
     
     self.schema_pddf=self.schema_pddf.fillna("")
-    self.schema_df=self.spark.createDataFrame(self.schema_pddf)
+    self.schema_df=spark.createDataFrame(self.schema_pddf)
     #self.schema_df.printSchema() 
       
     self.sourceschema_df=self.schema_df.filter(col("tabletype") == 'source')
     self.stageschema_df=self.schema_df.filter(col("tabletype") == 'stage')
     self.targetschema_df=self.schema_df.filter(col("tabletype") == 'target') 
    
-    self.stagemapping_df=self.spark.createDataFrame([], StructType([])) #Added by Susan
+    self.stagemapping_df=spark.createDataFrame([], StructType([])) #Added by Susan
 
     if self.stageEnabled == True:
       self.stagemapping_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='StageMapping', keep_default_na=False)
-      self.stagemapping_df=self.spark.createDataFrame(self.stagemapping_pddf) 
+      self.stagemapping_df=spark.createDataFrame(self.stagemapping_pddf)
       
     self.targetmapping_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='TargetMapping', keep_default_na=False)
-    self.targetmapping_df=self.spark.createDataFrame(self.targetmapping_pddf)
+    self.targetmapping_df=spark.createDataFrame(self.targetmapping_pddf)
   
     self.tgtschema_df = (self.targetschema_df
                          .select("columnname","datatype","length","scale")
