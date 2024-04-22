@@ -20,7 +20,7 @@ import json
 
 def createsparksession():
 
-    myconf = SparkConf.setmaster("local[*]").setAppName("s2ttester")
+    myconf = SparkConf.setMaster("local[*]").setAppName("s2ttester")
     spark = SparkSession.builder.config(conf=myconf).getOrCreate()
     spark.sparkContext.setLogLevel('WARN')
 
