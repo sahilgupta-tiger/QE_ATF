@@ -20,12 +20,7 @@ import json
 
 def createsparksession():
 
-    #conf_dict = json.loads(conf_JSON)
-    myconf = SparkConf().setAppName('s2ttester')
-    '''for key, val in conf_dict.items():
-        myconf.set(key, val)'''
-    
-    spark = SparkSession.builder.config(conf=myconf).getOrCreate()
+    spark = SparkSession.builder.getOrCreate()
     spark.sparkContext.setLogLevel('WARN')
 
     log_info("Spark Session Configuration items are listed below -")
@@ -961,4 +956,5 @@ if __name__ == "__main__":
     log_info(f"TestCasesRunList: {testcasesrunlist}")
     testerobj = S2TTester(spark)
     testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
+    spark.stop()
    
