@@ -5,7 +5,7 @@ constants.py
 """
 import pytz
 
-root_path = '/app/'
+root_path = '/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/'
 table_name = 'historical_trends'
 utctimezone = pytz.timezone("UTC")
 

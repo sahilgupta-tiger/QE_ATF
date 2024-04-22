@@ -2,6 +2,7 @@
 # DBTITLE 1,Import Required Libraries
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
+from atf.common.atf_common_functions import log_info,readconnectionconfig
 
 # COMMAND ----------
 
