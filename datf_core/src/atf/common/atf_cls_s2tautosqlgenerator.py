@@ -1,4 +1,4 @@
-
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
@@ -10,8 +10,8 @@ class S2TAutoLoadScripts:
   
   def __init__(self, s2tobj, tcdict,spark):
     self.s2tobj = s2tobj
-    self.tcdict = tcdict 
-    self.spark = spark
+    self.tcdict = tcdict
+    spark = SparkSession.getActiveSession()
 
   def printSummary(self):
     print(f"Mapping Name:{self.s2tobj.mappingName}")

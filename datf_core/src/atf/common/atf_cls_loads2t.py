@@ -1,7 +1,6 @@
-
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
-from pyspark import Row
 from pyspark.sql.types import StructType,StructField, StringType, IntegerType,DoubleType,DateType
 from datetime import datetime
 from sys import *
@@ -13,9 +12,9 @@ from constants import *
 
 class LoadS2T:
   
-  def __init__(self,configFilePath,spark):
+  def __init__(self, configFilePath, spark):
     self.stageEnabled = True
-    self.spark=spark
+    spark = SparkSession.getActiveSession()
     config_wb = load_workbook(configFilePath, read_only=True)
     if 'StageMapping' not in config_wb.sheetnames:
       self.stageEnabled = False
