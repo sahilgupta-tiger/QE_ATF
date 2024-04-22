@@ -947,7 +947,7 @@ class S2TTester:
 
 
 if __name__ == "__main__":
-    #spark = createsparksession()
+    spark = createsparksession()
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
     testtype = sys.argv[1]
