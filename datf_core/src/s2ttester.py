@@ -20,10 +20,10 @@ import json
 
 def createsparksession():
 
-    conf_dict = json.loads(conf_JSON)
-    myconf = SparkConf().setMaster("local[*]").setAppName('s2ttester')
-    for key, val in conf_dict.items():
-        myconf.set(key, val)
+    #conf_dict = json.loads(conf_JSON)
+    myconf = SparkConf().setAppName('s2ttester')
+    '''for key, val in conf_dict.items():
+        myconf.set(key, val)'''
     
     spark = SparkSession.builder.config(conf=myconf).getOrCreate()
     spark.sparkContext.setLogLevel('WARN')
@@ -947,7 +947,7 @@ class S2TTester:
 
 
 if __name__ == "__main__":
-    spark = createsparksession()
+    #spark = createsparksession()
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
     testtype = sys.argv[1]
