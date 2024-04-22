@@ -2,7 +2,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,debugexit
-from ...constants import *
+from constants import *
 
 def read_parquetdata(tc_datasource_config,spark):
   log_info("Reading parquet file")
