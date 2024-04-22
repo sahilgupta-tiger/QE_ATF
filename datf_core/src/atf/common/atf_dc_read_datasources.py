@@ -4,7 +4,7 @@ from atf.common.atf_dc_read_delimiteddata import read_delimiteddata
 from atf.common.atf_dc_read_avrodata import read_avrodata
 from atf.common.atf_dc_read_json import read_jsondata
 from atf.common.atf_dc_read_mysqldata import read_mysqldata
-from atf.common.atf_dc_read_redshiftdata import read_redshiftdata
+#from atf.common.atf_dc_read_redshiftdata import read_redshiftdata
 from atf.common.atf_dc_read_oracledata import read_oracledata
 from atf.common.atf_dc_read_bigquerydata import read_bigquerydata
 from atf.common.atf_dc_read_deltadata import read_deltadata
