@@ -1,12 +1,8 @@
-# Databricks notebook source
+
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 
-# COMMAND ----------
 
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
 
 def read_oracleschema(dict_connection, comparetype):
 

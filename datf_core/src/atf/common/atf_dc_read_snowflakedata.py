@@ -1,19 +1,9 @@
-# Databricks notebook source
-# DBTITLE 1, Import Required Libraries
-from pyspark.sql.functions import * 
+from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info, readconnectionconfig
 
 SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake"
 
-# COMMAND ----------
-
-# DBTITLE 1,Load Common Functions notebook
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
-
-# DBTITLE 1,Function to read Big Query data
 def read_snowflakedata(tc_datasource_config, spark):
   log_info("Reading from Snowflake Warehouse")
 

@@ -1,11 +1,4 @@
-# Databricks notebook source
-# MAGIC %run ./atf_cls_loads2t
 
-# COMMAND ----------
-
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
 
 def read_S2Tschema(dict_connection,comparetype):
   connectionname = dict_connection['connectionname']

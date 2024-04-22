@@ -1,17 +1,10 @@
-# Databricks notebook source
-# DBTITLE 1,Import Required Libraries
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 import math as m
 from atf.common.atf_common_functions import log_info
 
-# COMMAND ----------
 
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
-
-# DBTITLE 1,Function to read delta data
 def read_deltadata(dict_configdf, comparetype):
   log_info("Reading delta Data")
   connectionname = dict_configdf['connectionname']

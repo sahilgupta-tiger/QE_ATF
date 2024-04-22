@@ -1,7 +1,7 @@
-# Databricks notebook source
+
 from pyspark.sql.functions import lit
 
-# COMMAND ----------
+
 
 def read_parquetschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']

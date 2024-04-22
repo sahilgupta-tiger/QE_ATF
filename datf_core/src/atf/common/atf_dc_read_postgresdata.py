@@ -1,17 +1,8 @@
-# Databricks notebook source
-# DBTITLE 1, Import Required Libraries
-from pyspark.sql.functions import * 
+from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,readconnectionconfig
-import os
-# COMMAND ----------
 
-# DBTITLE 1,Load Common Functions notebook
-# MAGIC %run ./atf_common_functions
 
-# COMMAND ----------
-
-# DBTITLE 1,Function to read PostGRESQL data
 def read_postgresdata(tc_datasource_config, spark):
   log_info("Reading from PostGRESQL Table")
 

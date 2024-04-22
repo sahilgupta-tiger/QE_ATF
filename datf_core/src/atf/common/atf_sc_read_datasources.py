@@ -1,4 +1,4 @@
-# Databricks notebook source
+
 from atf.common.atf_common_functions import log_info
 from atf.common.atf_sc_read_parquetschema import read_parquetschema
 from atf.common.atf_sc_read_delimitedschema import read_delimitedschema
@@ -14,7 +14,7 @@ from pyspark.sql.types import *
 from pyspark.sql.functions import *
 from s2ttester import spark
 
-# DBTITLE 1,Create source target dataframe
+
 def read_schema(dict_connection,comparetype): 
   df_schema = spark.createDataFrame([], StructType([]))
   connectiontype = dict_connection['connectiontype'].strip().lower()

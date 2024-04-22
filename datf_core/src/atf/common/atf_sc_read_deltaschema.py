@@ -1,7 +1,4 @@
-# Databricks notebook source
-# MAGIC %run ./atf_common_functions
 
-# COMMAND ----------
 
 def read_deltaschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']
