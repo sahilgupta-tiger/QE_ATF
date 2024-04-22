@@ -301,7 +301,7 @@ class S2TTester:
 
         if tc_config['comparetype'] == 's2tcompare':
             loads2t_path = root_path+tc_config['s2tpath']
-            s2tobj = LoadS2T(loads2t_path, self.spark)
+            s2tobj = LoadS2T(loads2t_path, spark)
 
         if (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Manual'):
             log_info("Reading the Source Data")
@@ -312,7 +312,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
                            'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],
                            'schemastruct': s2tobj.getSchemaStruct("source"),'comparetype':tc_config['comparetype'],'filename':tc_config['sourcefilename']}
-            source_df, source_query = read_data(tc_source_config,self.spark)
+            source_df, source_query = read_data(tc_source_config,spark)
 
             log_info(f"Reading the Target Data")
             tc_target_config = {'aliasname': tc_config['targetaliasname'], 'connectiontype': tc_config['targetconnectiontype'],
@@ -322,7 +322,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
                            'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],
                            'schemastruct': s2tobj.getSchemaStruct("target"),'comparetype':tc_config['comparetype'],'filename':tc_config['targetfilename']}    
-            target_df, target_query = read_data(tc_target_config,self.spark)
+            target_df, target_query = read_data(tc_target_config,spark)
 
         elif (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Auto'):
             # s2tconnectionval = get_connection_config(testcase_details['s2tconnectionname'])['BUCKETNAME']
@@ -334,7 +334,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'],
                            'testcasename': tc_config['testcasename'], 'autoscripttype': 'source', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
                            'filename':tc_config['sourcefilename']}
-            autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_source_config, self.spark)
+            autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_source_config, spark)
             scriptpath, source_df, source_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
             source_conn_name = source_file_details_dict["connectionname"]
             join_cols_source = source_file_details_dict["join_columns"]
@@ -347,7 +347,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'],
                            'testcasename': tc_config['testcasename'], 'autoscripttype': 'target', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}
-            autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_target_config, self.spark)
+            autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_target_config, spark)
             scriptpath, target_df, target_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
             target_conn_name = target_file_details_dict["connectionname"]
             join_cols_target = target_file_details_dict["join_columns"]
@@ -362,7 +362,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
                            'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['sourcefilename']}
-            source_df, source_query = read_data(tc_source_config,self.spark)
+            source_df, source_query = read_data(tc_source_config,spark)
            
             log_info(f"Reading the Target Data")
             tc_target_config = {'aliasname': tc_config['targetaliasname'], 'connectiontype': tc_config['targetconnectiontype'],
@@ -372,7 +372,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
                            'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}    
-            target_df, target_query = read_data(tc_target_config,self.spark)
+            target_df, target_query = read_data(tc_target_config,spark)
             
 
         if (source_file_details_dict is not None):
@@ -427,7 +427,7 @@ class S2TTester:
         if (testcasetype == 'content'):
             
             print("Comparing Contents of Source and Target now...(this may take a while)...")
-            comparison_obj = datacompy.SparkCompare(self.spark, sourcedf, targetdf,  \
+            comparison_obj = datacompy.SparkCompare(spark, sourcedf, targetdf,  \
                                                     column_mapping=colmapping, \
                                                     join_columns=joincolumns, \
                                                     cache_intermediates=True)
@@ -620,7 +620,7 @@ class S2TTester:
             special_tgtdf = targetdf
 
             print("Comparing Fingerprints of Source and Target now...")
-            fingerprintcomp_obj = datacompy.SparkCompare(self.spark, special_srcdf, special_tgtdf,
+            fingerprintcomp_obj = datacompy.SparkCompare(spark, special_srcdf, special_tgtdf,
                                                     column_mapping=colmapping, join_columns=joincolumns)
             fingerprintcomp_obj.report()
 
