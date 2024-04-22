@@ -9,12 +9,13 @@ import pandas as pd
 from openpyxl import load_workbook
 from constants import *
 
+spark = SparkSession.getActiveSession()
+
 
 class LoadS2T:
   
   def __init__(self, configFilePath, spark):
     self.stageEnabled = True
-    spark = SparkSession.getActiveSession()
     config_wb = load_workbook(configFilePath, read_only=True)
     if 'StageMapping' not in config_wb.sheetnames:
       self.stageEnabled = False
