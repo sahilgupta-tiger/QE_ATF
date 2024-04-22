@@ -8,7 +8,7 @@ from sys import *
 import time
 import pandas as pd
 from openpyxl import load_workbook
-from ...constants import *
+from constants import *
 
 
 class LoadS2T:
