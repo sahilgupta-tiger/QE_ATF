@@ -2,17 +2,19 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,debugexit
+from ...constants import *
 
 def read_parquetdata(tc_datasource_config,spark):
-  log_info("Reading parquet file")  
-  df = spark.read.parquet(tc_datasource_config['path'])
+  log_info("Reading parquet file")
+  datasrc_path = root_path+tc_datasource_config['path']
+  df = spark.read.parquet(datasrc_path)
   df.createOrReplaceTempView(tc_datasource_config['aliasname'])
   
   if tc_datasource_config['comparetype'] == 's2tcompare' and tc_datasource_config['testquerygenerationmode'] == 'Auto':
     pass      
 
   elif tc_datasource_config['comparetype'] == 's2tcompare' and tc_datasource_config['testquerygenerationmode'] == 'Manual':
-    querypath = tc_datasource_config['querypath']
+    querypath = root_path+tc_datasource_config['querypath']
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)

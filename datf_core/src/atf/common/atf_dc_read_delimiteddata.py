@@ -3,6 +3,7 @@ from pyspark.sql.types import *
 from pyspark import StorageLevel
 from atf.common.atf_common_functions import log_info
 
+
 def read_delimiteddata(tc_datasource_config,spark):
   log_info("Reading delimited File")
   connectionname =tc_datasource_config['connectionname']
@@ -13,7 +14,8 @@ def read_delimiteddata(tc_datasource_config,spark):
   if tc_datasource_config['testquerygenerationmode'] == 'Auto':
     resourcename =tc_datasource_config['name']
     datafilter =tc_datasource_config['filter']
-    filepath = get_mount_path(tc_datasource_config['path'])
+    mount_path = root_path+tc_datasource_config['path']
+    filepath = get_mount_path(mount_path)
     excludecolumns =tc_datasource_config['excludecolumns']
     excludecolumns = str(excludecolumns)
     exclude_cols = excludecolumns.split(',')
@@ -30,7 +32,7 @@ def read_delimiteddata(tc_datasource_config,spark):
       query_csv = query_csv + " WHERE " + datafilter
     df_data = spark.sql(query_csv)        
   elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
-    querypath =tc_datasource_config['querypath']
+    querypath =root_path+tc_datasource_config['querypath']
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)

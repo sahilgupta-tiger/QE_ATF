@@ -8,6 +8,7 @@ from sys import *
 import time
 import pandas as pd
 from openpyxl import load_workbook
+from ...constants import *
 
 
 class LoadS2T:
@@ -38,7 +39,7 @@ class LoadS2T:
     if config["sourcefilepath"] != "":
       #self.sourceconnectionval = get_connection_config(self.sourceConnectionName)['BUCKETNAME']
       #self.sourceFilePath=get_mount_path(self.sourceconnectionval + config["sourcefilepath"])
-      self.sourceFilePath= config["sourcefilepath"]
+      self.sourceFilePath= root_path+config["sourcefilepath"]
     self.sourceFileName=config["sourcefilename"]
     if config["sourcefilehasheader"].upper() == 'Y':
       self.sourceFileHasHeader=True
@@ -59,7 +60,7 @@ class LoadS2T:
     if config["stagefilepath"] != "":
       #self.stageconnectionval = get_connection_config(self.stageConnectionName)['BUCKETNAME']
       #self.stageFilePath=get_mount_path(self.stageconnectionval +config["stagefilepath"])
-      self.stageFilePath=config["stagefilepath"]
+      self.stageFilePath=root_path+config["stagefilepath"]
     self.stageFileHasHeader=config["stagefilehasheader"]
     self.stageFileDelimiter=config["stagefiledelimiter"]
     self.stageTimestampFormat=config["stagetimestampformat"]
@@ -76,7 +77,7 @@ class LoadS2T:
     if config["targetfilepath"] != "":
       #self.targetconnectionval = get_connection_config(self.targetConnectionName)['BUCKETNAME']
       #self.targetFilePath=get_mount_path(self.targetconnectionval +config["targetfilepath"])
-      self.targetFilePath=config["targetfilepath"]
+      self.targetFilePath=root_path+config["targetfilepath"]
     self.targetFileHasHeader=config["targetfilehasheader"]
     self.targetFileDelimiter=config["targetfiledelimiter"]
     self.targetTimestampFormat=config["targettimestampformat"]
