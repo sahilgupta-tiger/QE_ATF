@@ -297,10 +297,11 @@ class S2TTester:
         map_cols = []
 
         if tc_config['s2tpath'] != "":
-            log_info(f"Reading the S2T for Source Details located at {tc_config['s2tpath']}")
+            log_info(f"Reading the S2T for Source Details located at {root_path+tc_config['s2tpath']}")
 
         if tc_config['comparetype'] == 's2tcompare':
-            s2tobj = LoadS2T(tc_config['s2tpath'], self.spark)
+            loads2t_path = root_path+tc_config['s2tpath']
+            s2tobj = LoadS2T(loads2t_path, self.spark)
 
         if (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Manual'):
             log_info("Reading the Source Data")
