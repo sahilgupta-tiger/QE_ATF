@@ -1,6 +1,5 @@
 from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
-from pyspark.conf import SparkConf
 import pandas as pd
 from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
@@ -15,7 +14,6 @@ import datacompy
 import sys
 import traceback
 from constants import *
-import json
 
 
 def createsparksession():
@@ -937,7 +935,7 @@ class S2TTester:
 
 
 if __name__ == "__main__":
-    spark = createsparksession()
+    #spark = createsparksession()
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
     testtype = sys.argv[1]
