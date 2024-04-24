@@ -153,6 +153,7 @@ class LoadS2T:
     print("printing pandas df datatype named schema_pddf....")
     self.schema_pddf=self.schema_pddf.fillna("")
     print(type(self.schema_pddf))
+    print(type(spark))
     print("no other print statement...")
     self.schema_df=spark.createDataFrame(self.schema_pddf)
     #self.schema_df.printSchema() 
