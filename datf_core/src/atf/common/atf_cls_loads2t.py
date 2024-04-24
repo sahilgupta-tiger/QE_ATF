@@ -148,10 +148,10 @@ class LoadS2T:
     elif self.targetDatabaseTableName != "":
       self.targetTableName=f"{self.targetDatabaseSchemaName}.{self.targetDatabaseTableName}"
    
-    
     self.schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
     
     self.schema_pddf=self.schema_pddf.fillna("")
+    print(self.schema_pddf)
     self.schema_df=spark.createDataFrame(self.schema_pddf)
     #self.schema_df.printSchema() 
       
