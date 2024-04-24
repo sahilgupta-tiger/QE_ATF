@@ -8,6 +8,7 @@ import time
 import pandas as pd
 from openpyxl import load_workbook
 from constants import *
+from IPython.display import display
 
 spark = SparkSession.getActiveSession()
 
@@ -151,7 +152,7 @@ class LoadS2T:
     self.schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
     
     self.schema_pddf=self.schema_pddf.fillna("")
-    print(self.schema_pddf.display())
+    print(display(self.schema_pddf))
     self.schema_df=spark.createDataFrame(self.schema_pddf)
     #self.schema_df.printSchema() 
       
