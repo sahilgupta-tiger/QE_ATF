@@ -152,7 +152,7 @@ class LoadS2T:
     self.schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
     print("printing pandas df datatype named schema_pddf....")
     self.schema_pddf=self.schema_pddf.fillna("")
-    print(isinstance(self.schema_pddf))
+    print(type(self.schema_pddf))
     print("no other print statement...")
     self.schema_df=spark.createDataFrame(self.schema_pddf)
     #self.schema_df.printSchema() 
