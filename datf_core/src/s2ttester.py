@@ -1,5 +1,5 @@
 from pyspark.sql.functions import *
-from pyspark.sql import SparkSession
+from databricks.connect import DatabricksSession
 import pandas as pd
 from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
@@ -927,13 +927,13 @@ class S2TTester:
 
 
 if __name__ == "__main__":
-    spark = sys.argv[1]
+    spark = DatabricksSession.builder.getOrCreate()
     log_info(spark)
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
-    testtype = sys.argv[2]
-    temporaryrunlist=sys.argv[3].rstrip()
-    if "," in sys.argv[3]:
+    testtype = sys.argv[1]
+    temporaryrunlist=sys.argv[2].rstrip()
+    if "," in sys.argv[2]:
         testcasesrunlist = temporaryrunlist.split(",")
     else:
         testcasesrunlist.append(temporaryrunlist)
