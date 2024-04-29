@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """
 constants.py
 """
@@ -18,4 +16,3 @@ def decryptcredentials(enodedstring):
     fer = Fernet(cryptokey)
     decrypted = fer.decrypt(encrypted).decode('utf-8')
     return decrypted
-
