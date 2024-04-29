@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  TEST_TYPE: content
+  TEST_TYPE: count
   TEST_NAMES: testcase23_snowflake_snowflake_match
 
 permissions:
