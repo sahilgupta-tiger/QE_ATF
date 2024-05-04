@@ -925,25 +925,8 @@ class S2TTester:
                 concat_key_cols.append(j)
             return df, concat_key_cols
 
-def get_db_utils(spark):
-
-      dbutils = None
-      
-      if spark.conf.get("spark.databricks.service.client.enabled") == "true":
-        
-        from pyspark.dbutils import DBUtils
-        dbutils = DBUtils(spark)
-      
-      else:
-        
-        import IPython
-        dbutils = IPython.get_ipython().user_ns["dbutils"]
-      
-      return dbutils
-
 if __name__ == "__main__":
     spark = spark.getActiveSession()
-    dbutils = get_db_utils(spark)
     log_info(spark)
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
