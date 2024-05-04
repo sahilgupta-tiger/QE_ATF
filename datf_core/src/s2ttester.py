@@ -942,9 +942,8 @@ def get_db_utils(spark):
       return dbutils
 
 if __name__ == "__main__":
-    spark = SparkSession.builder.getOrCreate()
+    spark = spark.getActiveSession()
     dbutils = get_db_utils(spark)
-    #spark = spark.getActiveSession()
     log_info(spark)
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
