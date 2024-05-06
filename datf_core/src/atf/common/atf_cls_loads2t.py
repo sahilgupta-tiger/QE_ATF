@@ -15,8 +15,7 @@ from IPython.display import display
 class LoadS2T:
   spark = SparkSession.getActiveSession()
   if spark is None:
-        builder = SparkSession.builder
-        spark = builder.getOrCreate()
+        spark = SparkSession.getOrCreate()
   
   def __init__(self, configFilePath, spark):
     self.stageEnabled = True
