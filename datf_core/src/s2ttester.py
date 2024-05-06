@@ -926,7 +926,7 @@ class S2TTester:
             return df, concat_key_cols
 
 if __name__ == "__main__":
-    spark = spark.getActiveSession()
+    spark = SparkSession.getActiveSession()
     log_info(spark)
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
