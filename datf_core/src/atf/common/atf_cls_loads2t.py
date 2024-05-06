@@ -10,16 +10,15 @@ from openpyxl import load_workbook
 from constants import *
 from IPython.display import display
 
-spark = SparkSession.getActiveSession()
-if spark is None:
+
+
+class LoadS2T:
+  spark = SparkSession.getActiveSession()
+  if spark is None:
         builder = SparkSession.builder
         for k, v in static_conf.items():
                 builder = builder.config(k, v)
         spark = builder.getOrCreate()
-return spark
-
-
-class LoadS2T:
   
   def __init__(self, configFilePath, spark):
     self.stageEnabled = True
