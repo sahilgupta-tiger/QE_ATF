@@ -14,6 +14,7 @@ from IPython.display import display
 
 class LoadS2T:
   SparkSession spark = SparkSession \
+                      .builder() \
                       .config("spark.master", "local[*, 4]") \
                       .getOrCreate()
 
