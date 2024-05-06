@@ -13,8 +13,11 @@ from IPython.display import display
 #spark = SparkSession.getActiveSession()
 
 class LoadS2T:
- 
-  spark = SparkSession.builder.getOrCreate()
+  SparkSession spark = SparkSession
+                       .builder()
+                       .appName("Java Spark SQL basic example")
+                       .config("spark.master", "local[*, 4]")
+                       .getOrCreate();
   
   def __init__(self, configFilePath, spark):
     self.stageEnabled = True
