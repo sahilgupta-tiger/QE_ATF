@@ -16,8 +16,8 @@ class LoadS2T:
   
   spark = SparkSession \
     .builder \
-    .appName("Java Spark SQL basic example") \
-    .config("spark.master", "local") \
+    .appName("Databricks Shell") \
+    .config("spark.master", "local[*, 4]") \
     .getOrCreate()
 
   
