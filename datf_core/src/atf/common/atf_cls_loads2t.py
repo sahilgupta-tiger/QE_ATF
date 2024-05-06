@@ -16,8 +16,6 @@ class LoadS2T:
   spark = SparkSession.getActiveSession()
   if spark is None:
         builder = SparkSession.builder
-        for k, v in static_conf.items():
-                builder = builder.config(k, v)
         spark = builder.getOrCreate()
   
   def __init__(self, configFilePath, spark):
