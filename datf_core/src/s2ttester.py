@@ -927,7 +927,7 @@ class S2TTester:
 
 if __name__ == "__main__":
     #spark = SparkSession.getActiveSession()
-    spark = SparkSession.builder.config("spark.master", "local[*, 4]").getOrCreate()
+    spark = SparkSession.builder.config("spark.master", "local[*, 4]").appName("Databricks Shell").getOrCreate()
     log_info(spark)
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
