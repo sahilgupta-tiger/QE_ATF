@@ -14,7 +14,7 @@ from IPython.display import display
 
 class LoadS2T:
   
- spark = SparkSession \
+  spark = SparkSession \
     .builder \
     .appName("Java Spark SQL basic example") \
     .config("spark.master", "local") \
