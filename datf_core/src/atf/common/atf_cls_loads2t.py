@@ -13,12 +13,7 @@ from IPython.display import display
 #spark = SparkSession.getActiveSession()
 
 class LoadS2T:
-  
-  spark = SparkSession \
-    .builder \
-    .appName("Databricks Shell") \
-    .config("spark.master", "local[*, 4]") \
-    .getOrCreate()
+  spark = SparkContext.getOrCreate()
 
   
   def __init__(self, configFilePath, spark):
