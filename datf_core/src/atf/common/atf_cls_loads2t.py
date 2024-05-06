@@ -11,14 +11,10 @@ from constants import *
 from IPython.display import display
 
 #spark = SparkSession.getActiveSession()
+spark = SparkSession.builder.getOrCreate()
 
 class LoadS2T:
-  SparkSession spark = SparkSession \
-                      .builder() \
-                      .config("spark.master", "local[*, 4]") \
-                      .getOrCreate()
-
-  
+   
   def __init__(self, configFilePath, spark):
     self.stageEnabled = True
     config_wb = load_workbook(configFilePath, read_only=True)
