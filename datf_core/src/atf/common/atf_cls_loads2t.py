@@ -11,6 +11,12 @@ from constants import *
 from IPython.display import display
 
 spark = SparkSession.getActiveSession()
+        if spark is None:
+            builder = SparkSession.builder
+            for k, v in static_conf.items():
+                builder = builder.config(k, v)
+            spark = builder.getOrCreate()
+        return spark
 
 
 class LoadS2T:
