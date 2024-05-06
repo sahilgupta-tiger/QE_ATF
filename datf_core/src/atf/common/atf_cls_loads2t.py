@@ -13,9 +13,9 @@ from IPython.display import display
 #spark = SparkSession.getActiveSession()
 
 class LoadS2T:
-  spark = SparkContext \
-          .config("spark.master", "local[*, 4]") \
-          .getOrCreate()
+  SparkSession spark = SparkSession \
+                      .config("spark.master", "local[*, 4]") \
+                      .getOrCreate()
 
   
   def __init__(self, configFilePath, spark):
