@@ -123,8 +123,10 @@ def preproc_unnestfields(microBatchDF):
 def debugexit():
   print("Debug Exit Reached")
   exit()
+#datf_core/test/connections
 
 def readconnectionconfig(connectionname):
-  connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
+  #connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
+  connection_config=json.load(open("/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/test/connections/"+connectionname+".json"))
   print(connection_config)
   return connection_config
