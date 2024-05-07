@@ -928,7 +928,7 @@ class S2TTester:
 if __name__ == "__main__":
     #spark = SparkSession.getActiveSession()
     #spark = SparkSession.builder.config("spark.master", "local[*, 4]").appName("Databricks Shell").getOrCreate()
-    spark = SparkSession.builder.getOrCreate()
+    spark = SparkSession.builder.config("spark.master", "local[*, 4]").appName("Databricks Shell").getOrCreate()
     def get_db_utils(spark):
 
       dbutils = None
