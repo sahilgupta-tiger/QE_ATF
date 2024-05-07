@@ -10,7 +10,7 @@ from openpyxl import load_workbook
 from constants import *
 from IPython.display import display
 
-#spark = SparkSession.getActiveSession()
+spark = SparkSession.getActiveSession()
 #spark = SparkSession.builder.getOrCreate()
 
 class LoadS2T:
