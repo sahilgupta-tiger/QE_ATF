@@ -5,14 +5,12 @@ from pyspark.sql.types import StructType,StructField,StringType,IntegerType,Doub
 from atf.common.atf_dc_read_datasources import read_data
 from constants import *
 
-
-spark = SparkSession.getActiveSession()
-
 class S2TAutoLoadScripts:
   
-  def __init__(self, s2tobj, tcdict,spark):
+  def __init__(self, s2tobj, tcdict, spark):
     self.s2tobj = s2tobj
     self.tcdict = tcdict
+    self.spark = spark
 
   def printSummary(self):
     print(f"Mapping Name:{self.s2tobj.mappingName}")
