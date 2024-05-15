@@ -38,7 +38,8 @@ def read_jsondata(tc_datasource_config,spark):
     query= f.read().splitlines()
     query=' '.join(query)
     print(query)
-    df = spark.read.option("multiline","false").json(root_path+tc_datasource_config['path'])
+    json_path = root_path+tc_datasource_config['path']
+    df = spark.read.option("multiline","false").json(json_path)
     df.printSchema()
     print(tc_datasource_config['aliasname'])
     df.createOrReplaceTempView(tc_datasource_config['aliasname'])
