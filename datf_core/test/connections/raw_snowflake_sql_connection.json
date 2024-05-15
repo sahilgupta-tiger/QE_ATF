@@ -1,8 +1,8 @@
 {
     "connnectiontype":"snowsqldatabase",
     "connectname":"pyspark_snowflake_connection",
-    "url":"feglmwu-wbb76572.snowflakecomputing.com",
-    "user":"sg217tiger",
+    "url":"mtgtuvz-ptb76201.snowflakecomputing.com",
+    "user":"tigergupta217",
     "password":"Root++0258",
     "database":"DATFDEMO",
     "schema":"TASFSCHEMA",
