@@ -13,7 +13,7 @@ def read_jsondata(tc_datasource_config,spark):
   if tc_datasource_config['testquerygenerationmode'] == 'Auto':
     resourcename = tc_datasource_config['name']
     datafilter = tc_datasource_config['filter']
-    jsonfilepath = get_mount_path(tc_datasource_config['path'])
+    jsonfilepath = get_mount_path(root_path+tc_datasource_config['path'])
     excludecolumns = tc_datasource_config['excludecolumns']
     excludecolumns = str(excludecolumns)
     exclude_cols = excludecolumns.split(',')
@@ -33,12 +33,12 @@ def read_jsondata(tc_datasource_config,spark):
     df_data = spark.sql(query_json)
 
   elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
-    querypath = tc_datasource_config['querypath']
+    querypath = root_path+tc_datasource_config['querypath']
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)
     print(query)
-    df = spark.read.option("multiline","false").json(tc_datasource_config['path'])
+    df = spark.read.option("multiline","false").json(root_path+tc_datasource_config['path'])
     df.printSchema()
     print(tc_datasource_config['aliasname'])
     df.createOrReplaceTempView(tc_datasource_config['aliasname'])

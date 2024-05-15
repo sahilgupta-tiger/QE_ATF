@@ -36,7 +36,7 @@ def read_delimiteddata(tc_datasource_config,spark):
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)
-    df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(tc_datasource_config['path'], header = True)
+    df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(root_path+tc_datasource_config['path'], header = True)
     df.printSchema()
     print(tc_datasource_config['aliasname'])
     df.createOrReplaceTempView(tc_datasource_config['aliasname'])
