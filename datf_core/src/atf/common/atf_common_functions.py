@@ -5,6 +5,7 @@ import json
 import os
 from datetime import datetime
 from re import search
+from constants import *
 
 
 def log_info(msg):
@@ -125,6 +126,6 @@ def debugexit():
   exit()
 
 def readconnectionconfig(connectionname):
-  connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
+  connection_config=json.load(open(f"{root_path}test/connections/"+connectionname+".json"))
   print(connection_config)
   return connection_config
