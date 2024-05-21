@@ -150,7 +150,7 @@ class LoadS2T:
    
     self.schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
     self.schema_pddf=self.schema_pddf.fillna("")
-    print("Active SparkSession: "+type(spark))
+    print(type(spark))
     self.schema_df=spark.createDataFrame(self.schema_pddf)
       
     self.sourceschema_df=self.schema_df.filter(col("tabletype") == 'source')
