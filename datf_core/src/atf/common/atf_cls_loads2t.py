@@ -10,13 +10,12 @@ from openpyxl import load_workbook
 from constants import *
 from IPython.display import display
 
-spark = SparkSession.getActiveSession()
-#spark = SparkSession.builder.getOrCreate()
 
 class LoadS2T:
    
   def __init__(self, configFilePath, spark):
     self.stageEnabled = True
+    self.spark = spark
     config_wb = load_workbook(configFilePath, read_only=True)
     if 'StageMapping' not in config_wb.sheetnames:
       self.stageEnabled = False
@@ -150,13 +149,9 @@ class LoadS2T:
       self.targetTableName=f"{self.targetDatabaseSchemaName}.{self.targetDatabaseTableName}"
    
     self.schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
-    print("printing pandas df datatype named schema_pddf....")
     self.schema_pddf=self.schema_pddf.fillna("")
-    print(type(self.schema_pddf))
-    print(type(spark))
-    print("no other print statement...")
+    print("Active SparkSession: "+type(spark))
     self.schema_df=spark.createDataFrame(self.schema_pddf)
-    #self.schema_df.printSchema() 
       
     self.sourceschema_df=self.schema_df.filter(col("tabletype") == 'source')
     self.stageschema_df=self.schema_df.filter(col("tabletype") == 'stage')

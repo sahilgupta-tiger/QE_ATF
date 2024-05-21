@@ -5,6 +5,7 @@ from pyspark.sql.types import StructType,StructField,StringType,IntegerType,Doub
 from atf.common.atf_dc_read_datasources import read_data
 from constants import *
 
+
 class S2TAutoLoadScripts:
   
   def __init__(self, s2tobj, tcdict, spark):
