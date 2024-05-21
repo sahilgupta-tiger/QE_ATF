@@ -1,0 +1,70 @@
+resources:
+  - repo: self
+
+trigger:
+  - only_for_datf
+
+variables:
+  databricks-host: 'https://adb-4188668828067310.10.azuredatabricks.net'
+  notebook-folder: '/Workspace/Users/sahil.gupta@tigeranalytics.com/'
+  cluster-id: '0422-060933-ihg1gid0'
+  notebook-name: 'DATF-Execution'
+  job-name: 'DATF-AzureRun'
+
+steps:
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.x'
+
+- script: |
+    pip install databricks-cli --upgrade
+  displayName: 'Install databricks-cli'
+
+- script: |
+    databricks jobs configure --version=2.1
+
+    JOB_ID=$(databricks jobs list --output JSON | 
+      jq -r --arg job_name "$(job-name)" '.jobs[] | 
+      select(.settings.name == "$(job-name)") | .job_id')
+
+    if [ -n "$JOB_ID" ]; then
+      echo "Starting existing job with ID: $JOB_ID"
+    else
+      JOB_ID=$(databricks jobs create --json '{
+          "name": "$(job-name)",
+          "existing_cluster_id": "$(cluster-id)",
+          "timeout_seconds": 3600,
+          "max_retries": 1,
+          "notebook_task": {
+            "notebook_path": "$(notebook-folder)$(notebook-name)",
+            "base_parameters": {}
+          }
+        }' | jq '.job_id')
+        echo "Starting new job with ID: $JOB_ID"
+    fi
+
+    RUN_ID=$(databricks jobs run-now --job-id $JOB_ID | jq '.run_id')
+
+    job_status="PENDING"
+    while [ $job_status = "RUNNING" ] || [ $job_status = "PENDING" ]
+    do
+      sleep 2
+      job_status=$(databricks runs get --run-id $RUN_ID | jq -r '.state.life_cycle_state')
+      echo Status $job_status
+    done
+
+    RESULT=$(databricks runs get-output --run-id $RUN_ID)
+
+    RESULT_STATE=$(echo $RESULT | jq -r '.metadata.state.result_state')
+    RESULT_MESSAGE=$(echo $RESULT | jq -r '.metadata.state.state_message')
+    if [ $RESULT_STATE = "FAILED" ]
+    then
+      echo "##vso[task.logissue type=error;]$RESULT_MESSAGE"
+      echo "##vso[task.complete result=Failed;done=true;]$RESULT_MESSAGE"
+    fi
+    echo $RESULT | jq .
+  displayName: 'Run DATF Databricks Notebook'
+
+  env:
+    DATABRICKS_TOKEN: $(databricks-token)
+    DATABRICKS_HOST: $(databricks-host)
+    DATABRICKS_JOBS_API_VERSION: 2.1
