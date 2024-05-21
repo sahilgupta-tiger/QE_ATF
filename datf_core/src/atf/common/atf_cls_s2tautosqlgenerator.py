@@ -241,7 +241,7 @@ class S2TAutoLoadScripts:
     autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
 
     dataFile = f"file:{dataFile}"
-    
+
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
@@ -249,10 +249,13 @@ class S2TAutoLoadScripts:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{dataFile}')\r\n")
         readschemadf= self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf= self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
-      if dataFormat in ["delta","parquet"]:
+      if dataFormat in ["parquet"]:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{dataFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(dataFile)
-        #readdatadf.printSchema()
+      if dataFormat in ["delta"]:
+        deltaFile = f"dbfs:{dataFile}"
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
+        readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
       if dataFormat == "json":
         f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).schema(schemaStruct).load(dataFile)
