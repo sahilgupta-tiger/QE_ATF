@@ -254,7 +254,7 @@ def create_duration_chart(new_df):
       </script>
     </head>
     <body>
-      <div id="time_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
+      <div id="time_chart" style="width: 550px; height: 400px; display: inline-block;"></div>
     </body>
     </html>
     '''
@@ -308,7 +308,7 @@ def create_pie_chart(new_df):
       </script>
     </head>
     <body>
-      <div id="pie_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
+      <div id="pie_chart" style="width: 550px; height: 400px; display: inline-block;"></div>
     </body>
     </html>
     '''
