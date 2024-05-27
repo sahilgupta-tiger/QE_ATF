@@ -11,6 +11,7 @@ from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
 import os
 import datacompy
+from datacompy.legacy import LegacySparkCompare
 import sys
 import traceback
 from constants import *
@@ -427,7 +428,7 @@ class S2TTester:
         if (testcasetype == 'content'):
             
             print("Comparing Contents of Source and Target now...(this may take a while)...")
-            comparison_obj = datacompy.SparkCompare(spark, sourcedf, targetdf,  \
+            comparison_obj = LegacySparkCompare(spark, sourcedf, targetdf,  \
                                                     column_mapping=colmapping, \
                                                     join_columns=joincolumns, \
                                                     cache_intermediates=True)
