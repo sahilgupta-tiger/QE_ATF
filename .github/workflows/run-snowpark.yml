@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 env:
-  TEST_TYPE: duplicate
-  TEST_NAMES: testcase23_snowflake_snowflake_match
+  TEST_TYPE: count
+  TEST_NAMES: testcase23_snowflake_snowflake_match,testcase24_snowflake_snowflake_etljob,testcase28_manual_sql_notifications,testcase29_manual_sql_fullname
 
 permissions:
   contents: write
