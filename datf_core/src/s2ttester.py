@@ -640,7 +640,7 @@ class S2TTester:
             special_tgtdf = targetdf
 
             print("Comparing Fingerprints of Source and Target now...")
-            fingerprintcomp_obj = datacompy.SparkCompare(self.spark, special_srcdf, special_tgtdf,
+            fingerprintcomp_obj = datacompy.LegacySparkCompare(self.spark, special_srcdf, special_tgtdf,
                                                     column_mapping=colmapping, join_columns=joincolumns)
             fingerprintcomp_obj.report()
 
