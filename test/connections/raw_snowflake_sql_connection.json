@@ -1,7 +1,7 @@
 {
     "connnectiontype":"snowsqldatabase",
     "connectname":"pyspark_snowflake_connection",
-    "account":"ERKPLIK-SKB05226",
+    "account":"iryfvfx-dob92180",
     "user":"tigergupta217",
     "password":"gAAAAABmIQ98YzvFHe3LZe7Ld7HB18VJ9PhYnwmQ5B5g7pV19pCCsNPKvtQM11wJfCVgeR-Y4NwxHCRAZx_vJ_E6e3CX7oRbwQ==",
     "database":"DATFDEMO",
