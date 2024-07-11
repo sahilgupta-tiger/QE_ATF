@@ -1,3 +1,4 @@
+pip install datacompy
 pip install datacompy[spark]
 pip install fpdf
 pip install openpyxl

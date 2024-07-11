@@ -3,9 +3,8 @@ import os
 import sys
 import traceback
 from datetime import datetime
-import datacompy
 import pandas as pd
-from datacompy.legacy import LegacySparkCompare
+from datacompy.spark.legacy import LegacySparkCompare
 from pyspark.conf import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
