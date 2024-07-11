@@ -17,7 +17,7 @@ from atf.common.atf_common_functions import read_protocol_file, log_error, log_i
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
 from constants import *
-from utils.create_db import create_db
+from create_db import create_db
 
 
 def createsparksession():
