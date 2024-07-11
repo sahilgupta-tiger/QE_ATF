@@ -6,7 +6,7 @@ from atf.common.atf_common_functions import log_info
 import sqlite3
 from tabulate import tabulate
 from datetime import datetime
-from constants import *
+from datf_core.src.constants import *
 
 
 def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time,
@@ -152,7 +152,7 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
     new_df['DB Stored Time'] = time_stored_in_db
 
     # Connect to SQLITE DB and update the table if exists
-    conn = sqlite3.connect(f'{root_path}utils/DATF_SQLITE.db')
+    conn = sqlite3.connect(f'{root_path}utils/DATF_RESULTS.db')
     new_df.to_sql(table_name, conn, if_exists='append', index=False)
     log_info("Execution Data stored in DB successfully")
     conn.close()
@@ -160,7 +160,7 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
 
 def retrieve_from_db(sql_query):
 
-    conn = sqlite3.connect(f'{root_path}utils/DATF_SQLITE.db')
+    conn = sqlite3.connect(f'{root_path}utils/DATF_RESULTS.db')
     # Filter data from DB using SQL and create a DF
     df_from_db = pd.read_sql_query(sql_query, conn)
 

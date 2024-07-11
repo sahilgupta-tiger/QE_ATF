@@ -8,6 +8,8 @@ from cryptography.fernet import Fernet
 
 root_path = '/app/'
 table_name = 'historical_trends'
+exec_table_name = 'testselection'
+exec_sheet_name = 'protocoltestcasedetails'
 utctimezone = pytz.timezone("UTC")
 
 conf_JSON = """ {

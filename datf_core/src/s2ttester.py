@@ -1,22 +1,24 @@
-from pyspark.sql.functions import *
-from pyspark.sql import SparkSession
-from pyspark.conf import SparkConf
-import pandas as pd
-from datetime import datetime
-from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
-from atf.common.atf_dc_read_datasources import read_data
-from atf.common.atf_cls_pdfformatting import generatePDF
-from atf.common.atf_cls_results_chart import generate_results_charts
-from atf.common.atf_cls_loads2t import LoadS2T
-from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
-from atf.common.atf_pdf_constants import *
+import json
 import os
-import datacompy
-from datacompy.legacy import LegacySparkCompare
 import sys
 import traceback
+from datetime import datetime
+import datacompy
+import pandas as pd
+from datacompy.legacy import LegacySparkCompare
+from pyspark.conf import SparkConf
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from atf.common.atf_cls_loads2t import LoadS2T
+from atf.common.atf_cls_pdfformatting import generatePDF
+from atf.common.atf_cls_results_chart import generate_results_charts
+from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
+from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, \
+    get_connection_config, get_mount_src_path
+from atf.common.atf_dc_read_datasources import read_data
+from atf.common.atf_pdf_constants import *
 from constants import *
-import json
+from datf_core.utils.create_db import create_db
 
 
 def createsparksession():
@@ -61,7 +63,7 @@ class S2TTester:
             # results_path = str(s3_path) + \
             #   str(dict_protocol['protocol_results_path'])
 
-            results_path = str(dict_protocol['protocol_results_path'])
+            results_path = str(root_path+dict_protocol['protocol_results_path'])
             timenow = datetime.now(utctimezone)
             created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
             # folder_s3 = results_path + str(dict_protocol['protocol_name']) + \
@@ -132,7 +134,7 @@ class S2TTester:
             test_case_name = row['test_case_name']
             tcnbr = str(int(row['Sno.']))
             execute_flag = row['execute']
-            test_case_file_path = row['test_case_file_path']
+            test_case_file_path = root_path+row['test_case_file_path']
             s3_conn_name = dict_protocol['protocol_connection']
             # s3_path = get_connection_config(s3_conn_name)
             # s3_path = s3_path['BUCKETNAME']
@@ -950,6 +952,7 @@ if __name__ == "__main__":
     spark = createsparksession()
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
+    create_db(protocol_file_path)
     testtype = sys.argv[1]
     temporaryrunlist=sys.argv[2].rstrip()
     if "," in sys.argv[2]:
