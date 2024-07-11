@@ -6,7 +6,7 @@ from atf.common.atf_common_functions import log_info
 import sqlite3
 from tabulate import tabulate
 from datetime import datetime
-from datf_core.src.constants import *
+from src.constants import *
 
 
 def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time,
