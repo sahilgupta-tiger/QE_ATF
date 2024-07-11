@@ -1,11 +1,11 @@
 import sqlite3
 import pandas as pd
 from tabulate import tabulate
-from datf_core.src.constants import *
+from constants import *
 
 # Establish connection with the database and create one if it does not exist
 exec_db_name = 'DATF_EXECUTION'
-conn = sqlite3.connect(f'{exec_db_name}.db')
+conn = sqlite3.connect(f'{root_path}utils/{exec_db_name}.db')
 cur = conn.cursor()
 
 

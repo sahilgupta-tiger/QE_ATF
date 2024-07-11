@@ -2,7 +2,7 @@ import sys
 
 from datf_core.src.atf.common.atf_common_functions import log_info
 from datf_core.src.constants import root_path
-from datf_core.utils.create_db import create_db
+from datf_core.src.atf.create_db import create_db
 
 if __name__ == "__main__":
     testcasesrunlist = []
