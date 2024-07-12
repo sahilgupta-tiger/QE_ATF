@@ -7,3 +7,4 @@ pip install pretty-html-table
 pip install tabulate
 pip install cryptography
 pip install streamlit
+pip install langchain

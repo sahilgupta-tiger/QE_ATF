@@ -1,9 +1,8 @@
 datf_core/test/data/target/ar_properties_50.csv
 datf_core/test/data/target/ar_properties.csv
-
-# production
 .idea
 /build
 datf_web/node_modules
 datf_core/test/data/source/ar_properties_50.csv
 datf_core/test/data/source/ar_properties.csv
+*.pyc

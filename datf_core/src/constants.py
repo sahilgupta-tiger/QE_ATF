@@ -6,6 +6,7 @@ constants.py
 import pytz
 from cryptography.fernet import Fernet
 
+
 root_path = '/app/'
 table_name = 'historical_trends'
 exec_table_name = 'testselection'

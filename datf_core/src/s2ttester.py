@@ -1,5 +1,4 @@
 import json
-import os
 import traceback
 from datetime import datetime
 import pandas as pd
@@ -16,7 +15,7 @@ from atf.common.atf_common_functions import read_protocol_file, log_error, log_i
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
 from constants import *
-from atf.create_db import create_db
+from datf_core.src.atf.common.atf_cls_createdb import create_db
 
 
 def createsparksession():
