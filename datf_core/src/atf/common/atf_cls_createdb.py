@@ -6,7 +6,6 @@ from constants import *
 
 
 # Establish connection with the database and create one if it does not exist
-exec_db_name = 'DATF_EXECUTION'
 conn = sqlite3.connect(f'{root_path}utils/{exec_db_name}.db')
 cur = conn.cursor()
 

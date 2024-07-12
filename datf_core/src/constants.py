@@ -8,7 +8,10 @@ from cryptography.fernet import Fernet
 
 
 root_path = '/app/'
-table_name = 'historical_trends'
+protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
+results_db_name = 'DATF_RESULTS'
+rept_table_name = 'historical_trends'
+exec_db_name = 'DATF_EXECUTION'
 exec_table_name = 'testselection'
 exec_sheet_name = 'protocoltestcasedetails'
 utctimezone = pytz.timezone("UTC")

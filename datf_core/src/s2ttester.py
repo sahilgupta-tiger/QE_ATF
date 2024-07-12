@@ -15,7 +15,7 @@ from atf.common.atf_common_functions import read_protocol_file, log_error, log_i
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
 from constants import *
-from datf_core.src.atf.common.atf_cls_createdb import create_db
+from atf.common.atf_cls_createdb import create_db
 
 
 def createsparksession():
@@ -948,10 +948,9 @@ class S2TTester:
 if __name__ == "__main__":
     spark = createsparksession()
     testcasesrunlist = []
-    protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
     create_db(protocol_file_path)
     testtype = sys.argv[1]
-    temporaryrunlist=sys.argv[2].rstrip()
+    temporaryrunlist = sys.argv[2].rstrip()
     if "," in sys.argv[2]:
         testcasesrunlist = temporaryrunlist.split(",")
     else:
