@@ -52,6 +52,7 @@ if __name__ == "__main__":
     create_db(protocol_file_path)
 """
 
+
 def change_permission(folder):
     for path_ in os.listdir(folder):
         abs_path = os.path.join(folder, path_)

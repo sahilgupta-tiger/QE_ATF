@@ -11,6 +11,7 @@ protocol_file_path = "../test/testprotocol/testprotocol.xlsx"
 selection_file_path = "../test/testprotocol/testselection.xlsx"
 df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
 
+
 def import_excel_to_db():
 
     df.to_sql(exec_table_name, conn, if_exists='replace', index=False)

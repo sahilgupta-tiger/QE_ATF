@@ -1,13 +1,16 @@
 import os
+import json
 import streamlit as st
 from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
+from constants import decryptcredential
 
 
-os.environ["AZURE_OPENAI_API_KEY"] = "4fed2bedb59744a99b0424622f6d9d1b"
-os.environ["AZURE_OPENAI_ENDPOINT"] = "https://qepracticekey.openai.azure.com/"
-openai_api_version="2023-05-15"
-azure_deployment="qepracticekey"
+openai_json = json.load(open("../test/connections/azure_open_ai_connection.json"))
+os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
+os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
+openai_api_version = openai_json['apiversion']
+azure_deployment = openai_json['deployment']
 
 
 def get_queries_from_ai(prompt):
@@ -20,7 +23,7 @@ def get_queries_from_ai(prompt):
         content=prompt
     )
     output_value=model([message])
-    return(output_value.content)
+    return output_value.content
 
 
 if __name__ == "__main__":
