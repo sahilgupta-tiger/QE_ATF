@@ -139,7 +139,7 @@ class S2TTester:
             # test_case_file_path = '/dbfs' + get_mount_path(s3_path) + row['test_case_file_path']
 
             try:
-                if (lst_run_testcases[0] == 'all' and execute_flag == 'Y'):
+                if (lst_run_testcases[0] == 'all' and (execute_flag == 'Y' or execute_flag == True)):
                     testcases_run_list.append(test_case_name)
                     pass
                 elif (test_case_name.lower() in lst_run_testcases):

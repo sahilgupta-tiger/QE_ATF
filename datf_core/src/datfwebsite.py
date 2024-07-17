@@ -7,10 +7,10 @@ from constants import *
 
 core_path = 'datf_core'
 conn = sqlite3.connect(f'{core_path}/utils/{exec_db_name}.db')
-cur = conn.cursor()
 
 protocol_file_path = f"{core_path}/test/testprotocol/testprotocol.xlsx"
 df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
+df['execute'].replace({'Y': True, 'N': False}, inplace=True)
 
 
 def load_homepage():
@@ -18,7 +18,7 @@ def load_homepage():
     # Choose the testing type
     test_type = st.radio(
         "Choose the testing type for execution:", ["Count", "Duplicate", "Content"],
-        captions = ["Row counts from src & tgt.", "Duplicate and Null checks.", "Reconciliation checks."])
+        captions=["Row counts from src & tgt.", "Duplicate and Null checks.", "Reconciliation checks."])
 
     if test_type is not None:
         st.write(f"You selected: {test_type} as your testing type.")
@@ -35,15 +35,25 @@ def load_homepage():
                            default=False,
                        )
                    },
-                   hide_index=True)
+                   hide_index=True, use_container_width = True)
     print(tabulate(edited_df, headers='keys', tablefmt='psql'))
     # Save the edited table into the DB for execution
     edited_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
+    st.divider()
+    if st.button("Start Execution"):
+        st.write("Chosen Test Cases for execution are:")
+        st.write(get_selected_testcases())
 
 
 def get_selected_testcases():
-
+    cur = conn.cursor()
+    tcnames_list = []
+    for row in cur:
+        if row['execute']:
+            tcnames_list.append(row['test_case_name'])
+    tc_names = ','.join(tcnames_list)
     return tc_names
+
 
 def generate_html_content():
     html_content = """
