@@ -340,7 +340,7 @@ def historical_trends():
 
     html_content += f"""
       <h2>1. Historical Trends Graph (Last 40 Runs)</h2>
-      <div id="trends_chart"></div>
+      <div id="trends_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
       
         <script type="text/javascript">
             google.charts.load('current', {{ packages: ['corechart'], callback: drawTrends }});
@@ -400,7 +400,7 @@ def historical_trends():
           <option value="content">Matching Contents</option>
         </select>
       </div>
-      <div id="chart_div"></div>
+      <div id="chart_div" style="width: 700px; height: 500px; display: inline-block;"></div>
 
       <script type="text/javascript">
         google.charts.load('current', {{ packages: ['corechart'], callback: drawChart }});
