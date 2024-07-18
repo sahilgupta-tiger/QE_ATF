@@ -12,10 +12,10 @@ cur = conn.cursor()
 
 def import_excel_to_db(xls_file):
     writedb_df = pd.read_excel(xls_file, sheet_name=exec_sheet_name)
-    writedb_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
     writedb_df['execute'].replace({'Y': True, 'N': False}, inplace=True)
+    writedb_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
     # displaying the DataFrame
-    print(tabulate(writedb_df, headers='keys', tablefmt='psql'))
+    # print(tabulate(writedb_df, headers='keys', tablefmt='psql'))
     del writedb_df
 
 
@@ -23,7 +23,7 @@ def export_db_to_excel(xls_file):
     readdb_df = pd.read_sql_table(exec_table_name, conn)
     readdb_df.to_excel(xls_file, sheet_name=exec_sheet_name)
     # displaying the DataFrame
-    print(tabulate(readdb_df, headers='keys', tablefmt='psql'))
+    # print(tabulate(readdb_df, headers='keys', tablefmt='psql'))
     del readdb_df
 
 

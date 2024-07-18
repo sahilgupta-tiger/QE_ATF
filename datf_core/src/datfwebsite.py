@@ -1,4 +1,4 @@
-import subprocess
+from subprocess import Popen
 import time
 import streamlit.components.v1 as components
 import streamlit as st
@@ -8,8 +8,10 @@ import pandas as pd
 from atf.common.atf_common_functions import log_info
 from constants import *
 
-results = "Logs will be generated only when execution is completed."
+stdout = "Logs will be generated only when execution is completed."
+stderr = "Any errors would be called out in logs."
 core_path = 'datf_core'
+full_path = f'D:/My_Workspaces/GitHub/DATF_Other/Pyspark/QE_ATF/{core_path}'
 conn = sqlite3.connect(f'{core_path}/utils/{exec_db_name}.db')
 
 protocol_file_path = f"{core_path}/test/testprotocol/testprotocol.xlsx"
@@ -51,12 +53,13 @@ def load_homepage():
 
 def get_selected_testcases():
     cur = conn.cursor()
+    cur.execute(f"SELECT * FROM {exec_table_name}")
     tcnames_list = []
-    for row in cur.fetchall():
-        if row['execute']:
-            tcnames_list.append(row['test_case_name'])
+    for row in cur:
+        if row[3]:
+            tcnames_list.append(row[1])
     tc_names = ','.join(tcnames_list)
-    print(tc_names)
+    cur.close()
     return tc_names
 
 
@@ -66,11 +69,9 @@ def start_execution(test_type):
         execution_cmd = test_type.lower() + " " + get_selected_testcases()
         st.write(execution_cmd)
         with st.spinner('Execution Started. Please wait...'):
-            """global results 
-            results = subprocess.run(
-                        ['bash', f'testingstart.sh {execution_cmd}'],
-                        capture_output=True, text=True)"""
-            time.sleep(3)
+            global stdout, stderr
+            p = Popen(f"scripts/run_datf.bat {execution_cmd}", cwd=f"{full_path}")
+            stdout, stderr = p.communicate()
         st.success("Completed. Click below to check results...")
         st.divider()
 
@@ -90,11 +91,13 @@ def report_generation():
             components.html(source_code, height=500, width=850, scrolling=True)
 
         with tab3:
-            st.write(results)
+            st.write(stdout)
+            st.write(stderr)
 
 
 if __name__ == "__main__":
     log_info(f"Protocol Config path :{protocol_file_path}")
     load_homepage()
+    conn.close()
 
 
