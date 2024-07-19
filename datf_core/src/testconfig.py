@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-constants.py
+testconfig.py
 """
 import pytz
 from cryptography.fernet import Fernet

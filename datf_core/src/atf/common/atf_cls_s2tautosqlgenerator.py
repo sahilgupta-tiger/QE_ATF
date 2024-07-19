@@ -4,7 +4,7 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
 from atf.common.atf_dc_read_datasources import read_data
-from constants import *
+from testconfig import *
 
 # COMMAND ----------
 

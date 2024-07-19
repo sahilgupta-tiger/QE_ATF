@@ -5,7 +5,7 @@ import json
 import os
 from datetime import datetime
 from re import search
-from constants import *
+from testconfig import *
 
 
 def log_info(msg):

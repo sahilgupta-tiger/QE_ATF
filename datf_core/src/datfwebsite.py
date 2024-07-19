@@ -4,7 +4,7 @@ import streamlit.components.v1 as components
 import streamlit as st
 import sqlite3
 import pandas as pd
-from constants import *
+from testconfig import *
 
 
 core_path = 'datf_core'

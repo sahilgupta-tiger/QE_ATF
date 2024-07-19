@@ -3,7 +3,7 @@ import json
 import streamlit as st
 from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
-from src.constants import decryptcredential
+from ..testconfig import decryptcredential
 
 
 openai_json = json.load(open("../../../test/connections/azure_open_ai_connection.json"))

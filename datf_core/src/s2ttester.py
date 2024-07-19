@@ -15,7 +15,7 @@ from atf.common.atf_common_functions import read_protocol_file, log_error, log_i
     get_connection_config, get_mount_src_path
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
-from constants import *
+from testconfig import *
 from atf.common.atf_cls_createdb import create_db
 
 
