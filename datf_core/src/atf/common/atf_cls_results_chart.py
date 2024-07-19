@@ -340,7 +340,14 @@ def historical_trends():
 
     html_content += f"""
       <h2>1. Historical Trends Graph (Last 40 Runs)</h2>
-      <div id="trends_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
+      <div>
+        <label for="droprefresh">Choose to: </label>
+        <select id="droprefresh" onchange="refreshGraph()">
+          <option value="blank" />
+          <option value="refresh">Refresh</option>
+        </select>
+      </div>
+      <div id="trends_chart"></div>
       
         <script type="text/javascript">
             google.charts.load('current', {{ packages: ['corechart'], callback: drawTrends }});
@@ -350,6 +357,27 @@ def historical_trends():
                 var data = google.visualization.arrayToDataTable([
                 ['Created Time', 'Total', 'Failed', 'Passed', 'Average'],
                 ...trendsData
+                ]);
+                
+                var options = {{
+                    vAxis: {{title: 'Results'}},
+                    hAxis: {{title: 'Timeline'}},
+                    legend: {{position: 'bottom', alignment: 'center', maxLines: 1}},
+                    isStacked: true,
+                    seriesType: 'bars',
+                    series: {{3: {{type: 'line', curveType: 'function'}}}}
+                }};
+                
+                var chart = new google.visualization.ComboChart(document.getElementById('trends_chart'));
+                chart.draw(data, options);
+            }}
+            
+            function refreshGraph() {{
+              var selectedFilter = document.getElementById('droprefresh').value;
+              var newData = {trends_data};
+              var data = google.visualization.arrayToDataTable([
+                ['Created Time', 'Total', 'Failed', 'Passed', 'Average'],
+                ...newData
                 ]);
                 
                 var options = {{
@@ -393,14 +421,15 @@ def historical_trends():
     html_content += f"""
       <h2>2. No. of Test Cases Executed (All Time)</h2>
       <div>
-        <label for="filter">Test Case Type Filter:</label>
+        <label for="filter">Test Case Type Filter: </label>
         <select id="filter" onchange="updateGraph()">
+          <option value="blank" />
           <option value="count">Counting Rows</option>
           <option value="duplicate">Finding Duplicates</option>
           <option value="content">Matching Contents</option>
         </select>
       </div>
-      <div id="chart_div" style="width: 700px; height: 500px; display: inline-block;"></div>
+      <div id="chart_div"></div>
 
       <script type="text/javascript">
         google.charts.load('current', {{ packages: ['corechart'], callback: drawChart }});
