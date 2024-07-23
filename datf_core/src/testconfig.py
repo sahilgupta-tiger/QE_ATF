@@ -9,6 +9,9 @@ from cryptography.fernet import Fernet
 
 root_path = '/app/'
 protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
+docker_bat_file = "contain_datf.bat"
+
+# *** DO NOT CHANGE BELOW VALUES ***
 results_db_name = 'DATF_RESULTS'
 rept_table_name = 'historical_trends'
 exec_db_name = 'DATF_EXECUTION'

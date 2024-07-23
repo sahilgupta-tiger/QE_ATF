@@ -45,10 +45,10 @@ def load_homepage():
     conn.commit()
     st.divider()
     # Start Execution Button
-    clicked, output = start_execution(test_type)
+    start_execution(test_type)
     st.divider()
     # Report Generation Button
-    report_generation(clicked, output)
+    report_generation()
 
 
 def get_selected_testcases():
@@ -70,21 +70,17 @@ def get_selected_testcases():
 
 
 def start_execution(test_type):
-    click_start = "no"
-    results = ""
+
     test_case_list = get_selected_testcases()
     execution_cmd = test_type.lower() + " " + test_case_list
     st.write("Chosen Test Cases for execution are: " + test_case_list)
     print(execution_cmd)
 
     if st.button("Start Execution"):
-        click_start = "yes"
         with st.spinner('Execution In-Progress. Please wait...(this may take a while)'):
-            subprocess.run(f"contain_datf.bat {execution_cmd}", cwd=f"{full_path}/scripts",
+            subprocess.run(f"{docker_bat_file} {execution_cmd}", cwd=f"{full_path}/scripts",
                                 shell=True)
         st.success("Completed. Click below to check results...")
-
-    return click_start, results
 
 
 def display_pdf(file):
@@ -107,7 +103,7 @@ def display_pdf(file):
         st.markdown(pdf_display, unsafe_allow_html=True)
 
 
-def report_generation(clicked, output):
+def report_generation():
 
     if st.button("Generate Report"):
         tab1, tab2, tab3 = st.tabs(["Summary", "Trends", "Detailed PDF"])
