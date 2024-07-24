@@ -1,3 +1,4 @@
+import setpaths
 import streamlit as st
 
 
@@ -19,7 +20,7 @@ def load_home_page():
         Framework (DATF) and new Generative AI capabilities.
         
         **👈 Select a page from the sidebar** to see some examples
-        of what the SQL Generator can do!
+        of what our Accelerator can do!
         
         ### Want to learn more?
         - Check out [streamlit.io](https://streamlit.io)
