@@ -37,8 +37,7 @@ def read_test_configs():
 
     option = st.selectbox(
         "Choose one from Test Configs below...",
-        onlyfiles, index=None,
-        placeholder="type to search",
+        onlyfiles, index=None, placeholder="type to search",
     )
     st.write("You selected: ", option)
 
