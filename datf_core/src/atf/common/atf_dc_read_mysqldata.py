@@ -2,7 +2,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,readconnectionconfig
-from constants import decryptcredential
+from testconfig import decryptcredential
 
 
 def read_mysqldata(tc_datasource_config,spark):

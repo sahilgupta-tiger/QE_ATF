@@ -3,7 +3,7 @@
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info, readconnectionconfig
-from constants import decryptcredential
+from testconfig import decryptcredential
 
 SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake"
 

@@ -36,39 +36,31 @@ def load_homepage():
                    },
                    hide_index=True, use_container_width=True)
 
-    # Save the edited table into the DB for execution
-    edited_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
-    conn.commit()
-
-    st.divider()
     # Start Execution Button
-    start_execution(test_type)
     st.divider()
+    start_execution(test_type, edited_df.copy())
+    del edited_df
     # Report Generation Button
+    st.divider()
     report_generation()
 
 
-def get_selected_testcases():
-    cur = conn.cursor()
-    cur.execute(f"SELECT * FROM {exec_table_name}")
-    tcnames_list = []
+def get_selected_testcases(selected_df):
 
-    for row in cur:
-        if row[3]:
-            tcnames_list.append(row[1])
+    filtered_df = selected_df[selected_df['execute'] == True]
+    tcnames_list = filtered_df['test_case_name'].to_list()
 
     if not tcnames_list:
         tc_names = 'all'
     else:
         tc_names = ','.join(tcnames_list)
 
-    cur.close()
     return tc_names
 
 
-def start_execution(test_type):
+def start_execution(test_type, modified_df):
 
-    test_case_list = get_selected_testcases()
+    test_case_list = get_selected_testcases(modified_df)
     st.write("Chosen Test Cases for execution are: " + test_case_list)
     execution_cmd = test_type.lower() + " " + test_case_list
     print(execution_cmd)
@@ -78,6 +70,9 @@ def start_execution(test_type):
             subprocess.run(f"{docker_bat_file} {execution_cmd}",
                            cwd=f"{full_path}/{core_path}/scripts",
                             shell=True)
+        # Save the edited table into the DB for execution
+        modified_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
+        conn.commit()
         st.success("Completed. Click below to check results...")
 
 

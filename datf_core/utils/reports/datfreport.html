@@ -77,7 +77,7 @@
           timeData.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
           timeData.addRows([
-            ['0s-45s', 1, 'testcase28_manual_sql_notifications'],
+            ['0s-45s', 0, 'No test cases'],
         ['45s-2m', 1, 'testcase14_csv_parquet_mismatch_manuel'],
         ['2m-5m', 0, 'No test cases'],
         ['5m+', 0, 'No test cases'],
@@ -116,7 +116,9 @@
     <tr style="text-align: right;">
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Testcase Name</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Source</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Distinct Rows in Source</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Target</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Distinct Rows in Target</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Test Result</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Reason</th>
       <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Runtime</th>
@@ -124,27 +126,31 @@
   </thead>
   <tbody>
     <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manuel</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:56</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase13_csv_parquet_match_manuel</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Execution Error</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
     </tr>
     <tr>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase28_manual_sql_notifications</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">5</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">2</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count mismatched</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:08</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manuel</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">No Duplicates</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:48</td>
     </tr>
   </tbody>
 </table></p>
             <h2><b>3. Protocol Run Details</b></h2>
-            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 19-Jul-2024 11:01:00 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 19-Jul-2024 11:02:06 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:01:05<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 1<br></p>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: sample<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: dev<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 25-Jul-2024 10:23:19 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 25-Jul-2024 10:24:08 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:48<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 1<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 1<br></p>
             <h2><b>4. Protocol Run Parameters</b></h2>
-            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: count<br></p>
+            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /app/test/testprotocol/testprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: duplicate<br></p>
            
         </body>
         </html>
