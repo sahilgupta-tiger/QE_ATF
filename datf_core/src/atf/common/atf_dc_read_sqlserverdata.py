@@ -4,7 +4,7 @@ from atf.common.atf_common_functions import log_info,readconnectionconfig
 
 
 def read_sqlserverdata(tc_datasource_config, spark):
-  log_info("Reading from PostGRESQL Table")
+  log_info("Reading from SQLSERVER Table")
 
   connectionname = tc_datasource_config['connectionname']
   connectiontype = tc_datasource_config['connectiontype']

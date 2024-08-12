@@ -4,8 +4,14 @@
 constants.py
 """
 import pytz
+from cryptography.fernet import Fernet
 
-root_path = '/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/'
+# root_path = '/Workspace/Repos/<user>/QE_ATF/datf_core/'
+root_path = '/app/'
+# root path must be CWD path
+protocol_location = f"{root_path}test/testprotocol/testprotocol.xlsx"
+conn_file_name = f"{root_path}test/connections/raw_snowflake_sql_connection.json"
+
 table_name = 'historical_trends'
 utctimezone = pytz.timezone("UTC")
 
@@ -23,3 +29,11 @@ conf_JSON = """ {
     "spark.sql.legacy.timeParserPolicy": "LEGACY",
     "spark.sql.autoBroadcastJoinThreshold": "-1"
 } """
+
+
+def decryptcredentials(enodedstring):
+    cryptokey = b'K_QLpmYNUy6iHP4m73k2Q2brMfFy2nmJJK61HlSOTQI='
+    encrypted = str.encode(enodedstring)
+    fer = Fernet(cryptokey)
+    decrypted = fer.decrypt(encrypted).decode('utf-8')
+    return decrypted

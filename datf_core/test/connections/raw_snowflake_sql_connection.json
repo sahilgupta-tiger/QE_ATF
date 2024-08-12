@@ -1,0 +1,11 @@
+{
+    "connnectiontype":"snowsqldatabase",
+    "connectname":"pyspark_snowflake_connection",
+    "account":"xxxx",
+    "user":"xxxx",
+    "password":"xxxx",
+    "database":"xxxx",
+    "schema":"xxxx",
+    "warehouse":"xxxx",
+    "role": "xxxx"
+}

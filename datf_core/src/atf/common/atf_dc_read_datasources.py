@@ -10,6 +10,7 @@ from atf.common.atf_dc_read_bigquerydata import read_bigquerydata
 from atf.common.atf_dc_read_deltadata import read_deltadata
 from atf.common.atf_dc_read_snowflakedata import read_snowflakedata
 from atf.common.atf_dc_read_postgresdata import read_postgresdata
+from atf.common.atf_dc_read_sqlserverdata import read_sqlserverdata
 
 def read_data(tc_datasource_config,spark):
   log_info("Inside read_data function")
@@ -17,23 +18,23 @@ def read_data(tc_datasource_config,spark):
   resourceformat = tc_datasource_config['format']
 
 
-  if connectiontype == 'aws-s3' and resourceformat == 'delta':
+  if connectiontype == 'aws-s3' or resourceformat == 'delta':
     df_deltadata, query = read_deltadata(tc_datasource_config,spark)
     df = df_deltadata
     
-  elif connectiontype == 'aws-s3' and resourceformat == 'parquet':
+  elif connectiontype == 'aws-s3' or resourceformat == 'parquet':
     df_parquetdata, query = read_parquetdata(tc_datasource_config,spark)
     df = df_parquetdata
     
-  elif connectiontype == 'aws-s3' and resourceformat == 'delimited':
+  elif connectiontype == 'aws-s3' or resourceformat == 'delimited':
     df_csvdata, query = read_delimiteddata(tc_datasource_config,spark)
     df = df_csvdata    
     
-  elif connectiontype == 'aws-s3' and resourceformat == 'avro':
+  elif connectiontype == 'aws-s3' or resourceformat == 'avro':
     df_avrodata, query = read_avrodata(tc_datasource_config,spark)
     df = df_avrodata
     
-  elif connectiontype == 'aws-s3' and resourceformat == 'json':
+  elif connectiontype == 'aws-s3' or resourceformat == 'json':
     df_jsondata, query = read_jsondata(tc_datasource_config,spark)
     df = df_jsondata
         

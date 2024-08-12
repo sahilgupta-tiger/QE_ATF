@@ -1,5 +1,8 @@
 from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
+from snowflake.snowpark.functions import *
+from snowflake.snowpark import Session
+from pyspark.conf import SparkConf
 import pandas as pd
 from datetime import datetime
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
@@ -11,10 +14,43 @@ from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
 import os
 import datacompy
-from datacompy.legacy import LegacySparkCompare
+from datacompy.spark.legacy import LegacySparkCompare
 import sys
 import traceback
+import json
+from tabulate import tabulate
 from constants import *
+
+
+def createsparksession(execution_engine):
+
+    if execution_engine == "snowpark":
+        connection_parameters = json.load(open(conn_file_name))
+        #connection_parameters['password'] = decryptcredentials(connection_parameters['password'])
+        session = Session.builder.configs(connection_parameters).create()
+        log_info("!!! Snowpark Session Created !!!")
+
+    elif execution_engine == "databricks":
+        session = SparkSession.getActiveSession()
+        log_info("!!! Databricks Session Acquired !!!")
+
+    elif execution_engine == "pyspark":
+        conf_dict = json.loads(conf_JSON)
+        myconf = SparkConf().setMaster("local[*]").setAppName('s2ttester')
+        for key, val in conf_dict.items():
+            myconf.set(key, val)
+
+        session = SparkSession.builder.config(conf=myconf).getOrCreate()
+        session.sparkContext.setLogLevel('WARN')
+
+        log_info("Spark Session Configuration items are listed below -")
+        configs = session.sparkContext.getConf().getAll()
+        log_info('Spark Version :' + session.version)
+        log_info('SparkContext Version :' + session.sparkContext.version)
+        for item in configs:
+            log_info(item)
+
+    return session
 
 
 class S2TTester:
@@ -926,11 +962,15 @@ class S2TTester:
                 concat_key_cols.append(j)
             return df, concat_key_cols
 
+
 if __name__ == "__main__":
-    spark = SparkSession.getActiveSession()
+    protocol_file_path = protocol_location
+    df_protocol = pd.read_excel(protocol_file_path,sheet_name='protocol',keep_default_na=False, header=None)
+    dict_protocol = dict(df_protocol.values)
+    spark = createsparksession(dict_protocol['protocol_engine'])
     log_info(spark)
+    del df_protocol
     testcasesrunlist = []
-    protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
     testtype = sys.argv[1]
     temporaryrunlist=sys.argv[2].rstrip()
     if "," in sys.argv[2]:
