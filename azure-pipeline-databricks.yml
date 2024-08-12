@@ -1,13 +1,10 @@
 resources:
   - repo: self
 
-trigger:
-  - only_for_datf
-
 variables:
-  databricks-host: 'https://adb-4188668828067310.10.azuredatabricks.net'
-  notebook-folder: '/Workspace/Users/sahil.gupta@tigeranalytics.com/'
-  cluster-id: '0422-060933-ihg1gid0'
+  databricks-host: 'https://adb.azuredatabricks.net'
+  notebook-folder: '/Workspace/Users/'
+  cluster-id: 'xxxx-060933-ihg1gid0'
   notebook-name: 'DATF-Execution'
   job-name: 'DATF-AzureRun'
 
