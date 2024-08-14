@@ -14,7 +14,7 @@ def read_delimiteddata(tc_datasource_config,spark):
   if tc_datasource_config['testquerygenerationmode'] == 'Auto':
     resourcename =tc_datasource_config['name']
     datafilter =tc_datasource_config['filter']
-    mount_path = root_path+tc_datasource_config['path']
+    mount_path = 'file:'+root_path+tc_datasource_config['path']
     filepath = get_mount_path(mount_path)
     excludecolumns =tc_datasource_config['excludecolumns']
     excludecolumns = str(excludecolumns)
@@ -36,7 +36,7 @@ def read_delimiteddata(tc_datasource_config,spark):
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)
-    csv_path = root_path+tc_datasource_config['path']
+    csv_path = 'file:'+root_path+tc_datasource_config['path']
     df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(csv_path, header = True)
     df.printSchema()
     print(tc_datasource_config['aliasname'])
