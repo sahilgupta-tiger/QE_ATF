@@ -3,13 +3,14 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 import math as m
 from atf.common.atf_common_functions import log_info
+from constants import *
 
-
-def read_deltadata(dict_configdf, comparetype):
+def read_deltadata(dict_configdf, spark):
   log_info("Reading delta Data")
   connectionname = dict_configdf['connectionname']
   connectiontype = dict_configdf['connectiontype']
   resourceformat = dict_configdf['format']
+  comparetype = ''
   
   if comparetype == 'Auto':
     resourcename = dict_configdf['name']
@@ -32,8 +33,7 @@ def read_deltadata(dict_configdf, comparetype):
     df_deltadata = spark.sql(query_delta)
     
   else:
-    querypath = dict_configdf['querypath']
-    print(querypath)
+    querypath = root_path+dict_configdf['querypath']
     query_delta = spark.read.text(querypath).collect()[0][0]
     print(query_delta)
     df_deltadata = spark.sql(query_delta)
