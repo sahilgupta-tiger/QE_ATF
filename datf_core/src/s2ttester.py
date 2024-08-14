@@ -928,6 +928,8 @@ class S2TTester:
 
 if __name__ == "__main__":
     spark = SparkSession.getActiveSession()
+    if spark is not None:
+        log_info("!!! Databricks Spark Session Acquired !!!")
     log_info(spark)
     testcasesrunlist = []
     protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
