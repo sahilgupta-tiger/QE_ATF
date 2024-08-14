@@ -31,9 +31,11 @@ def read_deltadata(dict_configdf, comparetype):
       query_delta = query_delta + " WHERE " + datafilter
     df_deltadata = spark.sql(query_delta)
     
-  elif comparetype == 'Manual':
+  else:
     querypath = get_mount_path(dict_configdf['querypath'])
+    print(querypath)
     query_delta = spark.read.text(querypath).collect()[0][0]
+    print(query_delta)
     df_deltadata = spark.sql(query_delta)
     
   log_info("Returning the DataFrame")
