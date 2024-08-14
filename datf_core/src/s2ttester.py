@@ -11,7 +11,7 @@ from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
 import os
 import datacompy
-from datacompy.legacy import LegacySparkCompare
+from datacompy.spark.legacy import LegacySparkCompare
 import sys
 import traceback
 from constants import *
