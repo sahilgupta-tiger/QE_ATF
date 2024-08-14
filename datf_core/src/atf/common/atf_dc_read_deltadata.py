@@ -34,7 +34,9 @@ def read_deltadata(dict_configdf, spark):
     
   else:
     querypath = 'file:'+root_path+dict_configdf['querypath']
-    query_delta = spark.read.text(querypath).collect()[0][0]
+    f = open(querypath,"r")
+    query_delta= f.read().splitlines()
+    query_delta=' '.join(query_delta)
     print(query_delta)
     df_deltadata = spark.sql(query_delta)
     
