@@ -4,4 +4,4 @@ src.MAIDEN as MAIDEN, src.MARITAL as MARITAL, src.DRIVERS as DRIVERS, src.STATE 
 src.COUNTY as COUNTY, src.ADDRESS as ADDRESS, src.PREFIX as PREFIX, src.ZIP as ZIP, src.LON as LON,
 src.SSN as SSN, src.LAST as LAST, src.BIRTHDATE as BIRTHDATE, src.RACE as RACE, src.ETHNICITY as ETHNICITY,
 src.GENDER as GENDER, src.id as id, src.HEALTHCARE_COVERAGE as HEALTHCARE_COVERAGE, src.LAT as LAT, src.FIRST as
-FIRST FROM `delta`.`dbfs:/user/hive/warehouse/healthcare.db/delta_patients` src;
+FIRST FROM `delta`.`<delta_location>` src;

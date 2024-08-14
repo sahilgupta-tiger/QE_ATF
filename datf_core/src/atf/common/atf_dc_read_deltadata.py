@@ -7,13 +7,11 @@ from constants import *
 
 def read_deltadata(dict_configdf, spark):
   log_info("Reading delta Data")
-  connectionname = dict_configdf['connectionname']
-  connectiontype = dict_configdf['connectiontype']
-  resourceformat = dict_configdf['format']
-  comparetype = ''
+  resourcename = dict_configdf['filename']
+  comparetype = dict_configdf['testquerygenerationmode']
   
   if comparetype == 'Auto':
-    resourcename = dict_configdf['name']
+
     datafilter = dict_configdf['filter']
     deltapath = get_mount_path(dict_configdf['path'])
     excludecolumns = dict_configdf['excludecolumns']
@@ -37,8 +35,12 @@ def read_deltadata(dict_configdf, spark):
     f = open(querypath,"r")
     query_delta= f.read().splitlines()
     query_delta=' '.join(query_delta)
+    query_delta.replace("<delta_location>", dict_configdf['filename'])
     print(query_delta)
     df_deltadata = spark.sql(query_delta)
-    
+
+  df_deltadata.printSchema()
+  df_deltadata.show()
   log_info("Returning the DataFrame")
+
   return df_deltadata, query_delta
