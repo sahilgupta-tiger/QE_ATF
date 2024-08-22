@@ -1,10 +1,10 @@
 {
     "connnectiontype":"snowsqldatabase",
     "connectname":"pyspark_snowflake_connection",
-    "url":"mtgtuvz-ptb76201.snowflakecomputing.com",
-    "user":"tigergupta217",
-    "password":"Root++0258",
-    "database":"DATFDEMO",
+    "url":"jynwhjw-etb55508.snowflakecomputing.com",
+    "user":"tigersgupta17",
+    "password":"Root@0258",
+    "database":"TIGERDEMO",
     "schema":"TASFSCHEMA",
     "warehouse":"COMPUTE_WH",
     "role": "accountadmin"

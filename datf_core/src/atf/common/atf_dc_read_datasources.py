@@ -10,6 +10,8 @@ from atf.common.atf_dc_read_bigquerydata import read_bigquerydata
 from atf.common.atf_dc_read_deltadata import read_deltadata
 from atf.common.atf_dc_read_snowflakedata import read_snowflakedata
 from atf.common.atf_dc_read_postgresdata import read_postgresdata
+from atf.common.atf_dc_read_adls_delta import read_adls_deltadata
+
 
 def read_data(tc_datasource_config,spark):
   log_info("Inside read_data function")
@@ -20,7 +22,11 @@ def read_data(tc_datasource_config,spark):
   if connectiontype == 'aws-s3' and resourceformat == 'delta':
     df_deltadata, query = read_deltadata(tc_datasource_config,spark)
     df = df_deltadata
-    
+
+  elif connectiontype == 'adls' and resourceformat == 'delta':
+    df_adlsdeltadata, query = read_adls_deltadata(tc_datasource_config,spark)
+    df = df_adlsdeltadata
+
   elif connectiontype == 'aws-s3' and resourceformat == 'parquet':
     df_parquetdata, query = read_parquetdata(tc_datasource_config,spark)
     df = df_parquetdata

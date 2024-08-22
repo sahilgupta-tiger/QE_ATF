@@ -1,0 +1,9 @@
+{
+    "connnectiontype":"adls",
+    "connectname":"raw_adls_connection",
+    "TENANT_ID": "",
+    "STORAGE_ACCOUNT_NAME": "test",
+    "CONTAINER_NAME": "",
+    "CLIENT_ID": "",
+    "CLIENT_SECRET": ""
+}
