@@ -4,8 +4,9 @@
 constants.py
 """
 import pytz
+import os
 
-root_path = '/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/'
+root_path = os.getenv('CWD')
 table_name = 'historical_trends'
 utctimezone = pytz.timezone("UTC")
 

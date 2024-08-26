@@ -2,8 +2,9 @@
     "connnectiontype":"adls",
     "connectname":"raw_adls_connection",
     "TENANT_ID": "",
-    "STORAGE_ACCOUNT_NAME": "test",
-    "CONTAINER_NAME": "",
+    "STORAGE_ACCOUNT_NAME": "taadlsstorage",
+    "CONTAINER_NAME": "test",
     "CLIENT_ID": "",
-    "CLIENT_SECRET": ""
+    "CLIENT_SECRET": "",
+    "SAS_TOKEN":"sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2024-09-30T14:07:58Z&st=2024-08-26T06:07:58Z&spr=https&sig=mnlcZPcK%2FZAxFxPJLCkmD5KEc8uMMzv64Ok7svGi8Bo%3D"
 }

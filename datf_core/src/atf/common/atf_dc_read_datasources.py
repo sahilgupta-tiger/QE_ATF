@@ -11,6 +11,8 @@ from atf.common.atf_dc_read_deltadata import read_deltadata
 from atf.common.atf_dc_read_snowflakedata import read_snowflakedata
 from atf.common.atf_dc_read_postgresdata import read_postgresdata
 from atf.common.atf_dc_read_adls_delta import read_adls_deltadata
+from atf.common.atf_dc_read_adls_parquetdata import read_adls_parquetdata
+from atf.common.atf_dc_read_adls_delimiteddata import read_adls_delimiteddata
 
 
 def read_data(tc_datasource_config,spark):
@@ -30,9 +32,17 @@ def read_data(tc_datasource_config,spark):
   elif connectiontype == 'aws-s3' and resourceformat == 'parquet':
     df_parquetdata, query = read_parquetdata(tc_datasource_config,spark)
     df = df_parquetdata
+
+  elif connectiontype == 'adls' and resourceformat == 'parquet':
+    df_parquetdata, query = read_adls_parquetdata(tc_datasource_config,spark)
+    df = df_parquetdata
     
   elif connectiontype == 'aws-s3' and resourceformat == 'delimited':
     df_csvdata, query = read_delimiteddata(tc_datasource_config,spark)
+    df = df_csvdata  
+
+  elif connectiontype == 'adls' and resourceformat == 'delimited':
+    df_csvdata, query = read_adls_delimiteddata(tc_datasource_config,spark)
     df = df_csvdata    
     
   elif connectiontype == 'aws-s3' and resourceformat == 'avro':

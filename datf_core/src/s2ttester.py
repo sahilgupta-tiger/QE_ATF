@@ -918,12 +918,7 @@ class S2TTester:
             keycols_val_temp = [j+'=' if i == 0 else ', ' +
                                 j+'= ' for i, j in enumerate(key_cols_list)]
 
-            print(keycols_name_temp)
-            print(keycols_val_temp)
-            df.show()
-            for i in range(len(keycols_name_temp)):
-                df = df.withColumn(keycols_name_temp[i], lit(keycols_val_temp[i]))
-
+         
             concat_key_cols = []
             for i, j in zip(keycols_name_temp, key_cols_list):
                 concat_key_cols.append(i)
