@@ -50,13 +50,13 @@ jobs:
           ls
           mkdir pdfs
       - name: Report html to pdf
-        uses: LukaszLapaj/html-to-pdf-action@master
+        uses: fifsky/html-to-pdf-action@master
         with:
           htmlFile: ./datfreport.html
           outputFile: ./pdfs/datfreport.pdf
           pdfOptions: '{"landscape": true}'
       - name: Trends html to pdf
-        uses: LukaszLapaj/html-to-pdf-action@master
+        uses: fifsky/html-to-pdf-action@master
         with:
           htmlFile: ./datf_trends_report.html
           outputFile: ./pdfs/datftrends.pdf
