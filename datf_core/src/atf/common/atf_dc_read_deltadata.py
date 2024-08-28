@@ -2,7 +2,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 import math as m
-from atf.common.atf_common_functions import log_info
+from atf.common.atf_common_functions import log_info, get_mount_path
 from constants import *
 
 def read_deltadata(dict_configdf, spark):

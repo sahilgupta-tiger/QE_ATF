@@ -240,8 +240,6 @@ class S2TAutoLoadScripts:
     autoscriptpath = self.tcdict['autoscriptpath']
     autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
 
-    dataFile = f"file:{dataFile}"
-
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
@@ -257,10 +255,10 @@ class S2TAutoLoadScripts:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
       if dataFormat == "json":
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('file:{dataFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).schema(schemaStruct).load(dataFile)
       if dataFormat == "delimitedfile":
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('{dataFile}')\r\n")
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('file:{dataFile}')\r\n")
         readdatadf= self.spark.read.format("csv").option('delimiter', delimiter).option('header', 'true').schema(schemaStruct).load(dataFile)
         #readdatadf.printSchema()
       #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
