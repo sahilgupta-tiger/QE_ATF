@@ -247,12 +247,13 @@ class S2TAutoLoadScripts:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{dataFile}')\r\n")
         readschemadf= self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf= self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
-      if dataFormat in ["parquet"]:
+      if dataFormat == "parquet":
+          print(datafile)
           parquetfile = dataFile.replace("dbfs:")
           print(parquetfile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(dataFile)
-      if dataFormat in ["delta"]:
+      if dataFormat == "delta":
         deltaFile = f"dbfs:{dataFile}"
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
