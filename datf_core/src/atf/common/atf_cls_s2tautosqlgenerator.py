@@ -248,7 +248,7 @@ class S2TAutoLoadScripts:
         readschemadf= self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf= self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
       if dataFormat == "parquet":
-        print(datafile)
+        print(dataFile)
         parquetfile = f"file:{dataFile}"
         print(parquetfile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
