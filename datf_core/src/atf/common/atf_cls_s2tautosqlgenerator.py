@@ -243,12 +243,13 @@ class S2TAutoLoadScripts:
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
-        f.write(f"readschemadf=spark.read.format('{dataFormat}').load('{dataFile.replace("dbfs:")}').schema\r\n")
+        f.write(f"readschemadf=spark.read.format('{dataFormat}').load('{dataFile}').schema\r\n")
         f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{dataFile}')\r\n")
         readschemadf= self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf= self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
       if dataFormat in ["parquet"]:
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{dataFile.replace("dbfs:")}')\r\n")
+          parquetfile = dataFile.replace("dbfs:")+'/'
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(dataFile)
       if dataFormat in ["delta"]:
         deltaFile = f"dbfs:{dataFile}"
