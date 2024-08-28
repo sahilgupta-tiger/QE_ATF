@@ -162,7 +162,7 @@ class S2TAutoLoadScripts:
         delimiter=self.s2tobj.targetFileDelimiter
 
 
-    for mapping in tgtmapping_df.rdd.collect():
+    for mapping in tgtmapping_df.collect():
       srccoltext=""
       tgtcoltext=""
       if exclusionEnabled == True and excludecollist.count(mapping["tgtcolumnname"]) > 0:
