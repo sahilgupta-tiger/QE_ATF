@@ -248,7 +248,8 @@ class S2TAutoLoadScripts:
         readschemadf= self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf= self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
       if dataFormat in ["parquet"]:
-          parquetfile = dataFile.replace("dbfs:")+'/'
+          parquetfile = dataFile.replace("dbfs:")
+          print(parquetfile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(dataFile)
       if dataFormat in ["delta"]:
@@ -256,11 +257,13 @@ class S2TAutoLoadScripts:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
       if dataFormat == "json":
+          jsonfile = f"file:{dataFile}"
         f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('file:{dataFile}')\r\n")
-        readdatadf= self.spark.read.format(dataFormat).schema(schemaStruct).load(dataFile)
+        readdatadf= self.spark.read.format(dataFormat).schema(schemaStruct).load(jsonfile)
       if dataFormat == "delimitedfile":
+          csvfile = f"file:{dataFile}"
         f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('file:{dataFile}')\r\n")
-        readdatadf= self.spark.read.format("csv").option('delimiter', delimiter).option('header', 'true').schema(schemaStruct).load(dataFile)
+        readdatadf= self.spark.read.format("csv").option('delimiter', delimiter).option('header', 'true').schema(schemaStruct).load(csvfile)
         #readdatadf.printSchema()
       #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
       #readdatadf=preproc_unnestfields(readdatadf)
