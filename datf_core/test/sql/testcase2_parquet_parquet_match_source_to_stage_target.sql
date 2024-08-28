@@ -1,3 +1,3 @@
-readdatadf=spark.read.format('parquet').load('/app/test/data/stage/patients_target_parquet_match')
+readdatadf=spark.read.format('parquet').load('file:/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/test/data/stage/patients_target_parquet_match')
 readdatadf.createOrReplaceTempView('dataview')
-spark.sql("SELECT DEATHDATE, HEALTHCARE_EXPENSES, SUFFIX, PASSPORT, CITY, BIRTHPLACE, MAIDEN, MARITAL, DRIVERS, STATE, COUNTY, ADDRESS, PREFIX, ZIP, LON, SSN, LAST, BIRTHDATE, RACE, ETHNICITY, GENDER, id, HEALTHCARE_COVERAGE, LAT, FIRST FROM dataview tgt ")
+spark.sql("SELECT id, BIRTHDATE, DEATHDATE, SSN, DRIVERS, PASSPORT, PREFIX, FIRST, LAST, SUFFIX, MAIDEN, MARITAL, RACE, ETHNICITY, GENDER, BIRTHPLACE, ADDRESS, CITY, STATE, COUNTY, ZIP, LAT, LON, HEALTHCARE_EXPENSES, HEALTHCARE_COVERAGE FROM dataview tgt ")
