@@ -931,10 +931,10 @@ if __name__ == "__main__":
         log_info("!!! Databricks Spark Session Acquired !!!")
     log_info(spark)
     testcasesrunlist = []
-    protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
-    testtype = sys.argv[1]
-    temporaryrunlist=sys.argv[2].rstrip()
-    if "," in sys.argv[2]:
+    protocol_file_path = sys.argv[1]
+    testtype = sys.argv[2]
+    temporaryrunlist=sys.argv[3].rstrip()
+    if "," in sys.argv[3]:
         testcasesrunlist = temporaryrunlist.split(",")
     else:
         testcasesrunlist.append(temporaryrunlist)
