@@ -135,18 +135,21 @@ class LoadS2T:
       self.sourceTableName=f"{self.sourceFileFormat}.`{self.sourceFile}`"
     elif self.sourceDatabaseTableName != "":
       self.sourceTableName=f"{self.sourceDatabaseSchemaName}.{self.sourceDatabaseTableName}"
+      self.sourceFile = self.sourceTableName
       
     if self.stageFileName != "":
       self.stageFile=self.stageFilePath+'/'+self.stageFileName
       self.stageTableName=f"{self.stageFileFormat}.`{self.stageFile}`"
     elif self.stageDatabaseTableName != "":
       self.stageTableName=f"{self.stageDatabaseSchemaName}.{self.stageDatabaseTableName}"
+      self.stageFile = self.stageTableName
       
     if self.targetFileName != "":
       self.targetFile=self.targetFilePath+'/'+self.targetFileName
       self.targetTableName=f"{self.targetFileFormat}.`{self.targetFile}`"
     elif self.targetDatabaseTableName != "":
       self.targetTableName=f"{self.targetDatabaseSchemaName}.{self.targetDatabaseTableName}"
+      self.targetFile = self.targetTableName
    
     self.schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
     self.schema_pddf=self.schema_pddf.fillna("")
