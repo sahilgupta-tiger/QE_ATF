@@ -281,6 +281,8 @@ class S2TAutoLoadScripts:
       returndf, table_query = read_data(self.tcdict, self.spark)
             
     f.close()
+    returndf.printSchema()
+    returndf.show()
     filePath = str(dataFormat) + ".`" +str(dataFile) + "`"
     file_details_dict = {"join_columns":joincols,"file_path":filePath,"connectionname":connectionname, "connectiontype":connectiontype}
     return autoScriptFile, returndf, file_details_dict
