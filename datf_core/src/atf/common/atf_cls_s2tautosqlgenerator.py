@@ -254,7 +254,7 @@ class S2TAutoLoadScripts:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
       if dataFormat == "delta":
-        deltaFile = f"{dataFile}"
+        deltaFile = f"{dataFile.replace(root_path,"")}"
         if '/' in dataFile:
             f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
             readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
