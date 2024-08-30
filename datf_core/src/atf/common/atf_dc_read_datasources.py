@@ -21,7 +21,7 @@ def read_data(tc_datasource_config,spark):
   resourceformat = tc_datasource_config['format']
 
 
-  if connectiontype == 'aws-s3' and resourceformat == 'delta':
+  if connectiontype in ['aws-s3','databricks'] and resourceformat == 'delta':
     df_deltadata, query = read_deltadata(tc_datasource_config,spark)
     df = df_deltadata
 
@@ -29,7 +29,7 @@ def read_data(tc_datasource_config,spark):
     df_adlsdeltadata, query = read_adls_deltadata(tc_datasource_config,spark)
     df = df_adlsdeltadata
 
-  elif connectiontype == 'aws-s3' and resourceformat == 'parquet':
+  elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'parquet':
     df_parquetdata, query = read_parquetdata(tc_datasource_config,spark)
     df = df_parquetdata
 
@@ -37,7 +37,7 @@ def read_data(tc_datasource_config,spark):
     df_parquetdata, query = read_adls_parquetdata(tc_datasource_config,spark)
     df = df_parquetdata
     
-  elif connectiontype == 'aws-s3' and resourceformat == 'delimited':
+  elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'delimited':
     df_csvdata, query = read_delimiteddata(tc_datasource_config,spark)
     df = df_csvdata  
 
@@ -45,11 +45,11 @@ def read_data(tc_datasource_config,spark):
     df_csvdata, query = read_adls_delimiteddata(tc_datasource_config,spark)
     df = df_csvdata    
     
-  elif connectiontype == 'aws-s3' and resourceformat == 'avro':
+  elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'avro':
     df_avrodata, query = read_avrodata(tc_datasource_config,spark)
     df = df_avrodata
     
-  elif connectiontype == 'aws-s3' and resourceformat == 'json':
+  elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'json':
     df_jsondata, query = read_jsondata(tc_datasource_config,spark)
     df = df_jsondata
         
