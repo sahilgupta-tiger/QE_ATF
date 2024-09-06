@@ -1,0 +1,7 @@
+datacompy[spark]
+fpdf
+openpyxl
+fsspec
+pretty-html-table
+tabulate
+cryptography
