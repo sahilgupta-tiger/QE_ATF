@@ -39,7 +39,10 @@ class LoadS2T:
     if config["sourcefilepath"] != "":
       #self.sourceconnectionval = get_connection_config(self.sourceConnectionName)['BUCKETNAME']
       #self.sourceFilePath=get_mount_path(self.sourceconnectionval + config["sourcefilepath"])
-      self.sourceFilePath= root_path+config["sourcefilepath"]
+      if 'Volumes' in config["sourcefilepath"]:
+        self.sourceFilePath = config["sourcefilepath"]
+      else:
+        self.sourceFilePath= root_path+config["sourcefilepath"]
     self.sourceFileName=config["sourcefilename"]
     if config["sourcefilehasheader"].upper() == 'Y':
       self.sourceFileHasHeader=True

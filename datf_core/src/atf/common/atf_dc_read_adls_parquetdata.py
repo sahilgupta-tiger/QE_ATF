@@ -8,29 +8,26 @@ def read_adls_parquetdata(tc_datasource_config,spark):
   resourcename = tc_datasource_config['aliasname']
   comparetype = tc_datasource_config['testquerygenerationmode']
   connectionname = tc_datasource_config['connectionname']
-  connectionconfig = readconnectionconfig(connectionname)
-  storage_account = connectionconfig['STORAGE_ACCOUNT_NAME']
-  container_name = connectionconfig['CONTAINER_NAME']  # Assuming you have this in your config
+  # connectionconfig = readconnectionconfig(connectionname)
+  # storage_account = connectionconfig['STORAGE_ACCOUNT_NAME']
+  # container_name = connectionconfig['CONTAINER_NAME']  # Assuming you have this in your config
   delta_path = tc_datasource_config['path']  # Relative path within the container
-  sas_token = connectionconfig['SAS_TOKEN']  # Optional SAS token
+  # sas_token = connectionconfig['SAS_TOKEN']  # Optional SAS token
 
-  # Set the configuration using SAS Token
-  spark.conf.set(f"fs.azure.account.auth.type.{storage_account}.dfs.core.windows.net", "SAS")
-  spark.conf.set(f"fs.azure.sas.token.provider.type.{storage_account}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
-  spark.conf.set(f"fs.azure.sas.fixed.token.{storage_account}.dfs.core.windows.net", sas_token)
+  # # Set the configuration using SAS Token
+  # spark.conf.set(f"fs.azure.account.auth.type.{storage_account}.dfs.core.windows.net", "SAS")
+  # spark.conf.set(f"fs.azure.sas.token.provider.type.{storage_account}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
+  # spark.conf.set(f"fs.azure.sas.fixed.token.{storage_account}.dfs.core.windows.net", sas_token)
   
   #Reading parquet from ADLS Stoarge Container
-  log_info("Reading parquet file from ADLS")
+  log_info("Reading parquet file from ADLS Volumes")
   # datasrc_path = 'file:'+root_path+tc_datasource_config['path']
   # df = spark.read.parquet(datasrc_path)
 
-  datasrc_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{delta_path}"
-  print(datasrc_path)
-  df = spark.read.parquet(datasrc_path)
+  #datasrc_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{delta_path}"
+  print('Volume File Path :',delta_path)
+  df = spark.read.parquet(delta_path)
   df.createOrReplaceTempView(tc_datasource_config['aliasname'])
-
-  df.display()
-  df.printSchema()
   
   if tc_datasource_config['comparetype'] == 's2tcompare' and tc_datasource_config['testquerygenerationmode'] == 'Auto':
     pass      
