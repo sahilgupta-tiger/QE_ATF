@@ -50,13 +50,13 @@ class S2TTester:
                 '/run_'+testcasetype+"_"+created_time+'/'
             log_info(f"Protocol Result folder Path: {folder_s3}")
             os.mkdir(folder_s3)
-            testcase_folder_s3 = folder_s3 + '/run_testcase_summary_' + created_time+'/'
+            testcase_folder_s3 = folder_s3 + '/run_' + testcasetype + '_testcase_summary_' + created_time+'/'
             os.mkdir(testcase_folder_s3)
             # protocol_output_path = "/dbfs" + get_mount_path(folder_s3)
             # testcase_output_path = "/dbfs" + get_mount_path(testcase_folder_s3)
             protocol_output_path = folder_s3
             testcase_output_path = testcase_folder_s3
-            combined_testcase_output_path = protocol_output_path + "/run_tc_combined_" + \
+            combined_testcase_output_path = protocol_output_path + "/run_tc_" + testcasetype + "_combined_" + \
                 str(dict_protocol['protocol_name']) + \
                 "_" + created_time + ".pdf"
 
@@ -905,7 +905,7 @@ class S2TTester:
                 df_protocol_summary_temp, table_type)
             sno = sno + 1
 
-        protocol_output_path = output_path + "/run_" + \
+        protocol_output_path = output_path + "/run_" + testcasetype + '_' + \
             protocol_run_details['Test Protocol Name'] + \
             "_" + created_time+".pdf"
         pdfobj_protocol.pdf.output(protocol_output_path, 'F')
