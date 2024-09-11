@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  TEST_TYPE: count
+  TEST_TYPE: duplicate
   TEST_NAMES: testcase23_snowflake_snowflake_match,testcase24_snowflake_snowflake_etljob,testcase29_manual_sql_fullname
 
 permissions:
