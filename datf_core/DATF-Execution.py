@@ -2,7 +2,11 @@
 dbutils.widgets.text('test_protocol_name', 'contenttestprotocol')
 dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
 dbutils.widgets.text('test_names', 'all')
-dbutils.widgets.text('work_path', '/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/')
+dbutils.widgets.text('work_path', '/Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/')
+
+# COMMAND ----------
+
+# MAGIC %sh /Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/scripts/install.sh
 
 # COMMAND ----------
 
