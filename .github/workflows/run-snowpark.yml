@@ -14,6 +14,8 @@ on:
         default: 'all'
         required: true
         type: string
+  push:
+    branches: [ "datf_snowpark" ]
 
 permissions:
   contents: write
