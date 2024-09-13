@@ -851,6 +851,7 @@ class S2TTester:
 
 
 if __name__ == "__main__":
+    os.environ["PYARROW_IGNORE_TIMEZONE"] = "1"
     spark = createsparksession()
     testcasesrunlist = []
     protocol_file_path = "test/testprotocol/testprotocol.xlsx"

@@ -129,9 +129,9 @@ def create_html_report(trends_code, chart_code, created_time, output_path, combi
     shutil.copy(trends_path, final_report_path)
     shutil.copy(index_path, final_report_path)
     # rename files for Archiving Artefacts within CT Pipeline integration
-    os.rename(fr"{final_report_path}\{html_file_name}", fr"{final_report_path}\datfreport.html")
-    os.rename(fr"{final_report_path}\{summary_file}", fr"{final_report_path}\datf_summary.pdf")
-    os.rename(fr"{final_report_path}\{combined_file}", fr"{final_report_path}\datf_combined.pdf")
+    os.rename(fr"{final_report_path}/{html_file_name}", fr"{final_report_path}/datfreport.html")
+    os.rename(fr"{final_report_path}/{summary_file}", fr"{final_report_path}/datf_summary.pdf")
+    os.rename(fr"{final_report_path}/{combined_file}", fr"{final_report_path}/datf_combined.pdf")
     log_info(f"HTML & PDF Reports copied over to: {final_report_path}")
 
 
