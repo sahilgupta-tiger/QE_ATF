@@ -1,11 +1,11 @@
 # Manually Trigger Github Actions workflow to execute Snowpark code
-name: snowpark_execution
+name: datf_snowpark_edition
 
 on:
   workflow_dispatch:
     inputs:
       test_type:
-        description: 'Check Type'
+        description: 'Type of Validation'
         default: 'count'
         required: true
         type: string
