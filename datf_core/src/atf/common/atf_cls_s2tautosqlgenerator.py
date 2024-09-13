@@ -259,7 +259,7 @@ class S2TAutoLoadScripts:
           parquetfile = f"{dataFile}"
           f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
           readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
-        else
+        else:
           parquetfile = f"file:{dataFile}"
           f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
           readdatadf= self.spark.read.format(dataFormat).load(parquetfile)

@@ -1,6 +1,6 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig
+from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config
 from constants import *
 
 def read_adls_parquetdata(tc_datasource_config,spark):
@@ -25,7 +25,7 @@ def read_adls_parquetdata(tc_datasource_config,spark):
     print('Volumes File Path :',delta_path)
     df = spark.read.parquet(delta_path)
     df.createOrReplaceTempView(tc_datasource_config['aliasname'])
-  else
+  else:
     log_info("Reading parquet file from ADLS via ABFSS protocol")
     print("Reading parquet file from ADLS via ABFSS protocol")
     print('ADLS File Path :',delta_path)

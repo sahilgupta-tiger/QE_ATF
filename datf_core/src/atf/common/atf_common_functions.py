@@ -127,7 +127,7 @@ def debugexit():
 
 def readconnectionconfig(connectionname):
   #connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
-  connection_config=json.load(open("/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/test/connections/"+connectionname+".json"))
+  connection_config=json.load(open("/Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/test/connections/"+connectionname+".json"))
   print(connection_config)
   return connection_config
 
