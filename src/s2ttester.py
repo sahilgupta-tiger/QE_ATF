@@ -853,7 +853,7 @@ class S2TTester:
 if __name__ == "__main__":
     spark = createsparksession()
     testcasesrunlist = []
-    protocol_file_path = "test\\testprotocol\\testprotocol.xlsx"
+    protocol_file_path = "test/testprotocol/testprotocol.xlsx"
     testtype = sys.argv[1]
     temporaryrunlist=sys.argv[2].rstrip()
     if "," in sys.argv[2]:

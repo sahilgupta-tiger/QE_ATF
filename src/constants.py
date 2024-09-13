@@ -7,7 +7,7 @@ from cryptography.fernet import Fernet
 root_path = '/app/'
 table_name = 'historical_trends'
 utctimezone = pytz.timezone("UTC")
-conn_file_name = "test\\connections\\raw_snowflake_sql_connection.json"
+conn_file_name = "test/connections/raw_snowflake_sql_connection.json"
 
 
 def decryptcredentials(enodedstring):
