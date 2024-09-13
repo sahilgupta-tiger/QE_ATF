@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Get Code
         uses: actions/checkout@v4
@@ -27,13 +27,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r scripts/install.txt
-      - name: Test Snowpark
+      - name: Test Execution using Snowpark
         run: |
           sh scripts/testingstart.sh $env:TEST_TYPE $env:TEST_NAMES
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-files
+          name: pdf-reports
           path: "utils/reports"
 
   report:
@@ -43,17 +43,17 @@ jobs:
       - name: Get Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: dist-files
+          name: pdf-reports
       - name: List Report Files
         run: |
           echo "Displaying the reports..."
           ls
           mkdir pdfs
-      - name: Report html to pdf
+      - name: Summary html to pdf
         uses: fifsky/html-to-pdf-action@master
         with:
           htmlFile: ./datfreport.html
-          outputFile: ./pdfs/datfreport.pdf
+          outputFile: ./pdfs/datfsummary.pdf
           pdfOptions: '{"landscape": true}'
       - name: Trends html to pdf
         uses: fifsky/html-to-pdf-action@master
@@ -63,6 +63,6 @@ jobs:
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: reports
+          name: html-reports
           path: ./pdfs
 

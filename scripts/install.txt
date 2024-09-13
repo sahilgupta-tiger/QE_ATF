@@ -1,4 +1,4 @@
-datacompy
+datacompy[spark]
 pandas
 fpdf
 openpyxl
