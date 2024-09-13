@@ -132,7 +132,7 @@ def readconnectionconfig(connectionname):
   return connection_config
 
 
-def set_azure_connection_config(connectionname,spark):
+def set_azure_connection_config(connectionconfig,spark):
   storage_account = connectionconfig['STORAGE_ACCOUNT_NAME']
   container_name = connectionconfig['CONTAINER_NAME']  # Assuming you have this in your config
   sas_token = connectionconfig['SAS_TOKEN']  # Optional SAS token
