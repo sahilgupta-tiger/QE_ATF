@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  TEST_TYPE: content
+  TEST_TYPE: count
   TEST_NAMES: all
 
 permissions:
@@ -29,7 +29,7 @@ jobs:
           pip install -r scripts/install.txt
       - name: Test Execution using Snowpark
         run: |
-          sh scripts/testingstart.sh $env:TEST_TYPE $env:TEST_NAMES
+          sh scripts/testingstart.sh ${env:TEST_TYPE} ${env:TEST_NAMES}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
