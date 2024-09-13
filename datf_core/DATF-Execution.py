@@ -1,5 +1,9 @@
 # Databricks notebook source
-# %sh /Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/scripts/install.sh
+# MAGIC %sh /Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/scripts/install.sh
+
+# COMMAND ----------
+
+dbutils.library.restartPython()
 
 # COMMAND ----------
 

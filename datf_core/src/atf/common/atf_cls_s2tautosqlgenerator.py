@@ -236,9 +236,13 @@ class S2TAutoLoadScripts:
       else:
         schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
     
+    print("Source data read statment - ")
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
+
+    print('Create Autoscript Path')
     autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
+    print('Autoscript Path Generated')
     autoScriptFile= autoScriptFile.replace('//','/')
 
     f=open(autoScriptFile,"w+")
