@@ -3,12 +3,17 @@ name: snowpark_execution
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "datf_snowpark" ]
-
-env:
-  TEST_TYPE: count
-  TEST_NAMES: all
+    inputs:
+      test_type:
+        description: 'Check Type'
+        default: 'count'
+        required: true
+        type: string
+      test_name:
+        description: 'Name of Test Cases'
+        default: 'all'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -29,7 +34,7 @@ jobs:
           pip install -r scripts/install.txt
       - name: Test Execution using Snowpark
         run: |
-          sh scripts/testingstart.sh $TEST_TYPE $TEST_NAMES
+          sh scripts/testingstart.sh ${{ inputs.test_type }} ${{ inputs.test_name }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
