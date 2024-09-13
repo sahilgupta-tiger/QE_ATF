@@ -336,6 +336,7 @@ class S2TTester:
                            'testcasename': tc_config['testcasename'], 'autoscripttype': 'source', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
                            'filename':tc_config['sourcefilename']}
             autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_source_config, spark)
+            print('S2TAutoLoadScripts Class load completed')
             scriptpath, source_df, source_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
             source_conn_name = source_file_details_dict["connectionname"]
             join_cols_source = source_file_details_dict["join_columns"]

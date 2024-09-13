@@ -1,12 +1,12 @@
 # Databricks notebook source
-dbutils.widgets.text('test_protocol_name', 'contenttestprotocol')
-dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
-dbutils.widgets.text('test_names', 'all')
-dbutils.widgets.text('work_path', '/Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/')
+# %sh /Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/scripts/install.sh
 
 # COMMAND ----------
 
-# MAGIC %sh /Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/scripts/install.sh
+dbutils.widgets.text('test_protocol_name', 'testprotocol')
+dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
+dbutils.widgets.text('test_names', 'testcase51_adls_adls_stage_removed')
+dbutils.widgets.text('work_path', '/Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/')
 
 # COMMAND ----------
 

@@ -242,6 +242,7 @@ class S2TAutoLoadScripts:
     autoScriptFile= autoScriptFile.replace('//','/')
 
     f=open(autoScriptFile,"w+")
+    print("The data format is : ",dataFormat)
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
         avrofile = f"file:{dataFile}"
@@ -250,9 +251,14 @@ class S2TAutoLoadScripts:
         readschemadf= self.spark.read.format(dataFormat).load(avrofile).schema
         readdatadf= self.spark.read.format(dataFormat).schema(readschemadf).load(avrofile)
       if dataFormat == "parquet":
-        parquetfile = f"file:{dataFile}"
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
-        readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
+        if 'Volumes' in dataFile:
+          parquetfile = f"{dataFile}"
+          f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
+          readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
+        else
+          parquetfile = f"file:{dataFile}"
+          f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
+          readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
       if dataFormat == "delta":
         deltaFile = dataFile.replace(root_path,"")
         if '/' in deltaFile:
