@@ -9,7 +9,7 @@ dbutils.library.restartPython()
 
 dbutils.widgets.text('test_protocol_name', 'testprotocol')
 dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
-dbutils.widgets.text('test_names', 'testcase51_adls_adls_stage_removed')
+dbutils.widgets.text('test_names', 'testcase52_adls_adls_stage_manual')
 dbutils.widgets.text('work_path', '/Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/')
 
 # COMMAND ----------

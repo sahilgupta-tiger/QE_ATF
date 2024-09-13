@@ -130,3 +130,18 @@ def readconnectionconfig(connectionname):
   connection_config=json.load(open("/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/test/connections/"+connectionname+".json"))
   print(connection_config)
   return connection_config
+
+
+def set_azure_connection_config(connectionname,spark):
+  storage_account = connectionconfig['STORAGE_ACCOUNT_NAME']
+  container_name = connectionconfig['CONTAINER_NAME']  # Assuming you have this in your config
+  sas_token = connectionconfig['SAS_TOKEN']  # Optional SAS token
+
+  # Set the configuration using SAS Token
+  print('Configuring Azure ADLS connection.')
+  spark.conf.set(f"fs.azure.account.auth.type.{storage_account}.dfs.core.windows.net", "SAS")
+  spark.conf.set(f"fs.azure.sas.token.provider.type.{storage_account}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
+  spark.conf.set(f"fs.azure.sas.fixed.token.{storage_account}.dfs.core.windows.net", sas_token)
+
+  print('Azure ADLS connection configuration completed.')
+  return storage_account,container_name
