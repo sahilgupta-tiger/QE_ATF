@@ -63,7 +63,11 @@ class LoadS2T:
     if config["stagefilepath"] != "":
       #self.stageconnectionval = get_connection_config(self.stageConnectionName)['BUCKETNAME']
       #self.stageFilePath=get_mount_path(self.stageconnectionval +config["stagefilepath"])
-      self.stageFilePath=root_path+config["stagefilepath"]
+      if 'Volumes' in config["stagefilepath"]:
+        self.stageFilePath = config["stagefilepath"]
+      else:
+        self.stageFilePath=root_path+config["stagefilepath"]
+
     self.stageFileHasHeader=config["stagefilehasheader"]
     self.stageFileDelimiter=config["stagefiledelimiter"]
     self.stageTimestampFormat=config["stagetimestampformat"]
@@ -80,7 +84,11 @@ class LoadS2T:
     if config["targetfilepath"] != "":
       #self.targetconnectionval = get_connection_config(self.targetConnectionName)['BUCKETNAME']
       #self.targetFilePath=get_mount_path(self.targetconnectionval +config["targetfilepath"])
-      self.targetFilePath=root_path+config["targetfilepath"]
+      if 'Volumes' in config["targetfilepath"]:
+        self.targetFilePath = config["targetfilepath"]
+      else:
+        self.targetFilePath=root_path+config["targetfilepath"]
+
     self.targetFileHasHeader=config["targetfilehasheader"]
     self.targetFileDelimiter=config["targetfiledelimiter"]
     self.targetTimestampFormat=config["targettimestampformat"]
@@ -148,6 +156,8 @@ class LoadS2T:
       self.stageFile = self.stageTableName
       
     if self.targetFileName != "":
+      print('self.targetFilePath -',self.targetFilePath)
+      print('self.targetFileName- ',self.targetFileName)
       self.targetFile=self.targetFilePath+'/'+self.targetFileName
       self.targetTableName=f"{self.targetFileFormat}.`{self.targetFile}`"
     elif self.targetDatabaseTableName != "":
