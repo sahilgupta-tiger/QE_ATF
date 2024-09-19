@@ -5,6 +5,7 @@ import json
 import os
 from datetime import datetime
 from re import search
+from constants import *
 
 
 def log_info(msg):
@@ -20,7 +21,7 @@ def read_protocol_file(filepath):
   df_testcases = pd.read_excel(filepath, engine='openpyxl',sheet_name='protocoltestcasedetails') #,keep_default_na=False
   df_testcases=df_testcases[df_testcases['Sno.']!='']
   #df_testcases=df_testcases.iloc[:,0:4]
-  df_testcases= df_testcases.dropna()
+  #df_testcases= df_testcases.dropna()
   dict_protocol = dict(df_protocol.values)
   #context = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
   #workspacename = context['tags']['browserHostName']
@@ -136,7 +137,8 @@ def debugexit():
 
 def readconnectionconfig(connectionname):
   #connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
-  connection_config=json.load(open("/Workspace/Repos/rajat.yadav@tigeranalytics.com/QE_ATF/datf_core/test/connections/"+connectionname+".json"))
+  json_file = root_path + "test/connections/"+connectionname+".json"
+  connection_config=json.load(open(json_file))
   print(connection_config)
   return connection_config
 

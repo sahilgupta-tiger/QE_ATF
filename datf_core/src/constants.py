@@ -7,7 +7,7 @@ import pytz
 import os
 
 #root_path = os.getenv('CWD')
-root_path = '/Volumes/adls-qe/db_atf_qa/adls_atf_main/'
+root_path = '/Volumes/mckesson/db_atf_qa/adls_atf_volume/'
 table_name = 'historical_trends'
 utctimezone = pytz.timezone("UTC")
 
