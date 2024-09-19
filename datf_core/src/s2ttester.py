@@ -103,15 +103,25 @@ class S2TTester:
             log_info("Test Case(s) part of current execution are:")
             print(testcasesrunlist)
         lst_run_testcases = testcasesrunlist
-        
+
         for index, row in df_testcases.iterrows():
-            log_info(
-                f"{row['test_case_name']}: Testcase Picked up for Execution")
+
+            #New Change
+            row = row.fillna('')
+            row = row.apply(lambda x: int(x) if isinstance(x, float) and x.is_integer() else x)
+
+            log_info(f"{row['testcasename']}: Testcase Picked up for Execution")
             testcase_details = {}
-            test_case_name = row['test_case_name']
+
+            #New Change
+            print('Getting test_case_name sno excute info')
+            test_case_name = row['testcasename']
             tcnbr = str(int(row['Sno.']))
             execute_flag = row['execute']
-            test_case_file_path = root_path+row['test_case_file_path']
+
+            print('Picked test_case_name sno excute info')
+            
+            #test_case_file_path = root_path+row['test_case_file_path']
             s3_conn_name = dict_protocol['protocol_connection']
             # s3_path = get_connection_config(s3_conn_name)
             # s3_path = s3_path['BUCKETNAME']
@@ -134,8 +144,12 @@ class S2TTester:
                     pdfobj_combined_testcase.pdf.add_page()
 
                 log_info(
-                    f"{row['test_case_name']}: Reading Test Case Config at {test_case_file_path}")
-                testcase_details = read_test_case(test_case_file_path)
+                    f"{row['testcasename']}: Reading Test Case Config ")
+                
+                #testcase_details = read_test_case(row,df_testcases)
+
+                testcase_details = row[2:]
+                
                 # rel_source_path = testcase_details['sourcepath']
                 # testcase_details['sourcepath'] = s3_path + testcase_details['sourcepath']
                 # testcase_details['sourcepath'] = testcase_details['sourcepath']
@@ -144,21 +158,21 @@ class S2TTester:
                 # testcase_details['targetpath'] = testcase_details['targetpath']
                 testcase_starttime = datetime.now(utctimezone)
 
-                log_info(f"{row['test_case_name']}: Reading Source and Target Data based on TestCase Configuration:  {test_case_name}")
-
+                #log_info(f"{row['testcasename']}: Reading Source and Target Data based on TestCase Configuration:  {testcasename}")
+                print('Runn execute_testcase function')
                 compare_input = self.execute_testcase(testcase_details, auto_script_path, testcasetype)
 
-                log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
+                log_info(f"{row['testcasename']}: Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
                 dict_compareoutput = self.compare_data(compare_input, testcasetype)
 
                 testcase_endtime = datetime.now(utctimezone)
                 testcase_exectime = testcase_endtime - testcase_starttime
                 testcase_exectime = str(testcase_exectime).split('.')[0]
-                log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
+                log_info(f"{row['testcasename']}: Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
                 # log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
 
                 log_info(
-                    f"{row['test_case_name']}: Test Results PDF Generation for Test Case Started for {test_case_name}")
+                    f"{row['testcasename']}: Test Results PDF Generation for Test Case Started for {test_case_name}")
                 testcase_starttime = testcase_starttime.astimezone(
                     utctimezone).strftime("%d-%b-%Y %H:%M:%S %Z")
                 testcase_endtime = testcase_endtime.astimezone(
@@ -200,13 +214,13 @@ class S2TTester:
                 pdfobj = self.generate_testcase_summary_report(dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj)
                 pdfobj.pdf.output(results_path, 'F')
                 log_info(
-                    f"{row['test_case_name']}: Testcase Results PDF for {test_case_name} testcase is created at location:{results_path}")
+                    f"{row['testcasename']}: Testcase Results PDF for {test_case_name} testcase is created at location:{results_path}")
                 log_info(
-                    f"{row['test_case_name']}: TestCase Results PDF Generation for Test Case Completed:{test_case_name}")
+                    f"{row['testcasename']}: TestCase Results PDF Generation for Test Case Completed:{test_case_name}")
                 dict_config = dict_config_temp
 
                 log_info(
-                    f"{row['test_case_name']}: TestCase Results of  {test_case_name} are Appended to the Summary")
+                    f"{row['testcasename']}: TestCase Results of  {test_case_name} are Appended to the Summary")
                 pdfobj_combined_testcase = self.generate_testcase_summary_report(
                     dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj_combined_testcase)
                 
@@ -227,9 +241,9 @@ class S2TTester:
                         dict_testresults['No. of KPIs matched']), str(dict_testresults['No. of KPIs mismatched']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
                     
                 log_info(
-                    f"{row['test_case_name']}: Testcase Execution Completed for {row['test_case_name']}")
+                    f"{row['testcasename']}: Testcase Execution Completed for {row['testcasename']}")
             except Exception as e1:
-                log_error(f"{row['test_case_name']}: Testcase Execution ERRORED:{row['test_case_name']} - ERRORMSG:{str(e1)}")
+                log_error(f"{row['testcasename']}: Testcase Execution ERRORED:{row['testcasename']} - ERRORMSG:{str(e1)}")
                 log_error(traceback.format_exc())
                 if testcasetype == "count":
                     df_protocol_summary.loc[index] = [

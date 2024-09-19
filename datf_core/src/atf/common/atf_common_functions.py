@@ -19,7 +19,7 @@ def read_protocol_file(filepath):
   df_protocol = pd.read_excel(filepath, engine='openpyxl',sheet_name='protocol',keep_default_na=False, header=None) 
   df_testcases = pd.read_excel(filepath, engine='openpyxl',sheet_name='protocoltestcasedetails') #,keep_default_na=False
   df_testcases=df_testcases[df_testcases['Sno.']!='']
-  df_testcases=df_testcases.iloc[:,0:4]
+  #df_testcases=df_testcases.iloc[:,0:4]
   df_testcases= df_testcases.dropna()
   dict_protocol = dict(df_protocol.values)
   #context = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
@@ -28,10 +28,19 @@ def read_protocol_file(filepath):
   return dict_protocol, df_testcases
 
 
-def read_test_case(filepath):
-  filepath = filepath.strip()
-  df = pd.read_excel(filepath, engine='openpyxl', header=None, keep_default_na=False, usecols="A,B")
-  mapping = dict(df.values)
+def read_test_case(row,df_testcases):
+  print('Staring Row transpose')
+  row = row.fillna('')
+  row = row.apply(lambda x: int(x) if isinstance(x, float) and x.is_integer() else x)
+  
+  # Create a DataFrame for each row with two columns: 'Field_Name' (Column A) and 'Value' (Column B)
+  df_row = pd.DataFrame({
+      'Field_Name': df_testcases.columns,  # Column A: The column names
+      'Value': row.values  # Column B: The values from the row
+  })
+  df_test_mapping = df_row.loc[2:, :]
+  print('Completed Row transpose')
+  mapping = dict(df_test_mapping.values)
   return mapping
 
 

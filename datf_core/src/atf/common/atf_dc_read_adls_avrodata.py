@@ -3,9 +3,6 @@ from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config
 from constants import *
 
-from datf_core.src.constants import root_path
-
-
 def read_adls_avrodata(tc_datasource_config, spark):
     log_info("Reading the avro File")
     connectionname = tc_datasource_config['connectionname']
