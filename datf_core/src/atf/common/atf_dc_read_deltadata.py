@@ -13,26 +13,39 @@ def read_deltadata(dict_configdf, spark):
   if comparetype == 'Auto':
 
     datafilter = dict_configdf['filter']
-    deltapath = get_mount_path(dict_configdf['path'])
+    deltapath = dict_configdf['path']
     excludecolumns = dict_configdf['excludecolumns']
     excludecolumns = str(excludecolumns)
     exclude_cols = excludecolumns.split(',')
     datafilter = str(datafilter)
-    descquery = 'DESCRIBE delta.`' + deltapath + '`;'
-    col_df = spark.sql(descquery)
-    col_df = col_df.filter((col("col_name") != "")
-                & (col("col_name") != "# Partition Information")
-                & (~col("col_name").contains("Part"))
-                & (col("col_name") != "Not partitioned")
-                & (col("col_name") != "# col_name"))
-    columns = list(col_df.select('col_name').toPandas()['col_name'])
-    columnlist = list(set(columns) - set(exclude_cols))
-    columnlist.sort()
-    columnlist = ','.join(columnlist)
-    query_delta = "SELECT " + columnlist +  " FROM delta.`" + deltapath + "`"
-    if len(datafilter) >=5:
-      query_delta = query_delta + " WHERE " + datafilter
-    df_deltadata = spark.sql(query_delta)
+
+    if 'dbfs' in deltapath: 
+      descquery = 'DESCRIBE delta.`' + deltapath + '`;'
+      col_df = spark.sql(descquery)
+      col_df = col_df.filter((col("col_name") != "")
+                  & (col("col_name") != "# Partition Information")
+                  & (~col("col_name").contains("Part"))
+                  & (col("col_name") != "Not partitioned")
+                  & (col("col_name") != "# col_name"))
+      columns = list(col_df.select('col_name').toPandas()['col_name'])
+      columnlist = list(set(columns) - set(exclude_cols))
+      columnlist.sort()
+      columnlist = ','.join(columnlist)
+      query_delta = "SELECT " + columnlist +  " FROM delta.`" + deltapath + "`"
+      if len(datafilter) >=5:
+        query_delta = query_delta + " WHERE " + datafilter
+      df_deltadata = spark.sql(query_delta)
+    else:
+      deltatable = deltapath.replace('/','.')
+      col_df = spark.table(deltatable)
+      columns = col_df.columns
+      columnlist = list(set(columns) - set(exclude_cols))
+      columnlist.sort()
+      columnlist = ','.join(columnlist)
+      query_delta = "SELECT " + columnlist +  " FROM " + deltatable
+      if len(datafilter) >=5:
+        query_delta = query_delta + " WHERE " + datafilter
+      df_deltadata = spark.sql(query_delta)
     
   else:
     querypath = root_path+dict_configdf['querypath']

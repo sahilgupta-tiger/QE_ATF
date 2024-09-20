@@ -25,53 +25,53 @@ class S2TTester:
     
     def starttestexecute(self, protocol_file_path, testcasetype, testcasesrunlist):
         log_info(f"Protocol Execution Started")
-        # try:
-        log_info(
-            f"Reading the Protocol file details from {protocol_file_path}")
-        protocol_file_path = root_path + protocol_file_path
-        dict_protocol, df_testcases = read_protocol_file(
-            protocol_file_path)
-        log_info("dict protocol is")
-        log_info(dict_protocol)
-        # "test_case_type", "count", ["count","duplicate","content"]
-        # s3_path = get_connection_config(s3_conn_name)
-        # s3_path = s3_path['BUCKETNAME']
-        s3_path = ""
-        # + '/' + str(testcasetype) + '/'
-        # results_path = str(s3_path) + \
-        #   str(dict_protocol['protocol_results_path'])
+        try:
+            log_info(
+                f"Reading the Protocol file details from {protocol_file_path}")
+            protocol_file_path = root_path + protocol_file_path
+            dict_protocol, df_testcases = read_protocol_file(
+                protocol_file_path)
+            log_info("dict protocol is")
+            log_info(dict_protocol)
+            # "test_case_type", "count", ["count","duplicate","content"]
+            # s3_path = get_connection_config(s3_conn_name)
+            # s3_path = s3_path['BUCKETNAME']
+            s3_path = ""
+            # + '/' + str(testcasetype) + '/'
+            # results_path = str(s3_path) + \
+            #   str(dict_protocol['protocol_results_path'])
 
-        results_path = str(root_path+dict_protocol['protocol_results_path'])
-        timenow = datetime.now(utctimezone)
-        created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
-        # folder_s3 = results_path + str(dict_protocol['protocol_name']) + \
-        # '/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
-        folder_s3 = results_path + \
-            str(dict_protocol['protocol_name']) + \
-            '/run_'+testcasetype+"_"+created_time+'/'
-        log_info(f"Protocol Result folder Path: {folder_s3}")
-        os.mkdir(folder_s3)
-        testcase_folder_s3 = folder_s3 + '/run_' + testcasetype + '_testcase_summary_' + created_time+'/'
-        os.mkdir(testcase_folder_s3)
-        # protocol_output_path = "/dbfs" + get_mount_path(folder_s3)
-        # testcase_output_path = "/dbfs" + get_mount_path(testcase_folder_s3)
-        protocol_output_path = folder_s3
-        testcase_output_path = testcase_folder_s3
-        combined_testcase_output_path = protocol_output_path + "/run_tc_" + testcasetype + "_combined_" + \
-            str(dict_protocol['protocol_name']) + \
-            "_" + created_time + ".pdf"
+            results_path = str(root_path+dict_protocol['protocol_results_path'])
+            timenow = datetime.now(utctimezone)
+            created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
+            # folder_s3 = results_path + str(dict_protocol['protocol_name']) + \
+            # '/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
+            folder_s3 = results_path + \
+                str(dict_protocol['protocol_name']) + \
+                '/run_'+testcasetype+"_"+created_time+'/'
+            log_info(f"Protocol Result folder Path: {folder_s3}")
+            os.mkdir(folder_s3)
+            testcase_folder_s3 = folder_s3 + '/run_' + testcasetype + '_testcase_summary_' + created_time+'/'
+            os.mkdir(testcase_folder_s3)
+            # protocol_output_path = "/dbfs" + get_mount_path(folder_s3)
+            # testcase_output_path = "/dbfs" + get_mount_path(testcase_folder_s3)
+            protocol_output_path = folder_s3
+            testcase_output_path = testcase_folder_s3
+            combined_testcase_output_path = protocol_output_path + "/run_tc_" + testcasetype + "_combined_" + \
+                str(dict_protocol['protocol_name']) + \
+                "_" + created_time + ".pdf"
 
-        df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
-            dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype, testcasesrunlist)
+            df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
+                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype, testcasesrunlist)
 
-        summary_output_path = self.generate_protocol_summary_report(
-            df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
-        # generate HTML report ** new function **
-        generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
-        log_info("Protocol Execution Completed")
+            summary_output_path = self.generate_protocol_summary_report(
+                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
+            # generate HTML report ** new function **
+            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
+            log_info("Protocol Execution Completed")
 
-        # except Exception as e2:
-        #     log_error(f"Protocol Execution ERRORED: {str(e2)}")
+        except Exception as e2:
+            log_error(f"Protocol Execution ERRORED: {str(e2)}")
 
     def execute_protocol(self, dict_protocol, df_testcases, output_path, combined_testcase_output_path, testcasetype,testcasesrunlist):
 

@@ -219,10 +219,13 @@ class S2TAutoLoadScripts:
         self.selectTableCommand=f"SELECT {selcolClause} FROM {srcTableName} src {lookupClause} {filterClause}"
       else:
         self.selectTableCommand=f"SELECT {selcolClause} FROM dataview src {lookupClause} {filterClause}"
-      if loadLayer == "source_to_stage":
+      if loadLayer == "source_to_stage" or loadLayer == "source_to_target":
         schemaStruct= self.getSchemaDefinitionSource(self.s2tobj.srcschema_df)
+        print('Source Schema struct - ',schemaStruct)
       else:
         schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
+        print('Source ST Schema struct - ',schemaStruct)
+        
         
     elif autoscripttype == "target":
       selcolClause=commaseparator.join(tgtcollist)
@@ -232,7 +235,7 @@ class S2TAutoLoadScripts:
       else:
         self.selectTableCommand=f"SELECT {selcolClause} FROM dataview tgt {filterClause}"  
       if loadLayer == "stage_to_target" or loadLayer == "source_to_target":
-        schemaStruct= self.getSchemaDefinitionTarget(self.s2tobj.stgschema_df)
+        schemaStruct= self.getSchemaDefinitionTarget(self.s2tobj.tgtschema_df)
       else:
         schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
     
@@ -249,7 +252,7 @@ class S2TAutoLoadScripts:
     print("The data format is : ",dataFormat)
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
-        avrofile = f"file:{dataFile}"
+        avrofile = f"{dataFile}"
         f.write(f"readschemadf=spark.read.format('{dataFormat}').load('{avrofile}').schema\r\n")
         f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{avrofile}')\r\n")
         readschemadf= self.spark.read.format(dataFormat).load(avrofile).schema
@@ -260,7 +263,7 @@ class S2TAutoLoadScripts:
           f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
           readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
         else:
-          parquetfile = f"file:{dataFile}"
+          parquetfile = f"{dataFile}"
           f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
           readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
       if dataFormat == "delta":
@@ -272,12 +275,12 @@ class S2TAutoLoadScripts:
             f.write(f"readdatadf=spark.table('{deltaFile}')\r\n")
             readdatadf= self.spark.table(deltaFile)
       if dataFormat == "json":
-        jsonfile = f"file:{dataFile}"
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('file:{dataFile}')\r\n")
+        jsonfile = f"{dataFile}"
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).schema(schemaStruct).load(jsonfile)
       if dataFormat == "delimitedfile":
-        csvfile = f"file:{dataFile}"
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('file:{csvfile}')\r\n")
+        csvfile = f"{dataFile}"
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('{csvfile}')\r\n")
         readdatadf= self.spark.read.format("csv").option('delimiter', delimiter).option('header', 'true').schema(schemaStruct).load(csvfile)
         #readdatadf.printSchema()
       #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
