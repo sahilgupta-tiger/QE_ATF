@@ -2,7 +2,7 @@ from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
 import pandas as pd
 from datetime import datetime
-from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit
+from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path,debugexit,update_dict_empty_fields
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_cls_pdfformatting import generatePDF
 from atf.common.atf_cls_results_chart import generate_results_charts
@@ -26,11 +26,9 @@ class S2TTester:
     def starttestexecute(self, protocol_file_path, testcasetype, testcasesrunlist):
         log_info(f"Protocol Execution Started")
         try:
-            log_info(
-                f"Reading the Protocol file details from {protocol_file_path}")
-            protocol_file_path = root_path + protocol_file_path
-            dict_protocol, df_testcases = read_protocol_file(
-                protocol_file_path)
+            log_info(f"Reading the Protocol file details from {protocol_file_path}")
+            dict_protocol, df_testcases = read_protocol_file(protocol_file_path)
+            print(dict_protocol)
             log_info("dict protocol is")
             log_info(dict_protocol)
             # "test_case_type", "count", ["count","duplicate","content"]
@@ -67,7 +65,7 @@ class S2TTester:
             summary_output_path = self.generate_protocol_summary_report(
                 df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
             # generate HTML report ** new function **
-            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
+            #generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:
@@ -159,7 +157,8 @@ class S2TTester:
 
                 #log_info(f"{row['testcasename']}: Reading Source and Target Data based on TestCase Configuration:  {testcasename}")
                 print('Runn execute_testcase function')
-                compare_input = self.execute_testcase(testcase_details, auto_script_path, testcasetype)
+                #Protocol_change
+                compare_input = self.execute_testcase(testcase_details, dict_protocol,auto_script_path, testcasetype)
 
                 log_info(f"{row['testcasename']}: Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
                 dict_compareoutput = self.compare_data(compare_input, testcasetype)
@@ -292,8 +291,7 @@ class S2TTester:
         return df_protocol_summary, protocol_run_details, protocol_run_params
     
 
-    def execute_testcase(self, tc_config, auto_script_path, testcasetype):
-        print(tc_config)
+    def execute_testcase(self, tc_config, dict_protocol,auto_script_path, testcasetype):
         s2tmappingsheet = tc_config['s2tmappingsheet']
         
         source_file_details_dict = None
@@ -316,8 +314,13 @@ class S2TTester:
         if tc_config['comparetype'] == 's2tcompare':
             loads2t_path = root_path+tc_config['s2tpath']
             s2tobj = LoadS2T(loads2t_path, spark)
-
+        
+        print('Before',tc_config['sourceconnectionname'],tc_config['sourceconnectiontype'])
+        
         if (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Manual'):
+            #Common Protocol Fields Logic Change
+            tc_config=update_dict_empty_fields(tc_config,dict_protocol)
+            print("++++++++++++++++++++++++++++++++++++++++++TC_CONFIG+++++++++++++++++++++++++++++",tc_config)
             log_info("Reading the Source Data")
             tc_source_config = {'aliasname': tc_config['sourcealiasname'], 'connectiontype': tc_config['sourceconnectiontype'],
                            'path': tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
@@ -369,6 +372,9 @@ class S2TTester:
             target_query = open(scriptpath).read().split('\n')
 
         elif tc_config['comparetype'] == 'likeobjectcompare':
+            #Common Protocol Fields Logic
+            tc_config=update_dict_empty_fields(tc_config,dict_protocol)
+            print("++++++++++++++++++++++++++++++++++++++++++TC_CONFIG+++++++++++++++++++++++++++++",tc_config)
             log_info("Reading the Source Data")
             tc_source_config = {'aliasname': tc_config['sourcealiasname'], 'connectiontype': tc_config['sourceconnectiontype'],
                            'path': tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
@@ -948,6 +954,7 @@ if __name__ == "__main__":
     log_info(spark)
     testcasesrunlist = []
     protocol_file_path = sys.argv[1]
+    protocol_file_path = root_path + protocol_file_path
     testtype = sys.argv[2]
     temporaryrunlist=sys.argv[3].rstrip()
     if "," in sys.argv[3]:

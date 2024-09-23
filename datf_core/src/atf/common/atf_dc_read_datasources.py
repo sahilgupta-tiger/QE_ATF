@@ -22,73 +22,10 @@ def read_data(tc_datasource_config,spark):
   connectiontype = tc_datasource_config['connectiontype'].lower().split()[0]
   resourceformat = tc_datasource_config['format']
 
-
-  # if connectiontype in ['aws-s3','databricks'] and resourceformat == 'delta':
-  #   df_deltadata, query = read_deltadata(tc_datasource_config,spark)
-  #   df = df_deltadata
-  #
-  # elif connectiontype == 'adls' and resourceformat == 'delta':
-  #   df_adlsdeltadata, query = read_adls_deltadata(tc_datasource_config,spark)
-  #   df = df_adlsdeltadata
-  #
-  # elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'parquet':
-  #   df_parquetdata, query = read_parquetdata(tc_datasource_config,spark)
-  #   df = df_parquetdata
-  #
-  # elif connectiontype == 'adls' and resourceformat == 'parquet':
-  #   df_parquetdata, query = read_adls_parquetdata(tc_datasource_config,spark)
-  #   df = df_parquetdata
-  #
-  # elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'delimited':
-  #   df_csvdata, query = read_delimiteddata(tc_datasource_config,spark)
-  #   df = df_csvdata
-  #
-  # elif connectiontype == 'adls' and resourceformat == 'delimited':
-  #   df_csvdata, query = read_adls_delimiteddata(tc_datasource_config,spark)
-  #   df = df_csvdata
-  #
-  # elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'avro':
-  #   df_avrodata, query = read_avrodata(tc_datasource_config,spark)
-  #   df = df_avrodata
-  #
-  # elif connectiontype == 'adls' and resourceformat == 'avro':
-  #   df_avrodata, query = read_adls_avrodata(tc_datasource_config, spark)
-  #   df = df_avrodata
-  #
-  # elif connectiontype in ['aws-s3','databricks'] and resourceformat == 'json':
-  #   df_jsondata, query = read_jsondata(tc_datasource_config,spark)
-  #   df = df_jsondata
-  #
-  # elif connectiontype == 'adls' and resourceformat == 'json':
-  #   df_jsondata, query = read_adls_jsondata(tc_datasource_config, spark)
-  #   df = df_jsondata
-  #
-  # elif connectiontype == 'oracle' and resourceformat == 'table':
-  #   df, query = read_oracledata(tc_datasource_config,spark)
-  #
-  # elif connectiontype == 'redshift' and resourceformat == 'table':
-  #   df, query = read_redshiftdata(tc_datasource_config,spark)
-  #
-  # elif connectiontype == 'mysql' and resourceformat == 'table':
-  #   df, query = read_mysqldata(tc_datasource_config,spark)
-  #
-  # elif connectiontype == 'bigquery' and resourceformat == 'table':
-  #     df, query = read_bigquerydata(tc_datasource_config,spark)
-  #
-  # elif connectiontype == 'snowflake' and resourceformat == 'table':
-  #     df, query = read_snowflakedata(tc_datasource_config,spark)
-  #
-  # elif connectiontype == 'postgres' and resourceformat == 'table':
-  #     df, query = read_postgresdata(tc_datasource_config,spark)
-  #
-  # else:
-  #   df = None
-  #   query = ''
-
-  # Call the read function logic based on connectiontype
+  # Call the read function based on connectiontype
   if connectiontype == 'adls':
     if resourceformat == 'delta':
-      df, query = read_adls_deltadata(tc_datasource_config, spark)
+      df, query = read_deltadata(tc_datasource_config, spark)
     elif resourceformat == 'parquet':
       df, query = read_adls_parquetdata(tc_datasource_config, spark)
     elif resourceformat == 'delimited':

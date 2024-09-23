@@ -17,21 +17,8 @@ def read_adls_parquetdata(tc_datasource_config,spark):
 
   # Relative path within the container
   delta_path = tc_datasource_config['path']  
-  
-  #Reading parquet from ADLS Stoarge Container
-  if 'Volumes' in delta_path:
-    log_info("Reading parquet file from ADLS via Databricks Volumes")
-    print("Reading parquet file from ADLS via Databricks Volumes")
-    print('Volumes File Path :',delta_path)
-    df = spark.read.parquet(delta_path)
-    df.createOrReplaceTempView(tc_datasource_config['aliasname'])
-  else:
-    log_info("Reading parquet file from ADLS via ABFSS protocol")
-    print("Reading parquet file from ADLS via ABFSS protocol")
-    print('ADLS File Path :',delta_path)
-    datasrc_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{delta_path}"
-    df = spark.read.parquet(datasrc_path)
-    df.createOrReplaceTempView(tc_datasource_config['aliasname'])
+  df = spark.read.parquet(delta_path)
+  df.createOrReplaceTempView(tc_datasource_config['aliasname'])
   
   if tc_datasource_config['comparetype'] == 's2tcompare' and tc_datasource_config['testquerygenerationmode'] == 'Auto':
     pass      

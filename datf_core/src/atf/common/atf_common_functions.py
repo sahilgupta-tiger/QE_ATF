@@ -28,6 +28,15 @@ def read_protocol_file(filepath):
   dict_protocol['test_run_environment'] = ""
   return dict_protocol, df_testcases
 
+#New Function for Protocol Common Columns
+def update_dict_empty_fields(tc_config_dict, protocol_dict):
+    for key, value in tc_config_dict.items():
+        # Check if the value in dictionary1 is empty (e.g., None or empty string)
+        if not value:
+            # If the key exists in dictionary2 and has a non-empty value, update dictionary1
+            if key in protocol_dict and protocol_dict[key]:
+                tc_config_dict[key] = protocol_dict[key]
+    return tc_config_dict
 
 def read_test_case(row,df_testcases):
   print('Staring Row transpose')

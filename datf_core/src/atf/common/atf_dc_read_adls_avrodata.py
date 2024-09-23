@@ -15,17 +15,7 @@ def read_adls_avrodata(tc_datasource_config, spark):
     # Set Adls Connection Configuration
     storage_account, container_name = set_azure_connection_config(connectionconfig, spark)
     avrofilepath = tc_datasource_config['path']  # Relative path within the container
-
-    # Reading parquet from ADLS Stoarge Container
-    if 'Volumes' in avrofilepath:
-        log_info("Reading json file from ADLS via Databricks Volumes")
-        print("Reading json file from ADLS via Databricks Volumes")
-        print('Volumes File Path :', avrofilepath)
-    else:
-        log_info("Reading json file from ADLS via ABFSS protocol")
-        print("Reading json file from ADLS via ABFSS protocol")
-        avrofilepath = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{avrofilepath}"
-        print('ADLS File Path :', avrofilepath)
+    print('ADLS File Path :', avrofilepath)
 
     if tc_datasource_config['testquerygenerationmode'] == 'Auto':
         resourcename = tc_datasource_config['name']

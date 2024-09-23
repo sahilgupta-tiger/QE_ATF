@@ -221,10 +221,8 @@ class S2TAutoLoadScripts:
         self.selectTableCommand=f"SELECT {selcolClause} FROM dataview src {lookupClause} {filterClause}"
       if loadLayer == "source_to_stage" or loadLayer == "source_to_target":
         schemaStruct= self.getSchemaDefinitionSource(self.s2tobj.srcschema_df)
-        print('Source Schema struct - ',schemaStruct)
       else:
         schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
-        print('Source ST Schema struct - ',schemaStruct)
         
         
     elif autoscripttype == "target":

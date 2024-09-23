@@ -16,17 +16,7 @@ def read_adls_delimiteddata(tc_datasource_config,spark):
   # Set Adls Connection Configuration
   storage_account, container_name = set_azure_connection_config(connectionconfig, spark)
   delimited_path = tc_datasource_config['path']  # Relative path within the container
-
-  # Reading parquet from ADLS Stoarge Container
-  if 'Volumes' in delimited_path:
-    log_info("Reading delimited file from ADLS via Databricks Volumes")
-    print("Reading delimited file from ADLS via Databricks Volumes")
-    print('Volumes File Path :', delimited_path)
-  else:
-    log_info("Reading parquet file from ADLS via ABFSS protocol")
-    print("Reading parquet file from ADLS via ABFSS protocol")
-    delimited_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{delimited_path}"
-    print('ADLS File Path :', delimited_path)
+  print('ADLS File Path :', delimited_path)
 
   connectiontype =tc_datasource_config['connectiontype']
   resourceformat =tc_datasource_config['format']

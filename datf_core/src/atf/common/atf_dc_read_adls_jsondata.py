@@ -16,17 +16,7 @@ def read_adls_jsondata(tc_datasource_config, spark):
     # Set Adls Connection Configuration
     storage_account, container_name = set_azure_connection_config(connectionconfig, spark)
     jsonfilepath = tc_datasource_config['path']  # Relative path within the container
-
-    # Reading parquet from ADLS Stoarge Container
-    if 'Volumes' in jsonfilepath:
-        log_info("Reading json file from ADLS via Databricks Volumes")
-        print("Reading json file from ADLS via Databricks Volumes")
-        print('Volumes File Path :', jsonfilepath)
-    else:
-        log_info("Reading json file from ADLS via ABFSS protocol")
-        print("Reading json file from ADLS via ABFSS protocol")
-        jsonfilepath = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{jsonfilepath}"
-        print('ADLS File Path :', jsonfilepath)
+    print('ADLS File Path :', jsonfilepath)
 
     if tc_datasource_config['testquerygenerationmode'] == 'Auto':
         resourcename = tc_datasource_config['name']
