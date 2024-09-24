@@ -194,7 +194,11 @@ class S2TAutoLoadScripts:
           srccoltext= f'lower({srccoltext})' 
         '''       
         if mapping["filteroutnulls"].upper() == "Y":
-          filterlist.append(f'src.{mapping["srccolumnname"]} IS NOT NULL')      
+          if autoscripttype == "source":
+            filterlist.append(f'src.{mapping["srccolumnname"]} IS NOT NULL') 
+          elif autoscripttype == "target":
+            filterlist.append(f'tgt.{mapping["srccolumnname"]} IS NOT NULL') 
+                 
       
       srccoltext=srccoltext+f' as {mapping["tgtcolumnname"]}'
       srccollist.append(srccoltext)
@@ -202,6 +206,8 @@ class S2TAutoLoadScripts:
 
     filterClause=andseparator.join(filterlist)
     if filterClause != "" and autoscripttype == "source":
+      filterClause=' WHERE '+filterClause
+    if filterClause != "" and autoscripttype == "target":
       filterClause=' WHERE '+filterClause
     if tcdatafilter != "":
       if filterClause != "":
