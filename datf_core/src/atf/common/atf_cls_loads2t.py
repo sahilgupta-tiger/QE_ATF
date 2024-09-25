@@ -41,6 +41,8 @@ class LoadS2T:
       #self.sourceFilePath=get_mount_path(self.sourceconnectionval + config["sourcefilepath"])
       if 'Volumes' in config["sourcefilepath"]:
         self.sourceFilePath = config["sourcefilepath"]
+      elif 'abfs' in config["sourcefilepath"]:
+        self.sourceFilePath = config["sourcefilepath"]
       else:
         self.sourceFilePath= root_path+config["sourcefilepath"]
     self.sourceFileName=config["sourcefilename"]
@@ -65,6 +67,8 @@ class LoadS2T:
       #self.stageFilePath=get_mount_path(self.stageconnectionval +config["stagefilepath"])
       if 'Volumes' in config["stagefilepath"]:
         self.stageFilePath = config["stagefilepath"]
+      elif 'abfs' in config["stagefilepath"]:
+        self.stageFilePath = config["stagefilepath"]
       else:
         self.stageFilePath=root_path+config["stagefilepath"]
 
@@ -85,6 +89,8 @@ class LoadS2T:
       #self.targetconnectionval = get_connection_config(self.targetConnectionName)['BUCKETNAME']
       #self.targetFilePath=get_mount_path(self.targetconnectionval +config["targetfilepath"])
       if 'Volumes' in config["targetfilepath"]:
+        self.targetFilePath = config["targetfilepath"]
+      elif 'abfs' in config["targetfilepath"]:
         self.targetFilePath = config["targetfilepath"]
       else:
         self.targetFilePath=root_path+config["targetfilepath"]
@@ -156,8 +162,6 @@ class LoadS2T:
       self.stageFile = self.stageTableName
       
     if self.targetFileName != "":
-      print('self.targetFilePath -',self.targetFilePath)
-      print('self.targetFileName- ',self.targetFileName)
       self.targetFile=self.targetFilePath+'/'+self.targetFileName
       self.targetTableName=f"{self.targetFileFormat}.`{self.targetFile}`"
     elif self.targetDatabaseTableName != "":

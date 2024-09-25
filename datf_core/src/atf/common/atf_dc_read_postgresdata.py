@@ -1,6 +1,6 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from atf.common.atf_common_functions import log_info,readconnectionconfig
+from atf.common.atf_common_functions import log_info,readconnectionconfig,initilize_dbutils
 
 
 def read_postgresdata(tc_datasource_config, spark):
@@ -9,8 +9,17 @@ def read_postgresdata(tc_datasource_config, spark):
   connectionname = tc_datasource_config['connectionname']
   connectiontype = tc_datasource_config['connectiontype']
   resourceformat = tc_datasource_config['format']
+  
+  #Importing dbutils
+  dbutils =  initilize_dbutils(spark)
+
+  #Reading connection config from json file
   connectionconfig = readconnectionconfig(connectionname)
   
+  #Fetching credentials from key vault
+  username =  dbutils.secrets.get(scope="akv-mckesson-scope",  key= connectionconfig['user'])  
+  password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])
+
   #connurl = f"{connectionconfig['url']}/{tc_datasource_config['filepath']}"
   resourcename = tc_datasource_config['filename']
   datafilter = tc_datasource_config['filter']
@@ -27,8 +36,8 @@ def read_postgresdata(tc_datasource_config, spark):
                     .option("driver", "org.postgresql.Driver") \
                     .option("url", connectionconfig['url']) \
                     .option("dbtable", resourcename) \
-                    .option("user", connectionconfig['user']) \
-                    .option("password", connectionconfig['password']) \
+                    .option("user", username) \
+                    .option("password", password) \
                     .load())
                     
   columns = df_postgresdata.columns

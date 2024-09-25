@@ -1,7 +1,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark import StorageLevel
-from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config
+from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config,initilize_dbutils
 from constants import *
 
 def read_adls_delimiteddata(tc_datasource_config,spark):
@@ -12,9 +12,13 @@ def read_adls_delimiteddata(tc_datasource_config,spark):
 
   # Reading Adls Connection Configuration
   connectionconfig = readconnectionconfig(connectionname)
+  
+  #Importing dbutils
+  dbutils =  initilize_dbutils(spark)
 
-  # Set Adls Connection Configuration
-  storage_account, container_name = set_azure_connection_config(connectionconfig, spark)
+  #Set Adls Connection Configuration
+  set_azure_connection_config(spark,connectionconfig,dbutils)
+  
   delimited_path = tc_datasource_config['path']  # Relative path within the container
   print('ADLS File Path :', delimited_path)
 

@@ -40,10 +40,26 @@ class S2TTester:
             #   str(dict_protocol['protocol_results_path'])
 
             results_path = str(root_path+dict_protocol['protocol_results_path'])
+            #Creating directory for results folder
+            if not os.path.exists(results_path):
+                log_info(f"Creating directory - {results_path}")
+                os.mkdir(results_path)
+            else:
+                log_info(f"The directory `{results_path}` already exists.")
+                
             timenow = datetime.now(utctimezone)
             created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
             # folder_s3 = results_path + str(dict_protocol['protocol_name']) + \
             # '/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
+
+            #Creating directory for results folder with directory name as protocol_name
+            protocol_result_directory = results_path + dict_protocol['protocol_name'] + '/'
+            if not os.path.exists(protocol_result_directory):
+                log_info(f"Creating directory - {protocol_result_directory}")
+                os.mkdir(protocol_result_directory)
+            else:
+                log_info(f"The directory `{protocol_result_directory}` already exists.")
+                
             folder_s3 = results_path + \
                 str(dict_protocol['protocol_name']) + \
                 '/run_'+testcasetype+"_"+created_time+'/'

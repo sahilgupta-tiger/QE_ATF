@@ -3,7 +3,9 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
 from atf.common.atf_dc_read_datasources import read_data
+from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config,initilize_dbutils
 from constants import *
+
 
 
 class S2TAutoLoadScripts:
@@ -161,6 +163,13 @@ class S2TAutoLoadScripts:
         connectiontype = self.s2tobj.targetConnectionType
         delimiter=self.s2tobj.targetFileDelimiter
 
+    if connectiontype == "adls" and ('abfs' in dataFile):
+      # Reading Adls Connection Configuration
+      connectionconfig = readconnectionconfig(connectionname)
+      #Importing dbutils
+      dbutils =  initilize_dbutils(self.spark)
+      #Set Adls Connection Configuration
+      set_azure_connection_config(self.spark,connectionconfig,dbutils)
 
     for mapping in tgtmapping_df.collect():
       srccoltext=""
@@ -262,17 +271,12 @@ class S2TAutoLoadScripts:
         readschemadf= self.spark.read.format(dataFormat).load(avrofile).schema
         readdatadf= self.spark.read.format(dataFormat).schema(readschemadf).load(avrofile)
       if dataFormat == "parquet":
-        if 'Volumes' in dataFile:
-          parquetfile = f"{dataFile}"
-          f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
-          readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
-        else:
-          parquetfile = f"{dataFile}"
-          f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
-          readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
+        parquetfile = f"{dataFile}"
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{parquetfile}')\r\n")
+        readdatadf= self.spark.read.format(dataFormat).load(parquetfile)
       if dataFormat == "delta":
         deltaFile = dataFile.replace(root_path,"")
-        if '/' in deltaFile:
+        if 'dbfs' in deltaFile:
             f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
             readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
         else:

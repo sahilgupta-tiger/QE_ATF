@@ -1,16 +1,25 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from atf.common.atf_common_functions import log_info, readconnectionconfig
+from atf.common.atf_common_functions import log_info, readconnectionconfig,initilize_dbutils
 
 
 def read_oracledata(tc_datasource_config, spark):
     log_info("Reading from Oracle Table")
 
+    #Importing dbutils
+    dbutils =  initilize_dbutils(spark)
+
     connectionname = tc_datasource_config['connectionname']
     connectiontype = tc_datasource_config['connectiontype']
     resourceformat = tc_datasource_config['format']
-    connectionconfig = readconnectionconfig(connectionname)
     resourcename = tc_datasource_config['filename']
+
+    #Reading connection config from json file
+    connectionconfig = readconnectionconfig(connectionname)
+
+    #Fetching credentials from key vault
+    username =  dbutils.secrets.get(scope="akv-mckesson-scope",  key= connectionconfig['user'])  
+    password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])
 
     if tc_datasource_config['testquerygenerationmode'] == 'Manual':
         querypath = tc_datasource_config['querypath']
@@ -25,8 +34,8 @@ def read_oracledata(tc_datasource_config, spark):
         df_out = (spark.read.format("jdbc")
                         .option("driver", "oracle.jdbc.driver.OracleDriver")
                         .option("url", connectionconfig['url'])
-                        .option("user", connectionconfig['user'])
-                        .option("password", connectionconfig['password'])
+                        .option("user", username)
+                        .option("password", password)
                         .option("query", selectmanualqry)
                         .option("oracle.jdbc.timezoneAsRegion", "false")
                         .load())
@@ -45,8 +54,8 @@ def read_oracledata(tc_datasource_config, spark):
                         .format("jdbc")
                         .option("driver", "oracle.jdbc.driver.OracleDriver")
                         .option("url", connectionconfig['url'])
-                        .option("user", connectionconfig['user'])
-                        .option("password", connectionconfig['password'])
+                        .option("user", username)
+                        .option("password", password)
                         .option("query", selectallcolqry)
                         .option("oracle.jdbc.timezoneAsRegion", "false")
                         .load())

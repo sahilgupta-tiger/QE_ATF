@@ -1,6 +1,6 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config
+from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config,initilize_dbutils
 from constants import *
 
 def read_adls_avrodata(tc_datasource_config, spark):
@@ -11,9 +11,13 @@ def read_adls_avrodata(tc_datasource_config, spark):
 
     # Reading Adls Connection Configuration
     connectionconfig = readconnectionconfig(connectionname)
-
-    # Set Adls Connection Configuration
-    storage_account, container_name = set_azure_connection_config(connectionconfig, spark)
+    
+    #Importing dbutils
+    dbutils =  initilize_dbutils(spark)
+    
+    #Set Adls Connection Configuration
+    set_azure_connection_config(spark,connectionconfig,dbutils)
+    
     avrofilepath = tc_datasource_config['path']  # Relative path within the container
     print('ADLS File Path :', avrofilepath)
 

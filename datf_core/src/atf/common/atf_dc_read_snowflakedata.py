@@ -1,6 +1,6 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from atf.common.atf_common_functions import log_info, readconnectionconfig
+from atf.common.atf_common_functions import log_info, readconnectionconfig,initilize_dbutils
 
 SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake"
 
@@ -10,9 +10,18 @@ def read_snowflakedata(tc_datasource_config, spark):
   connectionname = tc_datasource_config['connectionname']
   connectiontype = tc_datasource_config['connectiontype']
   resourceformat = tc_datasource_config['format']
-  connectionconfig = readconnectionconfig(connectionname)
-  resourcename = tc_datasource_config['filename']
+  
+  #Importing dbutils
+  dbutils =  initilize_dbutils(spark)
 
+  #Reading connection config from json file
+  connectionconfig = readconnectionconfig(connectionname)
+  
+  #Fetching credentials from key vault
+  username =  dbutils.secrets.get(scope="akv-mckesson-scope",  key= connectionconfig['user'])  
+  password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])  
+  
+  resourcename = tc_datasource_config['filename']
   datafilter = tc_datasource_config['filter']
   excludecolumns = tc_datasource_config['excludecolumns']
   excludecolumns = str(excludecolumns)
@@ -24,8 +33,8 @@ def read_snowflakedata(tc_datasource_config, spark):
 
   sfOptions = {
       "sfURL": connectionconfig['url'],
-      "sfUser": connectionconfig['user'],
-      "sfPassword": connectionconfig['password'],
+      "sfUser": username,
+      "sfPassword": password,
       "sfDatabase": connectionconfig['database'],
       "sfSchema": connectionconfig['schema'],
       "sfWarehouse": connectionconfig['warehouse'],
@@ -34,8 +43,8 @@ def read_snowflakedata(tc_datasource_config, spark):
 
   df_snowflakedata = (spark.read.format(SNOWFLAKE_SOURCE_NAME)
                     .option("sfURL", connectionconfig['url'])
-                    .option("sfUser", connectionconfig['user'])
-                    .option("sfPassword", connectionconfig['password'])
+                    .option("sfUser", username)
+                    .option("sfPassword", password)
                     .option("sfDatabase", connectionconfig['database'])
                     .option("sfSchema", connectionconfig['schema'])
                     .option("sfWarehouse", connectionconfig['warehouse'])

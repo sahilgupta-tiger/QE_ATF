@@ -1,4 +1,3 @@
-
 import datacompy
 import pandas as pd
 import json
@@ -6,6 +5,7 @@ import os
 from datetime import datetime
 from re import search
 from constants import *
+from pyspark.dbutils import DBUtils
 
 
 def log_info(msg):
@@ -144,24 +144,26 @@ def debugexit():
   exit()
 #datf_core/test/connections
 
+def initilize_dbutils(spark):
+  #Importing dbutils
+  dbutils = DBUtils(spark)
+  return dbutils
+
 def readconnectionconfig(connectionname):
   #connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
-  json_file = root_path + "test/connections/"+connectionname+".json"
+  json_file = root_path + "test/connections/" +connectionname+".json"
   connection_config=json.load(open(json_file))
-  print(connection_config)
+  log_info('Reading Connection Config json completed.')
   return connection_config
 
+def set_azure_connection_config(spark,connectionconfig,dbutils):
 
-def set_azure_connection_config(connectionconfig,spark):
   storage_account = connectionconfig['STORAGE_ACCOUNT_NAME']
-  container_name = connectionconfig['CONTAINER_NAME']  # Assuming you have this in your config
-  sas_token = connectionconfig['SAS_TOKEN']  # Optional SAS token
+  sas_token = dbutils.secrets.get(scope="akv-mckesson-scope", key=connectionconfig['SAS_TOKEN'])
 
   # Set the configuration using SAS Token
   print('Configuring Azure ADLS connection.')
   spark.conf.set(f"fs.azure.account.auth.type.{storage_account}.dfs.core.windows.net", "SAS")
   spark.conf.set(f"fs.azure.sas.token.provider.type.{storage_account}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
   spark.conf.set(f"fs.azure.sas.fixed.token.{storage_account}.dfs.core.windows.net", sas_token)
-
   print('Azure ADLS connection configuration completed.')
-  return storage_account,container_name

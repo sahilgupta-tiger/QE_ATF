@@ -1,23 +1,32 @@
 
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from atf.common.atf_common_functions import log_info,readconnectionconfig
+from atf.common.atf_common_functions import log_info,readconnectionconfig,initilize_dbutils
 
 def read_mysqldata(tc_datasource_config,spark):
   log_info("Reading from Mysql Table")
   connectionname = tc_datasource_config['connectionname']
   connectiontype = tc_datasource_config['connectiontype']
   resourceformat = tc_datasource_config['format']
+  
+  #Importing dbutils
+  dbutils =  initilize_dbutils(spark)
+  
+  #Reading connection config from json file
   connectionconfig = readconnectionconfig(connectionname)
   connectionurl="jdbc:mysql://"+connectionconfig['host']+":"+connectionconfig['port']+"/"+connectionconfig['database']
+
+  #Fetching credentials from key vault
+  username =  dbutils.secrets.get(scope="akv-mckesson-scope",  key= connectionconfig['user'])  
+  password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])
   
   query="select * from "+ tc_datasource_config['filename']
   df = (spark.read
                   .format("jdbc")
                   .option("driver","com.mysql.jdbc.Driver")
                   .option("url", connectionurl)
-                  .option("user", connectionconfig['user'])
-                  .option("password", connectionconfig['password'])
+                  .option("user", username)
+                  .option("password", password)
                   .option("useSSL", "false") \
                   .option("ssl", "false") \
                   .option("query", query)

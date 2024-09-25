@@ -1,6 +1,6 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config
+from atf.common.atf_common_functions import log_info,debugexit,readconnectionconfig,set_azure_connection_config,initilize_dbutils
 from constants import *
 
 def read_adls_parquetdata(tc_datasource_config,spark):
@@ -11,9 +11,12 @@ def read_adls_parquetdata(tc_datasource_config,spark):
 
   #Reading Adls Connection Configuration
   connectionconfig = readconnectionconfig(connectionname)
+  
+  #Importing dbutils
+  dbutils =  initilize_dbutils(spark)
 
   #Set Adls Connection Configuration
-  storage_account,container_name = set_azure_connection_config(connectionconfig,spark)
+  set_azure_connection_config(spark,connectionconfig,dbutils)
 
   # Relative path within the container
   delta_path = tc_datasource_config['path']  
