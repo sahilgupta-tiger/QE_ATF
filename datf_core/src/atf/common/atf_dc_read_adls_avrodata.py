@@ -19,7 +19,12 @@ def read_adls_avrodata(tc_datasource_config, spark):
     set_azure_connection_config(spark,connectionconfig,dbutils)
     
     avrofilepath = tc_datasource_config['path']  # Relative path within the container
-    print('ADLS File Path :', avrofilepath)
+
+    if ('abfs' not in avrofilepath) and ('Volume' not in avrofilepath):
+        log_info("Appending Root path to relative avro file Path")
+        avrofilepath = root_path + avrofilepath
+    
+    log_info(f'ADLS File Path :- {avrofilepath}')
 
     if tc_datasource_config['testquerygenerationmode'] == 'Auto':
         resourcename = tc_datasource_config['name']
@@ -40,16 +45,18 @@ def read_adls_avrodata(tc_datasource_config, spark):
         query_avro = "SELECT " + columnlist + " FROM " + resourcename + "_avroview"
         if len(datafilter) >= 5:
             query_avro = query_avro + " WHERE " + datafilter
+        log_info(f"Select Table Command statement - \n{query_avro}")
         df_data = spark.sql(query_avro)
+
     elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
         querypath = root_path + tc_datasource_config['querypath']
         f = open(querypath, "r")
         query = f.read().splitlines()
         query = ' '.join(query)
-        print(query)
+        log_info(f"Select Table Command statement - \n{query}")
         df = spark.read.format("avro").load(avrofilepath)
         df.printSchema()
-        print(tc_datasource_config['aliasname'])
+        log_info(tc_datasource_config['aliasname'])
         df.createOrReplaceTempView(tc_datasource_config['aliasname'])
         df_data = spark.sql(query)
 

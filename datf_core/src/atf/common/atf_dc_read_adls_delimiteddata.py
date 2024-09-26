@@ -20,7 +20,12 @@ def read_adls_delimiteddata(tc_datasource_config,spark):
   set_azure_connection_config(spark,connectionconfig,dbutils)
   
   delimited_path = tc_datasource_config['path']  # Relative path within the container
-  print('ADLS File Path :', delimited_path)
+
+  if ('abfs' not in delimited_path) and ('Volume' not in delimited_path):
+    log_info("Appending Root path to relative delimited file Path")
+    delimited_path = root_path + delimited_path
+
+  log_info(f'ADLS File Path :- {delimited_path}')
 
   connectiontype =tc_datasource_config['connectiontype']
   resourceformat =tc_datasource_config['format']
@@ -43,6 +48,7 @@ def read_adls_delimiteddata(tc_datasource_config,spark):
     query_csv = "SELECT " + columnlist + " FROM " + resourcename + "_csvview"
     if len(datafilter) >=5:
       query_csv = query_csv + " WHERE " + datafilter
+    log_info(f"Select Table Command statement - \n{query_csv}")
     df_data = spark.sql(query_csv)
 
   elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
@@ -52,8 +58,10 @@ def read_adls_delimiteddata(tc_datasource_config,spark):
     query=' '.join(query)
     df=spark.read.option("delimiter", delimiter).schema(tc_datasource_config['schemastruct']).csv(delimited_path, header = True)
     df.printSchema()
-    print(tc_datasource_config['aliasname'])
+    log_info(tc_datasource_config['aliasname'])
     df.createOrReplaceTempView(tc_datasource_config['aliasname'])
+    log_info(f"Select Table Command statement - \n{query}")
     df_data = spark.sql(query)
   log_info("Returning the DataFrame from read_delimiteddata Function")
+
   return df_data, query

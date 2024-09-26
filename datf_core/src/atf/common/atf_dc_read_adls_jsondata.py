@@ -24,7 +24,12 @@ def read_adls_jsondata(tc_datasource_config, spark):
     set_azure_connection_config(spark,connectionconfig,dbutils)
     
     jsonfilepath = tc_datasource_config['path']  # Relative path within the container
-    print('ADLS File Path :', jsonfilepath)
+
+    if ('abfs' not in jsonfilepath) and ('Volume' not in jsonfilepath):
+        log_info("Appending Root path to relative json file Path")
+        jsonfilepath = root_path + jsonfilepath
+
+    log_info(f'ADLS File Path :-  {jsonfilepath}')
 
     if tc_datasource_config['testquerygenerationmode'] == 'Auto':
         resourcename = tc_datasource_config['name']
@@ -46,6 +51,7 @@ def read_adls_jsondata(tc_datasource_config, spark):
         query_json = "SELECT " + columnlist + " FROM " + resourcename + "_jsonview"
         if len(datafilter) >= 5:
             query_json = query_json + " WHERE " + datafilter
+        log_info(f"Select Table Command statement - \n{query_json}")
         df_data = spark.sql(query_json)
 
     elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
@@ -53,11 +59,11 @@ def read_adls_jsondata(tc_datasource_config, spark):
         f = open(querypath, "r")
         query = f.read().splitlines()
         query = ' '.join(query)
-        print(query)
+        log_info(f"Select Table Command statement - \n{query}")
         # json_path = root_path + tc_datasource_config['path']
         df = spark.read.option("multiline", "false").json(jsonfilepath)
         df.printSchema()
-        print(tc_datasource_config['aliasname'])
+        log_info(tc_datasource_config['aliasname'])
         df.createOrReplaceTempView(tc_datasource_config['aliasname'])
         df_data = spark.sql(query)
 

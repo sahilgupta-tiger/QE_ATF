@@ -150,6 +150,7 @@ def initilize_dbutils(spark):
   return dbutils
 
 def readconnectionconfig(connectionname):
+  log_info('Reading Connection Config json file.')
   #connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
   json_file = root_path + "test/connections/" +connectionname+".json"
   connection_config=json.load(open(json_file))
@@ -157,13 +158,14 @@ def readconnectionconfig(connectionname):
   return connection_config
 
 def set_azure_connection_config(spark,connectionconfig,dbutils):
-
-  storage_account = connectionconfig['STORAGE_ACCOUNT_NAME']
+  log_info('Setting Azure ADLS spark connection configuration to Databricks.')
+  
+  storage_account = dbutils.secrets.get(scope="akv-mckesson-scope", key=connectionconfig['STORAGE_ACCOUNT_NAME'])
   sas_token = dbutils.secrets.get(scope="akv-mckesson-scope", key=connectionconfig['SAS_TOKEN'])
 
   # Set the configuration using SAS Token
-  print('Configuring Azure ADLS connection.')
   spark.conf.set(f"fs.azure.account.auth.type.{storage_account}.dfs.core.windows.net", "SAS")
   spark.conf.set(f"fs.azure.sas.token.provider.type.{storage_account}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
   spark.conf.set(f"fs.azure.sas.fixed.token.{storage_account}.dfs.core.windows.net", sas_token)
-  print('Azure ADLS connection configuration completed.')
+
+  log_info('Azure ADLS connection configuration completed.')

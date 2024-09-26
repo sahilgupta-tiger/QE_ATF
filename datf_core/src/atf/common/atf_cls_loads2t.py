@@ -9,7 +9,7 @@ import pandas as pd
 from openpyxl import load_workbook
 from constants import *
 from IPython.display import display
-
+from atf.common.atf_common_functions import log_info
 
 class LoadS2T:
    
@@ -44,7 +44,10 @@ class LoadS2T:
       elif 'abfs' in config["sourcefilepath"]:
         self.sourceFilePath = config["sourcefilepath"]
       else:
+        log_info("Appending Root path to relative file Path")
         self.sourceFilePath= root_path+config["sourcefilepath"]
+        log_info(f"Source File Path :- {self.sourceFilePath}")
+
     self.sourceFileName=config["sourcefilename"]
     if config["sourcefilehasheader"].upper() == 'Y':
       self.sourceFileHasHeader=True
@@ -70,7 +73,9 @@ class LoadS2T:
       elif 'abfs' in config["stagefilepath"]:
         self.stageFilePath = config["stagefilepath"]
       else:
+        log_info("Appending Root path to relative file Path")
         self.stageFilePath=root_path+config["stagefilepath"]
+        log_info(f"Stage File Path :- {self.stageFilePath}")
 
     self.stageFileHasHeader=config["stagefilehasheader"]
     self.stageFileDelimiter=config["stagefiledelimiter"]
@@ -93,7 +98,9 @@ class LoadS2T:
       elif 'abfs' in config["targetfilepath"]:
         self.targetFilePath = config["targetfilepath"]
       else:
+        log_info("Appending Root path to relative file Path")
         self.targetFilePath=root_path+config["targetfilepath"]
+        log_info(f"Target File Path :- {self.targetFilePath}")
 
     self.targetFileHasHeader=config["targetfilehasheader"]
     self.targetFileDelimiter=config["targetfiledelimiter"]

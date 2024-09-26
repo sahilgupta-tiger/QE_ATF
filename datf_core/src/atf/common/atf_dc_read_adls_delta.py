@@ -59,7 +59,7 @@ def read_adls_deltadata(dict_configdf, spark):
     df_deltadata = spark.sql(query_delta.head()[0])
 
   df_deltadata.printSchema()
-  df_deltadata.show()
+  #df_deltadata.show()
   log_info("Returning the DataFrame")
 
   return df_deltadata, query_delta

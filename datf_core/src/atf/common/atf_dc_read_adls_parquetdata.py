@@ -19,8 +19,15 @@ def read_adls_parquetdata(tc_datasource_config,spark):
   set_azure_connection_config(spark,connectionconfig,dbutils)
 
   # Relative path within the container
-  delta_path = tc_datasource_config['path']  
-  df = spark.read.parquet(delta_path)
+  parquet_path = tc_datasource_config['path'] 
+
+  if ('abfs' not in parquet_path) and ('Volume' not in parquet_path):
+      log_info("Appending Root path to relative parquet file Path")
+      parquet_path = root_path + parquet_path
+
+  log_info(f'ADLS File Path :- {parquet_path}')
+
+  df = spark.read.parquet(parquet_path)
   df.createOrReplaceTempView(tc_datasource_config['aliasname'])
   
   if tc_datasource_config['comparetype'] == 's2tcompare' and tc_datasource_config['testquerygenerationmode'] == 'Auto':
@@ -31,7 +38,7 @@ def read_adls_parquetdata(tc_datasource_config,spark):
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)
-    print(query)
+    log_info(f"Select Table Command statement - \n{query}")
 
   elif tc_datasource_config['comparetype'] == 'likeobjectcompare':
     excludecolumns = tc_datasource_config['excludecolumns']
@@ -46,11 +53,11 @@ def read_adls_parquetdata(tc_datasource_config,spark):
     query= "SELECT " + columnlist + " FROM "+tc_datasource_config['aliasname']
     if len(datafilter) >=5:
       query= query + " WHERE " + datafilter
-    print(query)
+    log_info(f"Select Table Command statement - \n{query}")
     
   df_data = spark.sql(query)
   df_data.printSchema()
-  df_data.show()
+  #df_data.show()
   log_info("Returning the Source DataFrame and Query")
   
   return df_data, query

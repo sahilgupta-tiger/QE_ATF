@@ -45,8 +45,6 @@ class S2TAutoLoadScripts:
   
   def getSchemaDefinitionStage(self, schemadf):
     schemaStruct = StructType()
-    #print("I am at the point")
-    #schemadf.printSchema()
     schemadfCollect = schemadf.collect()
     #print(schemadfCollect)
     for row in schemadfCollect:
@@ -252,17 +250,17 @@ class S2TAutoLoadScripts:
       else:
         schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
     
-    print("Source data read statment - ")
-    print(self.selectTableCommand)   
+    log_info(f"Select Table Command statement - \n{self.selectTableCommand}")
+
     autoscriptpath = self.tcdict['autoscriptpath']
 
-    print('Create Autoscript Path')
+    log_info('Creating Autoscript SQL Path')
     autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
-    print('Autoscript Path Generated')
+    log_info(f'Autoscript SQL Path Generated :- {autoScriptFile}')
     autoScriptFile= autoScriptFile.replace('//','/')
 
     f=open(autoScriptFile,"w+")
-    print("The data format is : ",dataFormat)
+    log_info(f"The data format of the file is : {dataFormat}")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
         avrofile = f"{dataFile}"
@@ -284,11 +282,11 @@ class S2TAutoLoadScripts:
             readdatadf= self.spark.table(deltaFile)
       if dataFormat == "json":
         jsonfile = f"{dataFile}"
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').schema({schemaStruct}).load('{dataFile}')\r\n")
         readdatadf= self.spark.read.format(dataFormat).schema(schemaStruct).load(jsonfile)
       if dataFormat == "delimitedfile":
         csvfile = f"{dataFile}"
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('{csvfile}')\r\n")
+        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).schema({schemaStruct}).option('header','true').load('{csvfile}')\r\n")
         readdatadf= self.spark.read.format("csv").option('delimiter', delimiter).option('header', 'true').schema(schemaStruct).load(csvfile)
         #readdatadf.printSchema()
       #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
@@ -303,7 +301,7 @@ class S2TAutoLoadScripts:
             
     f.close()
     returndf.printSchema()
-    returndf.show()
+    #returndf.show()
     filePath = str(dataFormat) + ".`" +str(dataFile) + "`"
     file_details_dict = {"join_columns":joincols,"file_path":filePath,"connectionname":connectionname, "connectiontype":connectiontype}
     return autoScriptFile, returndf, file_details_dict
