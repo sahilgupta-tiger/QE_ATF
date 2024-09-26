@@ -20,6 +20,11 @@ def read_oracledata(tc_datasource_config, spark):
     #Fetching credentials from key vault
     username =  dbutils.secrets.get(scope="akv-mckesson-scope",  key= connectionconfig['user'])  
     password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])
+    host = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['host'])
+    port = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['port'])
+    database = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['database'])
+                                 
+    connectionurl= f"jdbc:oracle:thin:@{host}:{port}/{database}"
 
     if tc_datasource_config['testquerygenerationmode'] == 'Manual':
         querypath = tc_datasource_config['querypath']
@@ -33,7 +38,7 @@ def read_oracledata(tc_datasource_config, spark):
 
         df_out = (spark.read.format("jdbc")
                         .option("driver", "oracle.jdbc.driver.OracleDriver")
-                        .option("url", connectionconfig['url'])
+                        .option("url", connectionurl)
                         .option("user", username)
                         .option("password", password)
                         .option("query", selectmanualqry)

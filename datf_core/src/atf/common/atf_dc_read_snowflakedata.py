@@ -19,7 +19,14 @@ def read_snowflakedata(tc_datasource_config, spark):
   
   #Fetching credentials from key vault
   username =  dbutils.secrets.get(scope="akv-mckesson-scope",  key= connectionconfig['user'])  
-  password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])  
+  password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])
+  host = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['host'])
+  port = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['port'])
+  database = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['database'])
+  schema = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['schema'])
+  warehouse = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['warehouse'])
+                                
+  connectionurl= dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['url'])
   
   resourcename = tc_datasource_config['filename']
   datafilter = tc_datasource_config['filter']
@@ -45,9 +52,9 @@ def read_snowflakedata(tc_datasource_config, spark):
                     .option("sfURL", connectionconfig['url'])
                     .option("sfUser", username)
                     .option("sfPassword", password)
-                    .option("sfDatabase", connectionconfig['database'])
-                    .option("sfSchema", connectionconfig['schema'])
-                    .option("sfWarehouse", connectionconfig['warehouse'])
+                    .option("sfDatabase", database)
+                    .option("sfSchema", schema)
+                    .option("sfWarehouse", warehouse)
                     .option("autopushdown", "on")
                     .option("query", selectallcolqry)
                     .load())

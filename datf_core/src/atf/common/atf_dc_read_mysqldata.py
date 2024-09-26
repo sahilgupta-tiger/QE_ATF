@@ -1,4 +1,3 @@
-
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,readconnectionconfig,initilize_dbutils
@@ -14,11 +13,16 @@ def read_mysqldata(tc_datasource_config,spark):
   
   #Reading connection config from json file
   connectionconfig = readconnectionconfig(connectionname)
-  connectionurl="jdbc:mysql://"+connectionconfig['host']+":"+connectionconfig['port']+"/"+connectionconfig['database']
 
   #Fetching credentials from key vault
   username =  dbutils.secrets.get(scope="akv-mckesson-scope",  key= connectionconfig['user'])  
   password = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['password'])
+  host = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['host'])
+  port = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['port'])
+  database = dbutils.secrets.get(scope="akv-mckesson-scope", key= connectionconfig['database'])
+                                 
+  connectionurl="jdbc:mysql://"+host+":"+port+"/"+database
+
   
   query="select * from "+ tc_datasource_config['filename']
   df = (spark.read
