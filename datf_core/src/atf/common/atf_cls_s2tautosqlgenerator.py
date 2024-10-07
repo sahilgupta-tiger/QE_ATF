@@ -4,6 +4,8 @@ from pyspark.sql.types import *
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
 from atf.common.atf_dc_read_datasources import read_data
 from constants import *
+from atf.common.atf_common_functions import *
+
 
 
 class S2TAutoLoadScripts:
@@ -236,7 +238,8 @@ class S2TAutoLoadScripts:
       else:
         schemaStruct= self.getSchemaDefinitionStage(self.s2tobj.stgschema_df)
     
-    print(self.selectTableCommand)   
+    log_info(f"Select Table Command statement - \n{self.selectTableCommand}")
+
     autoscriptpath = self.tcdict['autoscriptpath']
     autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
     autoScriptFile= autoScriptFile.replace('//','/')
@@ -282,7 +285,7 @@ class S2TAutoLoadScripts:
             
     f.close()
     returndf.printSchema()
-    returndf.show()
+    returndf.display()
     filePath = str(dataFormat) + ".`" +str(dataFile) + "`"
     file_details_dict = {"join_columns":joincols,"file_path":filePath,"connectionname":connectionname, "connectiontype":connectiontype}
     return autoScriptFile, returndf, file_details_dict

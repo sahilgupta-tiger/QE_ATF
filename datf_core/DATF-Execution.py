@@ -1,4 +1,8 @@
 # Databricks notebook source
+dbutils.library.restartPython()
+
+# COMMAND ----------
+
 dbutils.widgets.text('test_protocol_name', 'contenttestprotocol')
 dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
 dbutils.widgets.text('test_names', 'all')
