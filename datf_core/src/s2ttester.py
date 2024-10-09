@@ -10,7 +10,7 @@ from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_pdf_constants import *
 import os
-import datacompy
+from datacompy import SparkSQLCompare
 from datacompy.spark.legacy import LegacySparkCompare
 import sys
 import traceback
@@ -428,16 +428,25 @@ class S2TTester:
         if (testcasetype == 'content'):
             
             print("Comparing Contents of Source and Target now...(this may take a while)...")
-            comparison_obj = LegacySparkCompare(spark, sourcedf, targetdf,  \
-                                                    column_mapping=colmapping, \
+            if legacysparkcompare:
+                comparison_obj = LegacySparkCompare(spark, sourcedf, targetdf,  \
+                                                        column_mapping=colmapping, \
+                                                        join_columns=joincolumns, \
+                                                        cache_intermediates=True)
+            else:
+                comparison_obj = SparkSQLCompare(spark, sourcedf, targetdf, \
                                                     join_columns=joincolumns, \
-                                                    cache_intermediates=True)
+                                                 cast_column_names_lower=True, \
+                                                 df1_name='source1', df2_name='target1')
             #comparison_obj.report()
             distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
             distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
             duplicate_rowcount_source = rowcount_source - distinct_rowcount_source
             duplicate_rowcount_target = rowcount_target - distinct_rowcount_target
-            rows_both_all = comparison_obj.rows_both_all
+            if legacysparkcompare:
+                rows_both_all = comparison_obj.rows_both_all
+            else:
+                rows_both_all = comparison_obj.intersect_rows
             rows_mismatch = comparison_obj.rows_both_mismatch
             rows_only_source = comparison_obj.rows_only_base
             rows_only_target = comparison_obj.rows_only_compare

@@ -9,6 +9,7 @@ import os
 root_path = os.getenv('CWD')
 table_name = 'historical_trends'
 utctimezone = pytz.timezone("UTC")
+legacysparkcompare = True
 
 conf_JSON = """ {
     "spark.executor.instances": "18",

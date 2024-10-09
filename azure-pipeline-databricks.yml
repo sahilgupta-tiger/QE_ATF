@@ -52,16 +52,6 @@ steps:
       echo Status $job_status
     done
 
-    RESULT=$(databricks runs get-output --run-id $RUN_ID)
-
-    RESULT_STATE=$(echo $RESULT | jq -r '.metadata.state.result_state')
-    RESULT_MESSAGE=$(echo $RESULT | jq -r '.metadata.state.state_message')
-    if [ $RESULT_STATE = "FAILED" ]
-    then
-      echo "##vso[task.logissue type=error;]$RESULT_MESSAGE"
-      echo "##vso[task.complete result=Failed;done=true;]$RESULT_MESSAGE"
-    fi
-    echo $RESULT | jq .
   displayName: 'Run DATF Databricks Notebook'
 
   env:
