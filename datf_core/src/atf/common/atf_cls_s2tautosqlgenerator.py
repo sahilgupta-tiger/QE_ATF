@@ -285,7 +285,7 @@ class S2TAutoLoadScripts:
             
     f.close()
     returndf.printSchema()
-    returndf.display()
+    returndf.show()
     filePath = str(dataFormat) + ".`" +str(dataFile) + "`"
     file_details_dict = {"join_columns":joincols,"file_path":filePath,"connectionname":connectionname, "connectiontype":connectiontype}
     return autoScriptFile, returndf, file_details_dict
