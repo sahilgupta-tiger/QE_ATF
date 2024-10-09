@@ -245,6 +245,8 @@ class S2TAutoLoadScripts:
     autoScriptFile= autoScriptFile.replace('//','/')
 
     f=open(autoScriptFile,"w+")
+    print("dataFormat = " + dataFormat)
+    print("dataFile = " + dataFile)
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
         avrofile = f"file:{dataFile}"
@@ -280,6 +282,7 @@ class S2TAutoLoadScripts:
       f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
       returndf = self.spark.sql(self.selectTableCommand)
     else:
+      print("Moving to read_data function call")
       f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
       returndf, table_query = read_data(self.tcdict, self.spark)
             
