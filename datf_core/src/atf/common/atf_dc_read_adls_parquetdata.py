@@ -6,7 +6,6 @@ from constants import *
 def read_adls_parquetdata(tc_datasource_config,spark):
   log_info("Reading parquet Data from ADLS storage")
   resourcename = tc_datasource_config['aliasname']
-  comparetype = tc_datasource_config['testquerygenerationmode']
   connectionname = tc_datasource_config['connectionname']
 
   #Reading Adls Connection Configuration
@@ -58,6 +57,6 @@ def read_adls_parquetdata(tc_datasource_config,spark):
   df_data = spark.sql(query)
   df_data.printSchema()
   #df_data.show()
-  log_info("Returning the Source DataFrame and Query")
+  log_info("Returning the DataFrame from read_avrodata Function")
   
   return df_data, query

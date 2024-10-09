@@ -150,7 +150,7 @@ def initilize_dbutils(spark):
   return dbutils
 
 def readconnectionconfig(connectionname):
-  log_info('Reading Connection Config json file.')
+  log_info(f'Reading Connection Config json file. - {connectionname}')
   #connection_config=json.load(open("/app/test/connections/"+connectionname+".json"))
   json_file = root_path + "test/connections/" +connectionname+".json"
   connection_config=json.load(open(json_file))

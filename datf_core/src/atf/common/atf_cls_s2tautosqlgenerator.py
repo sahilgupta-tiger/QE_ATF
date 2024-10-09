@@ -152,6 +152,7 @@ class S2TAutoLoadScripts:
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="source")]["columnname"].tolist()
         connectionname = self.s2tobj.sourceConnectionName  
         connectiontype = self.s2tobj.sourceConnectionType
+        log_info(f'Source Connection type- {connectiontype}')
         delimiter=self.s2tobj.sourceFileDelimiter
       elif autoscripttype == "target":
         dataFormat = self.s2tobj.targetFileFormat
@@ -159,6 +160,7 @@ class S2TAutoLoadScripts:
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="target")]["columnname"].tolist()
         connectionname = self.s2tobj.targetConnectionName  
         connectiontype = self.s2tobj.targetConnectionType
+        log_info(f'Source Connection type- {connectiontype}')
         delimiter=self.s2tobj.targetFileDelimiter
 
     if connectiontype == "adls" and ('abfs' in dataFile):
@@ -199,13 +201,19 @@ class S2TAutoLoadScripts:
           srccoltext= f'upper({srccoltext})'
         elif (convertCase == "L" and mapping[tgtcolumndatatype].upper() == 'STRING'):
           srccoltext= f'lower({srccoltext})' 
-        '''       
+        '''  
+        #changes done by priyanka , lin2 210 change in the below line scrcolumnnmae to tgtcolumnname
         if mapping["filteroutnulls"].upper() == "Y":
           if autoscripttype == "source":
             filterlist.append(f'src.{mapping["srccolumnname"]} IS NOT NULL') 
           elif autoscripttype == "target":
-            filterlist.append(f'tgt.{mapping["srccolumnname"]} IS NOT NULL') 
-                 
+            filterlist.append(f'tgt.{mapping["tgtcolumnname"]} IS NOT NULL') 
+        ##Code change for filtersqlexpression
+        if  mapping["filtersqlexpression"].upper() !='':
+          if autoscripttype == "source":
+            filterlist.append(f'src.{mapping["srccolumnname"]}' + ' ' + f'{mapping["filtersqlexpression"]}')
+          elif autoscripttype == "target":
+            filterlist.append(f'tgt.{mapping["tgtcolumnname"]}' + ' ' + f'{mapping["filtersqlexpression"]}')        
       
       srccoltext=srccoltext+f' as {mapping["tgtcolumnname"]}'
       srccollist.append(srccoltext)
@@ -226,12 +234,13 @@ class S2TAutoLoadScripts:
     lookupClause="".join(lookuplist)
          
     if autoscripttype == "source":
+      log_info(f'Dataview Source - dataview_{autoscripttype}')
       selcolClause=commaseparator.join(srccollist)
       srcTableName = self.tcdict["path"]+"."+self.tcdict["name"]
       if self.tcdict["format"] == "table":
         self.selectTableCommand=f"SELECT {selcolClause} FROM {srcTableName} src {lookupClause} {filterClause}"
       else:
-        self.selectTableCommand=f"SELECT {selcolClause} FROM dataview src {lookupClause} {filterClause}"
+        self.selectTableCommand=f"SELECT {selcolClause} FROM dataview_{autoscripttype} src {lookupClause} {filterClause}"
       if loadLayer == "source_to_stage" or loadLayer == "source_to_target":
         schemaStruct= self.getSchemaDefinitionSource(self.s2tobj.srcschema_df)
       else:
@@ -239,12 +248,13 @@ class S2TAutoLoadScripts:
         
         
     elif autoscripttype == "target":
+      log_info(f'Dataview Source - dataview_{autoscripttype}')
       selcolClause=commaseparator.join(tgtcollist)
       tgtTableName = self.tcdict["path"]+"."+self.tcdict["name"]
       if self.tcdict["format"] == "table":
         self.selectTableCommand=f"SELECT {selcolClause} FROM {tgtTableName} tgt {filterClause}"
       else:
-        self.selectTableCommand=f"SELECT {selcolClause} FROM dataview tgt {filterClause}"  
+        self.selectTableCommand=f"SELECT {selcolClause} FROM dataview_{autoscripttype} tgt {filterClause}"  
       if loadLayer == "stage_to_target" or loadLayer == "source_to_target":
         schemaStruct= self.getSchemaDefinitionTarget(self.s2tobj.tgtschema_df)
       else:
@@ -261,6 +271,8 @@ class S2TAutoLoadScripts:
 
     f=open(autoScriptFile,"w+")
     log_info(f"The data format of the file is : {dataFormat}")
+    
+    #Read the data
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":
         avrofile = f"{dataFile}"
@@ -291,10 +303,18 @@ class S2TAutoLoadScripts:
         #readdatadf.printSchema()
       #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
       #readdatadf=preproc_unnestfields(readdatadf)
-      f.write(f"readdatadf.createOrReplaceTempView('dataview')\r\n")
-      readdatadf.createOrReplaceTempView('dataview')
+      
+      if autoscripttype == "source":
+        f.write(f"readdatadf.createOrReplaceTempView('dataview_source')\r\n")
+        readdatadf.createOrReplaceTempView('dataview_source')
+      else:
+        f.write(f"readdatadf.createOrReplaceTempView('dataview_target')\r\n")
+        readdatadf.createOrReplaceTempView('dataview_target')
+      
       f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
       returndf = self.spark.sql(self.selectTableCommand)
+
+
     else:
       f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
       returndf, table_query = read_data(self.tcdict, self.spark)
