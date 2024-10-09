@@ -428,10 +428,11 @@ class S2TTester:
         if (testcasetype == 'content'):
             
             print("Comparing Contents of Source and Target now...(this may take a while)...")
-            comparison_obj = LegacySparkCompare(spark, sourcedf, targetdf,  \
-                                                    column_mapping=colmapping, \
+            comparison_obj = datacompy.SparkSQLCompare(spark, sourcedf, targetdf,  \
+                                                    #column_mapping=colmapping, \
                                                     join_columns=joincolumns, \
-                                                    cache_intermediates=True)
+                                                    #cache_intermediates=True, \
+                                                    df1_name='source1', df2_name='target1')
             #comparison_obj.report()
             distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
             distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
