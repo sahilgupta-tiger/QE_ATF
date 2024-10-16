@@ -1,12 +1,18 @@
 # Databricks notebook source
-dbutils.library.restartPython()
-
-# COMMAND ----------
-
 dbutils.widgets.text('test_protocol_name', 'contenttestprotocol')
 dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
 dbutils.widgets.text('test_names', 'all')
 dbutils.widgets.text('work_path', '/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/')
+
+# COMMAND ----------
+
+work_path = dbutils.widgets.get("work_path")
+install_path = f"{work_path}/scripts/requirements.txt"
+%pip install -r $install_path
+
+# COMMAND ----------
+
+dbutils.library.restartPython()
 
 # COMMAND ----------
 
@@ -30,11 +36,11 @@ runner = f"{py_file} {test_protocol} {test_type} {test_names}"
 # COMMAND ----------
 
 work_path = dbutils.widgets.get("work_path")
-html_file_content = open(f"{work_path}/utils/reports/datfreport.html", 'r').read()
+html_file_content = open(f"{work_path}utils/reports/datfreport.html", 'r').read()
 displayHTML(html_file_content)
 
 # COMMAND ----------
 
 work_path = dbutils.widgets.get("work_path")
-html_file_content = open(f"{work_path}/utils/reports/datf_trends_report.html", 'r').read()
+html_file_content = open(f"{work_path}utils/reports/datf_trends_report.html", 'r').read()
 displayHTML(html_file_content)
