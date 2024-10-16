@@ -497,9 +497,9 @@ class S2TTester:
             dict_no_of_rows = {'No. of rows in Source': rowcount_source,
                                'No. of rows in Target': rowcount_target}
 
-            if rows_only_source.rdd.isEmpty() and rows_only_target.rdd.isEmpty():
-                rows_both_all = None
-            if rows_mismatch.rdd.isEmpty():
+            if rows_only_source.limit(1).count()==0 and rows_only_target.limit(1).count()==0:
+                pass
+            if rows_mismatch.limit(1).count()==0:
                 rows_mismatch = None
                 sample_mismatch = None
             else:
@@ -509,7 +509,8 @@ class S2TTester:
                     sample_mismatch, joincolumns)
                 sample_mismatch = sample_mismatch.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_source.rdd.isEmpty():
+
+            if rows_only_source.limit(1).count()==0:
                 rows_only_source = None
                 sample_source_only = None
             else:
@@ -519,7 +520,8 @@ class S2TTester:
                     sample_source_only, joincolumns)
                 sample_source_only = sample_source_only.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_target.rdd.isEmpty():
+
+            if rows_only_target.limit(1).count()==0:
                 rows_only_target = None
                 sample_target_only = None
             else:
