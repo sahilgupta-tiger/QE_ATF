@@ -7,7 +7,7 @@ on:
     branches: [ "datf_snowpark" ]
 
 env:
-  TEST_TYPE: count
+  TEST_TYPE: duplicate
   TEST_NAME: all
 
 permissions:
