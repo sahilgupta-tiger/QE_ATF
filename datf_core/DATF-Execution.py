@@ -2,16 +2,13 @@
 dbutils.widgets.text('test_protocol_name', 'contenttestprotocol')
 dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
 dbutils.widgets.text('test_names', 'all')
-dbutils.widgets.text('work_path', '/Workspace/Repos/sahil.gupta@tigeranalytics.com/QE_ATF/datf_core/')
+dbutils.widgets.text('work_path', '/Workspace/Shared/QE_ATF/datf_core/')
 
 # COMMAND ----------
 
 work_path = dbutils.widgets.get("work_path")
 install_path = f"{work_path}/scripts/requirements.txt"
 %pip install -r $install_path
-
-# COMMAND ----------
-
 dbutils.library.restartPython()
 
 # COMMAND ----------
