@@ -256,6 +256,7 @@ class S2TAutoLoadScripts:
         readschemadf=self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf=self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
       if dataFormat in ["delta","parquet"]:
+        print(dataFile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{dataFile}')\r\n")
         readdatadf=self.spark.read.format(dataFormat).load(dataFile)
         #readdatadf.printSchema()

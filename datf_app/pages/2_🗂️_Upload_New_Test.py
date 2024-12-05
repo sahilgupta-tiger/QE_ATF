@@ -1,31 +1,8 @@
-from datf_core.src.website.setpaths import *
-import streamlit as st
-import json
-from langchain_core.messages import HumanMessage
-from langchain_openai import AzureChatOpenAI
-from datf_core.src.testconfig import *
 from os import listdir
 from os.path import isfile, join
-
-
-openai_json = json.load(open(f"{core_path}/test/connections/azure_open_ai_connection.json"))
-os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
-os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
-openai_api_version = openai_json['apiversion']
-azure_deployment = openai_json['deployment']
-
-
-def get_queries_from_ai(prompt):
-
-    model = AzureChatOpenAI(
-        openai_api_version=openai_api_version,
-        azure_deployment=azure_deployment,
-    )
-    message = HumanMessage(
-        content=prompt
-    )
-    output_value=model([message])
-    return output_value.content
+import os
+import streamlit as st
+from datf_core.src.testconfig import *
 
 
 def save_uploadedfile(uploadedfile, filepath):
@@ -38,7 +15,7 @@ def file_upload_all(uploaded_file, file_type, convention):
 
     if uploaded_file is not None:
         name_present = False
-        tc_path = f"{core_path}/test/{file_type}"
+        tc_path = f"{root_path}/test/{file_type}"
         onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
         for loop in onlyfiles:
             if uploaded_file.name == loop:
@@ -56,18 +33,30 @@ def file_upload_all(uploaded_file, file_type, convention):
             return True
 
 
-def bulk_generation():
+def upload_new_test_page():
 
     st.set_page_config(
-        page_title="Bulk Generator"
+        page_title="Upload New TC"
     )
-    st.title("Bulk Test Configs SQL Generator")
+    st.title("Upload new Test Configuration")
 
     st.divider()
-    testcase_file = st.file_uploader("Template Excel file",
+    testcase_file = st.file_uploader("Test Case Excel file",
                                      type='xlsx', accept_multiple_files=False)
-    upl_bulk = file_upload_all(testcase_file, 'sqlbulk', 'bulk_')
+    upl_tc = file_upload_all(testcase_file, 'testcases', 'testcase')
+
+    connection_file = st.file_uploader("Credential JSON file",
+                                     type='json', accept_multiple_files=False)
+    upl_con = file_upload_all(connection_file, 'connections', 'conn_')
+
+    s2t_file = st.file_uploader("Source to Target Mapping file (optional)",
+                                     type='xlsx', accept_multiple_files=False)
+    upl_s2t = file_upload_all(s2t_file, 's2t', 's2t_')
+
+    if upl_tc or upl_con or upl_s2t:
+        st.divider()
+        st.markdown("**👈 Select the required page from the sidebar** to continue!")
 
 
 if __name__ == "__main__":
-    bulk_generation()
+    upload_new_test_page()

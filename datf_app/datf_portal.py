@@ -1,6 +1,4 @@
-import setpaths
 import streamlit as st
-
 
 def load_home_page():
 

@@ -1,16 +1,14 @@
-from datf_core.src.website.setpaths import *
 import streamlit as st
 import pandas as pd
 from os import listdir
 from os.path import isfile, join
 import json
-import pyodbc
 from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
 from datf_core.src.testconfig import *
 
 
-openai_json = json.load(open(f"{core_path}/test/connections/azure_open_ai_connection.json"))
+openai_json = json.load(open(f"{root_path}/test/connections/azure_open_ai_connection.json"))
 os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
 os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
 openai_api_version = openai_json['apiversion']

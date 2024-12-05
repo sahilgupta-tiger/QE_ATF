@@ -1,4 +1,3 @@
-from datf_core.src.website.setpaths import *
 import base64
 import subprocess
 import streamlit.components.v1 as components
@@ -68,7 +67,7 @@ def start_execution(test_type, modified_df):
     if st.button("Start Execution"):
         with st.spinner('Execution In-Progress. Please wait...(this may take a while)'):
             subprocess.run(f"{docker_bat_file} {execution_cmd}",
-                           cwd=f"{full_path}/{core_path}/scripts",
+                           cwd=f"{root_path}/scripts",
                             shell=True)
         # Save the edited table into the DB for execution
         modified_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
@@ -102,25 +101,25 @@ def report_generation():
         tab1, tab2, tab3 = st.tabs(["Summary", "Trends", "Detailed PDF"])
 
         with tab1:
-            html_file = open(f"{core_path}/utils/reports/datfreport.html", 'r', encoding='utf-8')
+            html_file = open(f"{root_path}/utils/reports/datfreport.html", 'r', encoding='utf-8')
             source_code = html_file.read()
             components.html(source_code, height=500, width=850, scrolling=True)
 
         with tab2:
-            html_file = open(f"{core_path}/utils/reports/datf_trends_report.html", 'r', encoding='utf-8')
+            html_file = open(f"{root_path}/utils/reports/datf_trends_report.html", 'r', encoding='utf-8')
             source_code = html_file.read()
             components.html(source_code, height=800, width=850, scrolling=True)
 
         with tab3:
-            display_pdf(f"{core_path}/utils/reports/datf_combined.pdf")
+            display_pdf(f"{root_path}/utils/reports/datf_combined.pdf")
 
 
 if __name__ == "__main__":
     use_protocol = False
-    conn = sqlite3.connect(f'{core_path}/utils/{exec_db_name}.db')
+    conn = sqlite3.connect(f'{root_path}/utils/{exec_db_name}.db')
 
     if use_protocol:
-        protocol_file_path = f"{core_path}/test/testprotocol/testprotocol.xlsx"
+        protocol_file_path = f"{root_path}/test/testprotocol/testprotocol.xlsx"
         df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
         df['execute'].replace({'Y': True, 'N': False}, inplace=True)
     else:

@@ -4,11 +4,12 @@
 testconfig.py
 """
 import pytz
+import os
 from cryptography.fernet import Fernet
 
 
-root_path = '/app/'
-protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
+root_path = '/app/datf_core'
+protocol_file_path = f"{root_path}/test/testprotocol/testprotocol.xlsx"
 docker_bat_file = "contain_datf.bat"
 
 # *** DO NOT CHANGE BELOW VALUES ***
