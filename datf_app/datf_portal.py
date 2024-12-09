@@ -1,4 +1,7 @@
+import pathlib
+import sys; sys.path.append(str(pathlib.Path(__file__).parent.parent))
 import streamlit as st
+
 
 def load_home_page():
 
@@ -15,7 +18,8 @@ def load_home_page():
         """
         Our OpenAI powered SQL Generator along with Data-validation Automated Testing 
         Framework (DATF) helps you achieve the best of both worlds namely, 
-        High Volume Data Validations using PySpark technology and new Generative AI capabilities.
+        High Volume Big Data Validations using Spark technology (clusters or compute) 
+        and new Generative AI LLM capabilities.
         
         **👈 Select a page from the sidebar** to see some examples
         of what our Accelerator can do!

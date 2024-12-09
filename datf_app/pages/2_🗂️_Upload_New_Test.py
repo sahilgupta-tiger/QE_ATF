@@ -1,6 +1,5 @@
 from os import listdir
 from os.path import isfile, join
-import os
 import streamlit as st
 from datf_core.src.testconfig import *
 

@@ -8,7 +8,7 @@ import os
 from cryptography.fernet import Fernet
 
 
-root_path = '/app/datf_core/'
+root_path = 'datf_core/'
 protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
 docker_bat_file = "contain_datf.bat"
 

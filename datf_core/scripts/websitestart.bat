@@ -8,7 +8,7 @@ del temp_exists.txt
 
 if "%CONTAINER_EXISTS%"=="" (
     echo Container does not exist. Creating a new container...
-    docker run -dt -p 8501-8510:8501-8510 -v %datfpath%:/app --name %container% apache/spark-py bash
+    docker run -dt -p 8501-8510:8501-8510 -v %datfpath%:/app -w /app --name %container% apache/spark-py bash
 ) else (
     echo Container exists. Checking if it is running...
 
@@ -16,7 +16,7 @@ if "%CONTAINER_EXISTS%"=="" (
     set /p CONTAINER_CHECK=<temp.txt
     del temp.txt
 
-    if "%CONTAINER_CHECK%"=="" (
+    if "%CONTAINER_CHECK%"=="%container%" (
         echo Container is not running. Starting the container...
         docker start %container%
     ) else (
@@ -26,6 +26,6 @@ if "%CONTAINER_EXISTS%"=="" (
 echo Installing Plugins
 docker exec -u root %container% bash -c "pip config set global.trusted-host 'pypi.org files.pythonhosted.org pypi.python.org' --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org"
 docker exec -u root %container% bash -c "python3 -m pip install --upgrade pip"
-docker exec -u root %container% bash -c "cd / && sh app/datf_core/scripts/install.sh"
+docker exec -u root %container% bash -c "sh datf_core/scripts/install.sh"
 echo Starting Website
-docker exec -u root %container% bash -c "cd / && cd app/datf_core/scripts && sh websitestart.sh"
+docker exec -u root %container% bash -c "sh datf_core/scripts/websitestart.sh"

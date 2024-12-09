@@ -31,7 +31,7 @@ def get_queries_from_ai(prompt):
 
 
 def read_test_configs():
-    tc_path = f"{core_path}/test/testcases"
+    tc_path = f"{root_path}/test/testcases"
     onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
     for loop in onlyfiles:
         if loop.find("template") != -1:

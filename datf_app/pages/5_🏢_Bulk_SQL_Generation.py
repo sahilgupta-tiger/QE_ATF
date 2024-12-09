@@ -37,7 +37,7 @@ def file_upload_all(uploaded_file, file_type, convention):
 
     if uploaded_file is not None:
         name_present = False
-        tc_path = f"{core_path}/test/{file_type}"
+        tc_path = f"{root_path}/test/{file_type}"
         onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
         for loop in onlyfiles:
             if uploaded_file.name == loop:
