@@ -4,7 +4,7 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
 from atf.common.atf_dc_read_datasources import read_data
-from testconfig import *
+from ...testconfig import *
 
 # COMMAND ----------
 
@@ -247,6 +247,7 @@ class S2TAutoLoadScripts:
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
     autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
+    autoScriptFile= autoScriptFile.replace('//','/')
 
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
@@ -255,11 +256,19 @@ class S2TAutoLoadScripts:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{dataFile}')\r\n")
         readschemadf=self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf=self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
-      if dataFormat in ["delta","parquet"]:
+      if dataFormat in ["parquet"]:
         print(dataFile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{dataFile}')\r\n")
         readdatadf=self.spark.read.format(dataFormat).load(dataFile)
         #readdatadf.printSchema()
+      if dataFormat == "delta":
+        deltaFile = dataFile.replace(root_path,"")
+        if '/' in deltaFile:
+          f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
+          readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
+        else:
+          f.write(f"readdatadf=spark.table('{deltaFile}')\r\n")
+          readdatadf= self.spark.table(deltaFile)
       if dataFormat == "json":
         f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
         readdatadf=self.spark.read.format(dataFormat).schema(schemaStruct).load(dataFile)

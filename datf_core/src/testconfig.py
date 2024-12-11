@@ -7,9 +7,15 @@ import pytz
 import os
 from cryptography.fernet import Fernet
 
+protocol_engine = "pyspark" # options: pyspark, databricks, docker
 
-root_path = 'datf_core/'
-protocol_file_path = f"{root_path}test/testprotocol/testprotocol.xlsx"
+if protocol_engine == "databricks":
+    root_path = os.getenv('CWD')
+elif protocol_engine == "pyspark":
+    root_path = "datf_core/"
+else:
+    root_path = "app/datf_core/"
+
 docker_bat_file = "contain_datf.bat"
 
 # *** DO NOT CHANGE BELOW VALUES ***

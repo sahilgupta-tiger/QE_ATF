@@ -21,20 +21,27 @@ from atf.common.atf_cls_createdb import create_db
 
 def createsparksession():
 
-    conf_dict = json.loads(conf_JSON)
-    myconf = SparkConf().setMaster("local[*]").setAppName('s2ttester')
-    for key, val in conf_dict.items():
-        myconf.set(key, val)
-    
-    spark = SparkSession.builder.config(conf=myconf).getOrCreate()
-    spark.sparkContext.setLogLevel('WARN')
+    if protocol_engine == "databricks":
+        spark = SparkSession.getActiveSession()
+        if spark is not None:
+            log_info("!!! Databricks Spark Session Acquired !!!")
+    else:
+        conf_dict = json.loads(conf_JSON)
+        myconf = SparkConf().setMaster("local[*]").setAppName('s2ttester')
+        for key, val in conf_dict.items():
+            myconf.set(key, val)
 
-    log_info("Spark Session Configuration items are listed below -")
-    configs = spark.sparkContext.getConf().getAll()
-    log_info('Spark Version :' + spark.version)
-    log_info('SparkContext Version :' + spark.sparkContext.version)
-    for item in configs:
-        log_info(item)
+        spark = SparkSession.builder.config(conf=myconf).getOrCreate()
+        spark.sparkContext.setLogLevel('WARN')
+
+        log_info("Spark Session Configuration items are listed below -")
+        configs = spark.sparkContext.getConf().getAll()
+        log_info('Spark Version :' + spark.version)
+        log_info('SparkContext Version :' + spark.sparkContext.version)
+        for item in configs:
+            log_info(item)
+
+    log_info(spark)
     return spark
 
 
@@ -947,12 +954,13 @@ class S2TTester:
 
 
 if __name__ == "__main__":
+    protocol_file_path = sys.argv[1]
     spark = createsparksession()
     testcasesrunlist = []
     create_db(protocol_file_path)
-    testtype = sys.argv[1]
-    temporaryrunlist = sys.argv[2].rstrip()
-    if "," in sys.argv[2]:
+    testtype = sys.argv[2]
+    temporaryrunlist = sys.argv[3].rstrip()
+    if "," in sys.argv[3]:
         testcasesrunlist = temporaryrunlist.split(",")
     else:
         testcasesrunlist.append(temporaryrunlist)

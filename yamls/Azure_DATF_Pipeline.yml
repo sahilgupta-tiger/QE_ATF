@@ -1,0 +1,67 @@
+resources:
+  repositories:
+  - repository: self
+
+trigger:
+  branches:
+    include:
+    - only_for_datf
+
+variables:
+- name: databricks-host
+  value: 'https://adb-4188668828067310.10.azuredatabricks.net'
+- name: notebook-folder
+  value: '/Workspace/Shared/QE_ATF/datf_core/'
+- name: cluster-id
+  value: '0422-060933-ihg1gid0'
+- name: notebook-name
+  value: 'DATF-Execution'
+- name: job-name
+  value: 'DATF-AzureRun'
+
+stages:
+- stage: __default
+  jobs:
+  - job: Job
+    steps:
+    - task: UsePythonVersion@0
+      displayName: 'Use Python 3.x'
+    - task: CmdLine@2
+      displayName: 'Install databricks-cli'
+      inputs:
+        script: |
+          pip install databricks-cli --upgrade
+    - task: CmdLine@2
+      displayName: 'Run DATF Databricks Notebook'
+      env:
+        DATABRICKS_TOKEN: $(databricks-token)
+        DATABRICKS_HOST: $(databricks-host)
+        DATABRICKS_JOBS_API_VERSION: 2.1
+      inputs:
+        script: "databricks jobs configure --version=2.1\n\nJOB_ID=$(databricks jobs list --output JSON | \n  jq -r --arg job_name \"$(job-name)\" '.jobs[] | \n  select(.settings.name == \"$(job-name)\") | .job_id')\n\nif [ -n \"$JOB_ID\" ]; then\n  echo \"Starting existing job with ID: $JOB_ID\"\nelse\n  JOB_ID=$(databricks jobs create --json '{\n      \"name\": \"$(job-name)\",\n      \"existing_cluster_id\": \"$(cluster-id)\",\n      \"timeout_seconds\": 3600,\n      \"max_retries\": 0,\n      \"notebook_task\": {\n        \"notebook_path\": \"$(notebook-folder)$(notebook-name)\",\n        \"base_parameters\": {}\n      }\n    }' | jq '.job_id')\n    echo \"Starting new job with ID: $JOB_ID\"\nfi\n\nRUN_ID=$(databricks jobs run-now --job-id $JOB_ID | jq '.run_id')\n\njob_status=\"PENDING\"\nwhile [ $job_status = \"RUNNING\" ] || [ $job_status = \"PENDING\" ]\ndo\n  sleep 2\n  job_status=$(databricks runs get --run-id $RUN_ID | jq -r '.state.life_cycle_state')\n  echo Status $job_status\ndone\n\n#RESULT=$(databricks runs get-output --run-id $RUN_ID)\n\n#RESULT_STATE=$(echo $RESULT | jq -r '.metadata.state.result_state')\n#RESULT_MESSAGE=$(echo $RESULT | jq -r '.metadata.state.state_message')\n#if [ $RESULT_STATE = \"FAILED\" ]\n#then\n#  echo \"##vso[task.logissue type=error;]$RESULT_MESSAGE\"\n#  echo \"##vso[task.complete result=Failed;done=true;]$RESULT_MESSAGE\"\n#fi\n#echo $RESULT | jq .\n"
+    - task: CmdLine@2
+      displayName: 'Download results from Workspace'
+      inputs:
+        script: |
+          databricks workspace export $(notebook-folder)utils/reports/datfreport.html ./datfreport.html
+          databricks workspace export $(notebook-folder)utils/reports/datf_trends_report.html ./datf_trends_report.html
+          databricks workspace export $(notebook-folder)utils/reports/datf_combined.pdf ./datf_combined.pdf
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: ./datf_combined.pdf
+        artifact: 'Detailed Report PDF'
+        publishLocation: 'pipeline'
+      displayName: 'Publish Detailed Report'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: ./datfreport.html
+        artifact: 'Summary Report HTML'
+        publishLocation: 'pipeline'
+      displayName: 'Publish Summary Report'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: ./datf_trends_report.html
+        artifact: 'Trends Report HTML'
+        publishLocation: 'pipeline'
+      displayName: 'Publish Trends Report'
+
