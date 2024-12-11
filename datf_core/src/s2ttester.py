@@ -954,10 +954,9 @@ class S2TTester:
 
 
 if __name__ == "__main__":
-    protocol_file_path = sys.argv[1]
     spark = createsparksession()
     testcasesrunlist = []
-    create_db(protocol_file_path)
+    protocol_file_path = sys.argv[1]
     testtype = sys.argv[2]
     temporaryrunlist = sys.argv[3].rstrip()
     if "," in sys.argv[3]:
@@ -967,6 +966,7 @@ if __name__ == "__main__":
     log_info(f"Protocol Config path :{protocol_file_path}")
     log_info(f"TestType: {testtype}")
     log_info(f"TestCasesRunList: {testcasesrunlist}")
+    create_db(protocol_file_path)
     testerobj = S2TTester(spark)
     testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
    
