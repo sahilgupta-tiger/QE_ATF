@@ -6,7 +6,10 @@ constants.py
 import pytz
 import os
 
-root_path = os.getenv('CWD')
+if os.getenv('CWD') is not None:
+    root_path = os.getenv('CWD')
+else:
+    root_path = "datf_core/"
 table_name = 'historical_trends'
 utctimezone = pytz.timezone("UTC")
 legacysparkcompare = True
