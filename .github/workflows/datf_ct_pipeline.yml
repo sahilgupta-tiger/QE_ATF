@@ -2,7 +2,25 @@ name: datf_testing_pipeline
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  test:
+  build-and-run:
     runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Build Custom Image from Base Image
+      - name: Build Custom Spark Image
+        run: |
+          docker build --build-arg BASE_IMAGE=apache/spark-py -t custom-spark-app .
+
+      # Step 3: Run Custom Image
+      - name: Run Spark Application
+        run: |
+          docker run --rm custom-spark-app

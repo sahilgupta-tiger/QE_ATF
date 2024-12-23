@@ -1,10 +1,10 @@
 {
     "connnectiontype":"snowsqldatabase",
     "connectname":"pyspark_snowflake_connection",
-    "url":"feglmwu-wbb76572.snowflakecomputing.com",
-    "user":"sg217tiger",
-    "password":"gAAAAABmIQ98YzvFHe3LZe7Ld7HB18VJ9PhYnwmQ5B5g7pV19pCCsNPKvtQM11wJfCVgeR-Y4NwxHCRAZx_vJ_E6e3CX7oRbwQ==",
-    "database":"DATFDEMO",
+    "url":"yifgzee-nkb46151.snowflakecomputing.com",
+    "user":"tigersgupta17",
+    "password":"gAAAAABmzBudsxC-U55R6WXGmSXqZuF6sxMGjC6XqViSrN7Cd8Q6UJt3E85ZpVNwa3VkwRNgLGlozx6T510u9SiyHRriPpnWiA==",
+    "database":"TIGERDEMO",
     "schema":"TASFSCHEMA",
     "warehouse":"COMPUTE_WH",
     "role": "accountadmin"

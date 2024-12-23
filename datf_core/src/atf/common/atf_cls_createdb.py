@@ -2,7 +2,7 @@ import os
 import sqlite3
 import pandas as pd
 from tabulate import tabulate
-from ...testconfig import *
+from testconfig import *
 
 
 # Establish connection with the database and create one if it does not exist

@@ -46,7 +46,7 @@ def read_snowflakedata(tc_datasource_config, spark):
   df_snowflakedata = (spark.read.format(SNOWFLAKE_SOURCE_NAME)
                     .option("sfURL", connectionconfig['url'])
                     .option("sfUser", connectionconfig['user'])
-                    .option("sfPassword", connectionconfig['password'])
+                    .option("sfPassword", decryptcredential(connectionconfig['password']))
                     .option("sfDatabase", connectionconfig['database'])
                     .option("sfSchema", connectionconfig['schema'])
                     .option("sfWarehouse", connectionconfig['warehouse'])

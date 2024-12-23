@@ -335,7 +335,7 @@ def historical_trends():
         ORDER BY [DB Stored Time] DESC LIMIT 40;
     '''
     trends_df = retrieve_from_db(trends_query)
-    print(tabulate(trends_df, headers='keys', tablefmt='psql'))
+    # print(tabulate(trends_df, headers='keys', tablefmt='psql'))
     trends_data = trends_df.values.tolist()
 
     html_content += f"""

@@ -184,8 +184,8 @@ class S2TTester:
                 # testcase_exectime = testcase_exectime.strftime("%H:%M:%S")
 
                 dict_runsummary = {'Application Name': dict_protocol['protocol_application_name'], 'Protocol Name': dict_protocol['protocol_name'],
-                                   "Protocol File Path": protocol_file_path, 'Testcase Name': testcase_details['testcasename'],
-                                   "Testcase Type": testcasetype,
+                                   "Protocol File Path": protocol_file_path, 'Testcase Name': test_case_name,
+                                   'Testcase Type': testcasetype,
                                    'Test Environment': dict_protocol['protocol_run_environment'], 'Start Time': testcase_starttime,
                                    'End Time': testcase_endtime, 'Run Time': testcase_exectime, 'Test Result': dict_compareoutput['test_result'],
                                    'Reason': dict_compareoutput['result_desc']}
@@ -229,19 +229,19 @@ class S2TTester:
                     dict_runsummary, dict_config, results_path, compare_input, dict_compareoutput, testcasetype, comparison_type, pdfobj_combined_testcase)
                 
                 if testcasetype == "count":
-                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(
+                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(
                         dict_testresults['No. of rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
                 elif testcasetype == "duplicate":
-                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
+                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
                         dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
                 elif testcasetype == "content" or testcasetype == "count and content":
-                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']), str(
+                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']), str(
                         dict_testresults['No. of matched rows']), str(dict_testresults['No. of mismatched rows']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
                 
                 elif testcasetype == "fingerprint":
-                    df_protocol_summary.loc[index] = [testcase_details['testcasename'], str(dict_testresults['No. of KPIs in Source']), str(dict_testresults['No. of KPIs in Target']), str(
+                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of KPIs in Source']), str(dict_testresults['No. of KPIs in Target']), str(
                         dict_testresults['No. of KPIs matched']), str(dict_testresults['No. of KPIs mismatched']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
                     
                 log_info(
@@ -350,7 +350,7 @@ class S2TTester:
                            'path': tc_config['sourcefilepath'], 'format': tc_config['sourcefileformat'], 'name': tc_config['sourcefilename'],
                            'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'],
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'],
-                           'testcasename': tc_config['testcasename'], 'autoscripttype': 'source', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
+                           'test_case_name': tc_config['test_case_name'], 'autoscripttype': 'source', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
                            'filename':tc_config['sourcefilename']}
             autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_source_config, self.spark)
             scriptpath, source_df, source_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
@@ -363,7 +363,7 @@ class S2TTester:
                            'path': tc_config['targetfilepath'], 'format': tc_config['targetfileformat'], 'name': tc_config['targetfilename'],
                            'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'],
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'],
-                           'testcasename': tc_config['testcasename'], 'autoscripttype': 'target', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
+                           'test_case_name': tc_config['test_case_name'], 'autoscripttype': 'target', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}
             autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_target_config, self.spark)
             scriptpath, target_df, target_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
@@ -945,15 +945,17 @@ class S2TTester:
 
 if __name__ == "__main__":
     spark = createsparksession()
-    testcasesrunlist = []
+    testcasesrunlist = ['all']
     protocol_file_path = sys.argv[1]
     testtype = sys.argv[2]
+    '''
     temporaryrunlist = sys.argv[3].rstrip()
     if "," in sys.argv[3]:
         testcasesrunlist = temporaryrunlist.split(",")
     else:
         testcasesrunlist.append(temporaryrunlist)
-    log_info(f"Protocol Config path :{protocol_file_path}")
+    '''
+    log_info(f"Protocol Config path: {protocol_file_path}")
     log_info(f"TestType: {testtype}")
     log_info(f"TestCasesRunList: {testcasesrunlist}")
     create_db(protocol_file_path)
