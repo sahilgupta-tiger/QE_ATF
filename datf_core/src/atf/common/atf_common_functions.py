@@ -20,8 +20,8 @@ def read_protocol_file(filepath):
   df_protocol = pd.read_excel(filepath, engine='openpyxl',sheet_name='protocol',keep_default_na=False, header=None) 
   df_testcases = pd.read_excel(filepath, engine='openpyxl',sheet_name='protocoltestcasedetails') #,keep_default_na=False
   df_testcases=df_testcases[df_testcases['Sno.']!='']
-  df_testcases=df_testcases.iloc[:,0:4]
-  df_testcases= df_testcases.dropna()
+  #df_testcases=df_testcases.iloc[:,0:4]
+  #df_testcases= df_testcases.dropna()
   dict_protocol = dict(df_protocol.values)
   #context = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
   #workspacename = context['tags']['browserHostName']

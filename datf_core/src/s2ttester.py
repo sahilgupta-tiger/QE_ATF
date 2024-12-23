@@ -26,7 +26,7 @@ def createsparksession():
         if spark is not None:
             log_info("!!! Databricks Spark Session Acquired !!!")
     else:
-        conf_dict = json.loads(conf_JSON)
+        conf_dict = json.loads(spark_conf_JSON)
         myconf = SparkConf().setMaster("local[*]").setAppName('s2ttester')
         for key, val in conf_dict.items():
             myconf.set(key, val)
@@ -58,32 +58,30 @@ class S2TTester:
                 f"Reading the Protocol file details from {protocol_file_path}")
             dict_protocol, df_testcases = read_protocol_file(
                 protocol_file_path)
-            log_info("dict protocol is")
+            log_info("Protocol read completed :- ")
             log_info(dict_protocol)
-            # "test_case_type", "count", ["count","duplicate","content"]
-            # s3_path = get_connection_config(s3_conn_name)
-            # s3_path = s3_path['BUCKETNAME']
-            s3_path = ""
-            # + '/' + str(testcasetype) + '/'
-            # results_path = str(s3_path) + \
-            #   str(dict_protocol['protocol_results_path'])
 
             results_path = str(root_path+dict_protocol['protocol_results_path'])
+            #Creating directory for results folder
+            if not os.path.exists(results_path):
+                log_info(f"Creating directory - {results_path}")
+                os.mkdir(results_path)
+            else:
+                log_info(f"The directory - `{results_path}` already exists.")
+
             timenow = datetime.now(utctimezone)
             created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
-            # folder_s3 = results_path + str(dict_protocol['protocol_name']) + \
-            # '/run_' + str(dict_protocol['protocol_name']) + "_" + created_time+'/'
-            folder_s3 = results_path + \
+
+            cloud_results_folder = results_path + \
                 str(dict_protocol['protocol_name']) + \
                 '/run_'+testcasetype+"_"+created_time+'/'
-            log_info(f"Protocol Result folder Path: {folder_s3}")
-            os.mkdir(folder_s3)
-            testcase_folder_s3 = folder_s3 + '/run_testcase_summary_' + created_time+'/'
-            os.mkdir(testcase_folder_s3)
-            # protocol_output_path = "/dbfs" + get_mount_path(folder_s3)
-            # testcase_output_path = "/dbfs" + get_mount_path(testcase_folder_s3)
-            protocol_output_path = folder_s3
-            testcase_output_path = testcase_folder_s3
+            log_info(f"Protocol Result folder Path: {cloud_results_folder}")
+            os.mkdir(cloud_results_folder)
+            testcase_cloud_results_folder = cloud_results_folder + '/run_testcase_summary_' + created_time+'/'
+            os.mkdir(testcase_cloud_results_folder)
+
+            protocol_output_path = cloud_results_folder
+            testcase_output_path = testcase_cloud_results_folder
             combined_testcase_output_path = protocol_output_path + "/run_tc_combined_" + \
                 str(dict_protocol['protocol_name']) + \
                 "_" + created_time + ".pdf"
@@ -94,7 +92,7 @@ class S2TTester:
             summary_output_path = self.generate_protocol_summary_report(
                 df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
             # generate HTML report ** new function **
-            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, folder_s3, combined_testcase_output_path, summary_output_path)
+            generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, cloud_results_folder, combined_testcase_output_path, summary_output_path)
             log_info("Protocol Execution Completed")
 
         except Exception as e2:
@@ -133,18 +131,14 @@ class S2TTester:
         lst_run_testcases = testcasesrunlist
         
         for index, row in df_testcases.iterrows():
-            log_info(
-                f"{row['test_case_name']}: Testcase Picked up for Execution")
-            testcase_details = {}
             test_case_name = row['test_case_name']
+            log_info(f"{test_case_name}: Testcase Picked up for Execution")
+            row = row.fillna('')
+            row = row.apply(lambda x: int(x) if isinstance(x, float) and x.is_integer() else x)
+            testcase_details = {}
             tcnbr = str(int(row['Sno.']))
             execute_flag = row['execute']
-            test_case_file_path = root_path+row['test_case_file_path']
-            s3_conn_name = dict_protocol['protocol_connection']
-            # s3_path = get_connection_config(s3_conn_name)
-            # s3_path = s3_path['BUCKETNAME']
-            # test_case_mnt_src_path = s3_path + row['test_case_file_path']
-            # test_case_file_path = '/dbfs' + get_mount_path(s3_path) + row['test_case_file_path']
+            #test_case_file_path = root_path+row['test_case_file_path']
 
             try:
                 if (lst_run_testcases[0] == 'all' and (execute_flag == 'Y' or execute_flag == True)):
@@ -162,28 +156,24 @@ class S2TTester:
                     pdfobj_combined_testcase.pdf.add_page()
 
                 log_info(
-                    f"{row['test_case_name']}: Reading Test Case Config at {test_case_file_path}")
-                testcase_details = read_test_case(test_case_file_path)
-                # rel_source_path = testcase_details['sourcepath']
-                # testcase_details['sourcepath'] = s3_path + testcase_details['sourcepath']
-                # testcase_details['sourcepath'] = testcase_details['sourcepath']
-                # rel_target_path = testcase_details['targetpath']
-                # testcase_details['targetpath'] = s3_path + testcase_details['targetpath']
-                # testcase_details['targetpath'] = testcase_details['targetpath']
+                    f"Reading Test Case Config for:  {test_case_name}")
+                testcase_details = dict(row[2:])
+                #testcase_details = read_test_case(test_case_file_path)
+
                 testcase_starttime = datetime.now(utctimezone)
 
-                log_info(f"{row['test_case_name']}: Reading Source and Target Data based on TestCase Configuration:  {test_case_name}")
+                log_info(f"Reading Source and Target Data based on TestCase Configuration:  {test_case_name}")
 
                 compare_input = self.execute_testcase(testcase_details, auto_script_path, testcasetype)
 
-                log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
+                log_info(f"Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
                 dict_compareoutput = self.compare_data(compare_input, testcasetype)
 
                 testcase_endtime = datetime.now(utctimezone)
                 testcase_exectime = testcase_endtime - testcase_starttime
                 testcase_exectime = str(testcase_exectime).split('.')[0]
-                log_info(f"{row['test_case_name']}: Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
-                # log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
+                log_info(f"Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
+                log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
 
                 log_info(
                     f"{row['test_case_name']}: Test Results PDF Generation for Test Case Started for {test_case_name}")

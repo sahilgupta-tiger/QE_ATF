@@ -7,11 +7,11 @@ import pytz
 import os
 from cryptography.fernet import Fernet
 
-protocol_engine = "pyspark" # options: pyspark, databricks, docker
+protocol_engine = "docker" # options: default, databricks, docker
 
 if protocol_engine == "databricks":
     root_path = os.getenv('CWD')
-elif protocol_engine == "pyspark":
+elif protocol_engine == "docker":
     root_path = "datf_core/"
 else:
     root_path = "app/datf_core/"
@@ -26,7 +26,7 @@ exec_table_name = 'testselection'
 exec_sheet_name = 'protocoltestcasedetails'
 utctimezone = pytz.timezone("UTC")
 
-conf_JSON = """ {
+spark_conf_JSON = """ {
     "spark.executor.instances": "18",
     "spark.executor.cores": "8",
     "spark.executor.memory": "6g",

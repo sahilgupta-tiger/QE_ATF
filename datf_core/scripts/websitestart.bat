@@ -16,7 +16,7 @@ if "%CONTAINER_EXISTS%"=="" (
     set /p CONTAINER_CHECK=<temp.txt
     del temp.txt
 
-    if "%CONTAINER_CHECK%"=="%container%" (
+    if "%CONTAINER_CHECK%"=="" (
         echo Container is not running. Starting the container...
         docker start %container%
     ) else (
