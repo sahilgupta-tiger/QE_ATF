@@ -1,3 +1,4 @@
+@echo OFF
 set container=DATF
 @echo "Start Docker Container"
 docker start %container%
