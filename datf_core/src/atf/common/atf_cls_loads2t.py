@@ -9,6 +9,8 @@ from sys import *
 import time
 import pandas as pd
 from openpyxl import load_workbook
+from testconfig import root_path
+
 
 # COMMAND ----------
 
@@ -23,6 +25,7 @@ class LoadS2T:
   def __init__(self,configFilePath,spark):
     self.stageEnabled = True
     self.spark=spark
+    configFilePath = root_path + configFilePath
     config_wb = load_workbook(configFilePath, read_only=True)
     if 'StageMapping' not in config_wb.sheetnames:
       self.stageEnabled = False

@@ -11,18 +11,18 @@ from pyspark.sql.types import *
 # COMMAND ----------
 
 # DBTITLE 1,Function to read Redshift data
-def read_redshiftdata(dict_configdf, comparetype):
+def read_redshiftdata(tc_datasource_config, comparetype):
   
   log_info("Reading from Redshift Table")
-  connectionname = dict_configdf['connectionname']
-  connectiontype = dict_configdf['connectiontype']
-  resourceformat = dict_configdf['format']
+  connectionname = tc_datasource_config['connectionname']
+  connectiontype = tc_datasource_config['connectiontype']
+  resourceformat = tc_datasource_config['format']
   connectionconfig = get_connection_config(connectionname)
   
   if comparetype == 'Auto':
-    resourcename = dict_configdf['name']
-    datafilter = dict_configdf['filter']
-    excludecolumns = dict_configdf['excludecolumns']
+    resourcename = tc_datasource_config['name']
+    datafilter = tc_datasource_config['filter']
+    excludecolumns = tc_datasource_config['excludecolumns']
     excludecolumns = str(excludecolumns)
     exclude_cols = excludecolumns.split(',')
     datafilter = str(datafilter)

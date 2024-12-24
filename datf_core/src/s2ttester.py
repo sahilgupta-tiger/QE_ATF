@@ -944,17 +944,12 @@ class S2TTester:
 
 
 if __name__ == "__main__":
+    os.environ["PYARROW_IGNORE_TIMEZONE"] = "1"
     spark = createsparksession()
     testcasesrunlist = ['all']
     protocol_file_path = sys.argv[1]
     testtype = sys.argv[2]
-    '''
-    temporaryrunlist = sys.argv[3].rstrip()
-    if "," in sys.argv[3]:
-        testcasesrunlist = temporaryrunlist.split(",")
-    else:
-        testcasesrunlist.append(temporaryrunlist)
-    '''
+
     log_info(f"Protocol Config path: {protocol_file_path}")
     log_info(f"TestType: {testtype}")
     log_info(f"TestCasesRunList: {testcasesrunlist}")

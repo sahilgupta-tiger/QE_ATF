@@ -1,5 +1,5 @@
-pip install datacompy
 pip install datacompy[spark]
+pip install datacompy[fugue]
 pip install fpdf
 pip install openpyxl
 pip install fsspec
