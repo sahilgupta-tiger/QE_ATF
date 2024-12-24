@@ -40,9 +40,9 @@ def upload_new_test_page():
     st.title("Upload new Test Configuration")
 
     st.divider()
-    testcase_file = st.file_uploader("Test Case Excel file",
+    testcase_file = st.file_uploader("Test Case Protocol Excel file",
                                      type='xlsx', accept_multiple_files=False)
-    upl_tc = file_upload_all(testcase_file, 'testcases', 'testcase')
+    upl_tc = file_upload_all(testcase_file, 'testprotocol', 'test_')
 
     connection_file = st.file_uploader("Credential JSON file",
                                      type='json', accept_multiple_files=False)

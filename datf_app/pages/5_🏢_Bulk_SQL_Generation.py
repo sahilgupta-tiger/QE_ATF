@@ -58,7 +58,7 @@ def file_upload_all(uploaded_file, file_type, convention):
 def bulk_generation():
 
     st.set_page_config(
-        page_title="Bulk Generator"
+        page_title="Bulk SQL Generator"
     )
     st.title("Bulk Test Configs SQL Generator")
 

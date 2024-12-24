@@ -13,8 +13,6 @@ os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
 os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
 openai_api_version = openai_json['apiversion']
 azure_deployment = openai_json['deployment']
-conn_str = f"DRIVER={{SQL Server}};SERVER={'server'};DATABASE={'database'};UID={'username'};PWD={'password'}"
-conn = """pyodbc.connect(conn_str)"""
 
 
 def get_queries_from_ai(prompt):
@@ -31,7 +29,7 @@ def get_queries_from_ai(prompt):
 
 
 def read_test_configs():
-    tc_path = f"{root_path}/test/testcases"
+    tc_path = f"{root_path}test/testprotocol"
     onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
     for loop in onlyfiles:
         if loop.find("template") != -1:
@@ -54,7 +52,7 @@ def get_column_names(connection, table_name):
 def s2t_sql_generation():
 
     st.set_page_config(
-        page_title="S2T Generator"
+        page_title="S2T SQL Generator"
     )
     st.title("Source to Target SQL Generator")
     read_test_configs()

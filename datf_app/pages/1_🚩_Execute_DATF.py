@@ -2,12 +2,14 @@ import base64
 import subprocess
 import streamlit.components.v1 as components
 import streamlit as st
-import sqlite3
+from os import listdir
+from os.path import isfile, join
 import pandas as pd
 from datf_core.src.testconfig import *
 
 
 def load_homepage():
+
     st.set_page_config(
         page_title="DATF Execution",
         page_icon="📌"
@@ -23,25 +25,47 @@ def load_homepage():
     else:
         st.write("Please select a Testing Type from the list above.")
 
-    # Load the Test Cases as an interactive table
-    edited_df = st.data_editor(df, key='Sno.',
-                   column_order=('Sno.', 'test_case_name', 'execute'),
-                   column_config={
-                       "execute": st.column_config.CheckboxColumn(
-                           "Execute?",
-                           help="Select the test cases for execution.",
-                           default=False,
-                       )
-                   },
-                   hide_index=True, use_container_width=True)
+    selected_protocol = read_test_protocol()
+    if selected_protocol is not None:
+        protocol_file_path = f"{root_path}/test/testprotocol/{selected_protocol}"
+        df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
+        df['execute'].replace({'Y': True, 'N': False}, inplace=True)
 
-    # Start Execution Button
-    st.divider()
-    start_execution(test_type, edited_df.copy())
-    del edited_df
-    # Report Generation Button
-    st.divider()
-    report_generation()
+        # Load the Test Cases as an interactive table
+        edited_df = st.data_editor(df, key='Sno.',
+                       column_order=('Sno.', 'test_case_name', 'execute'),
+                       column_config={
+                           "execute": st.column_config.CheckboxColumn(
+                               "Execute?",
+                               help="Select the test cases for execution.",
+                               default=False,
+                           )
+                       },
+                       hide_index=True, use_container_width=True)
+
+        # Start Execution Button
+        st.divider()
+        start_execution(test_type, edited_df.copy())
+        del edited_df
+
+        # Report Generation Button
+        st.divider()
+        report_generation(1)
+
+
+def read_test_protocol():
+    tc_path = f"{root_path}test/testprotocol"
+    onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
+    for loop in onlyfiles:
+        if loop.find("template") != -1:
+            onlyfiles.remove(loop)
+
+    option = st.selectbox(
+        "Choose one from Test Configs below...",
+        onlyfiles, index=None, placeholder="type to search",
+    )
+    st.write("You selected: ", option)
+    return option
 
 
 def get_selected_testcases(selected_df):
@@ -73,6 +97,9 @@ def start_execution(test_type, modified_df):
         modified_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
         conn.commit()
         st.success("Completed. Click below to check results...")
+        # Report Generation Button
+        st.divider()
+        report_generation(2)
 
 
 def display_pdf(file):
@@ -95,9 +122,14 @@ def display_pdf(file):
         st.markdown(pdf_display, unsafe_allow_html=True)
 
 
-def report_generation():
+def report_generation(order):
 
-    if st.button("Generate Report"):
+    if order == 1:
+        button_text = "Display Last Report"
+    else:
+        button_text = "Generate Recent Report"
+
+    if st.button(button_text):
         tab1, tab2, tab3 = st.tabs(["Summary", "Trends", "Detailed PDF"])
 
         with tab1:
@@ -115,15 +147,5 @@ def report_generation():
 
 
 if __name__ == "__main__":
-    use_protocol = False
-    conn = sqlite3.connect(f'{root_path}/utils/{exec_db_name}.db')
-
-    if use_protocol:
-        protocol_file_path = f"{root_path}/test/testprotocol/testprotocol.xlsx"
-        df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
-        df['execute'].replace({'Y': True, 'N': False}, inplace=True)
-    else:
-        df = pd.read_sql(f'SELECT * FROM {exec_table_name}', conn)
-
     load_homepage()
-    conn.close()
+
