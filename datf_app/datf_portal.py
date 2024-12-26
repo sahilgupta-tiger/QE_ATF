@@ -1,6 +1,7 @@
 import pathlib
 import sys; sys.path.append(str(pathlib.Path(__file__).parent.parent))
 import streamlit as st
+import openpyxl; openpyxl.reader.excel.warnings.simplefilter(action='ignore')
 
 
 def load_home_page():

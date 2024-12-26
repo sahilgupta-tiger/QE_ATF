@@ -1,4 +1,5 @@
 import base64
+import sqlite3
 import subprocess
 import streamlit.components.v1 as components
 import streamlit as st
@@ -6,6 +7,8 @@ from os import listdir
 from os.path import isfile, join
 import pandas as pd
 from datf_core.src.testconfig import *
+
+conn = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db")
 
 
 def load_homepage():
@@ -29,28 +32,26 @@ def load_homepage():
     if selected_protocol is not None:
         protocol_file_path = f"{root_path}/test/testprotocol/{selected_protocol}"
         df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
-        df['execute'].replace({'Y': True, 'N': False}, inplace=True)
+        #df['execute'].replace({'Y': True, 'N': False}, inplace=True)
 
         # Load the Test Cases as an interactive table
-        edited_df = st.data_editor(df, key='Sno.',
-                       column_order=('Sno.', 'test_case_name', 'execute'),
-                       column_config={
-                           "execute": st.column_config.CheckboxColumn(
-                               "Execute?",
-                               help="Select the test cases for execution.",
-                               default=False,
-                           )
-                       },
-                       hide_index=True, use_container_width=True)
+        st.dataframe(df, key='Sno.', on_select='ignore',
+                    column_order=('Sno.', 'test_case_name', 'execute'),
+                   column_config={
+                       "execute": st.column_config.Column(
+                           "Execute?",
+                           help="Selected test cases will execute."
+                       )
+                   },
+                   hide_index=True, use_container_width=True)
 
         # Start Execution Button
         st.divider()
-        start_execution(test_type, edited_df.copy())
-        del edited_df
+        start_execution(test_type, protocol_file_path)
 
-        # Report Generation Button
-        st.divider()
-        report_generation(1)
+    # Report Generation Button
+    st.divider()
+    report_generation("Generate Report")
 
 
 def read_test_protocol():
@@ -81,25 +82,16 @@ def get_selected_testcases(selected_df):
     return tc_names
 
 
-def start_execution(test_type, modified_df):
+def start_execution(test_type, protocol_file_path):
 
-    test_case_list = get_selected_testcases(modified_df)
-    st.write("Chosen Test Cases for execution are: " + test_case_list)
-    execution_cmd = test_type.lower() + " " + test_case_list
+    execution_cmd = protocol_file_path + " " + test_type.lower()
     print(execution_cmd)
 
     if st.button("Start Execution"):
         with st.spinner('Execution In-Progress. Please wait...(this may take a while)'):
-            subprocess.run(f"{docker_bat_file} {execution_cmd}",
-                           cwd=f"{root_path}/scripts",
-                            shell=True)
-        # Save the edited table into the DB for execution
-        modified_df.to_sql(exec_table_name, conn, if_exists='replace', index=False)
-        conn.commit()
+            subprocess.run(f"sh {root_path}scripts/testingstart.sh {execution_cmd}",shell=True)
+
         st.success("Completed. Click below to check results...")
-        # Report Generation Button
-        st.divider()
-        report_generation(2)
 
 
 def display_pdf(file):
@@ -122,12 +114,7 @@ def display_pdf(file):
         st.markdown(pdf_display, unsafe_allow_html=True)
 
 
-def report_generation(order):
-
-    if order == 1:
-        button_text = "Display Last Report"
-    else:
-        button_text = "Generate Recent Report"
+def report_generation(button_text):
 
     if st.button(button_text):
         tab1, tab2, tab3 = st.tabs(["Summary", "Trends", "Detailed PDF"])

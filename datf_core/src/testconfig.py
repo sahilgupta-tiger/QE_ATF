@@ -16,7 +16,6 @@ elif protocol_engine == "docker":
 else:
     root_path = "app/datf_core/"
 
-docker_bat_file = "contain_datf.bat"
 
 # *** DO NOT CHANGE BELOW VALUES ***
 results_db_name = 'DATF_RESULTS'
