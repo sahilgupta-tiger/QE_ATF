@@ -1,0 +1,10 @@
+datacompy[spark]
+datacompy[fugue]
+fpdf
+openpyxl
+fsspec
+pretty-html-table
+tabulate
+cryptography
+streamlit
+langchain-openai
