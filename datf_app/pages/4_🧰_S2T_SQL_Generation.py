@@ -8,7 +8,7 @@ from langchain_openai import AzureChatOpenAI
 from datf_core.src.testconfig import *
 
 
-openai_json = json.load(open(f"{root_path}/test/connections/azure_open_ai_connection.json"))
+openai_json = json.load(open(f"{root_path}/test/connections/{genai_conn_json}.json"))
 os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
 os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
 openai_api_version = openai_json['apiversion']

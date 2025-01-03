@@ -32,6 +32,7 @@ def edit_test_cases():
                            },
                            hide_index=True, use_container_width=True)
 
+        edited_df.to_sql(conn, if_exists="replace")
 
     st.divider()
     st.markdown("**👈 Select the required page from the sidebar** to continue!")

@@ -24,6 +24,7 @@ exec_db_name = 'DATF_EXECUTION'
 exec_table_name = 'testselection'
 exec_sheet_name = 'protocoltestcasedetails'
 utctimezone = pytz.timezone("UTC")
+genai_conn_json = "azure_open_ai_connection"
 
 spark_conf_JSON = """ {
     "spark.executor.instances": "18",
