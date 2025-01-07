@@ -18,13 +18,13 @@ def load_home_page():
     st.markdown(
         """
         Our OpenAI powered SQL Generator along with Data-validation Automated Testing 
-        Framework (DATF) helps you achieve the best of both worlds namely, 
+        Framework (DATF) **Spark Edition** helps you achieve the best of both worlds namely, 
         High Volume Big Data Validations using Spark technology (clusters or compute) 
         and new Generative AI LLM capabilities.
-        
+        \n\n
         **👈 Select a page from the sidebar** to see some examples
         of what our Accelerator can do!
-        
+        \n\n
         ### Want to learn more?
         - Check out [streamlit.io](https://streamlit.io)
         

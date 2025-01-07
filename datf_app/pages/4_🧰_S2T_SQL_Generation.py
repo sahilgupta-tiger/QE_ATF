@@ -1,3 +1,4 @@
+import sqlite3
 import streamlit as st
 import pandas as pd
 from os import listdir
@@ -7,6 +8,7 @@ from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
 from datf_core.src.testconfig import *
 
+conn = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db")
 
 openai_json = json.load(open(f"{root_path}/test/connections/{genai_conn_json}.json"))
 os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
@@ -56,13 +58,13 @@ def s2t_sql_generation():
     )
     st.title("Source to Target SQL Generator")
     read_test_configs()
+    src_table = exec_table_name
     if st.button("Test Connection with Source & Target"):
         pass
     with (st.expander("Click to Generate Source SQL Query")):
-        src_table = ""
         source_columns = get_column_names(conn, src_table)
         source_column_selection = st.multiselect("Select Source Columns", source_columns)
-        prompt = st.text_area("Enter your prompt for SQL generation")
+        prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
         if st.button("Generate Source SQL"):
             final_prompt = f"Generate a SQL query with following requirements-{prompt}"
             final_prompt += f"\nAnd use these Columns names as reference: {', '.join(source_column_selection)}"
@@ -79,7 +81,7 @@ def s2t_sql_generation():
     with (st.expander("Click to Generate Target SQL Query")):
         target_columns = get_column_names(conn, src_table)
         target_column_selection = st.multiselect("Select Target Columns", target_columns)
-        tgt_prompt = st.text_area("Enter your prompt for SQL generation")
+        tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
         if st.button("Generate Target SQL"):
             final_tgt_prompt = f"Generate a SQL query with following requirements-{tgt_prompt}"
             final_tgt_prompt += f"\nAnd use these Columns names as reference: {', '.join(target_column_selection)}"

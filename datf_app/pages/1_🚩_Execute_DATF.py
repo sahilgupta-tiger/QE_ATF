@@ -32,13 +32,13 @@ def load_homepage():
     if selected_protocol is not None:
         protocol_file_path = f"{root_path}/test/testprotocol/{selected_protocol}"
         df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
-        #df['execute'].replace({'Y': True, 'N': False}, inplace=True)
+        df['execute'].replace({'Y': True, 'N': False}, inplace=True)
 
         # Load the Test Cases as an interactive table
         st.dataframe(df, key='Sno.', on_select='ignore',
                     column_order=('Sno.', 'test_case_name', 'execute'),
                    column_config={
-                       "execute": st.column_config.Column(
+                       "execute": st.column_config.CheckboxColumn(
                            "Execute?",
                            help="Selected test cases will execute."
                        )

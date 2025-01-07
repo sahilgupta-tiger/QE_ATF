@@ -12,16 +12,16 @@ if "%CONTAINER_EXISTS%"=="" (
 ) else (
     echo Container exists. Checking if it is running...
 
-    docker ps --filter "status=running" --format "{{.Names}}" > temp_check.txt
+    docker ps -a --filter "name=%container%" --filter "status=running" --format "{{.Names}}" > temp_check.txt
     set /p CONTAINER_CHECK=<temp_check.txt
     del temp_check.txt
     echo "%CONTAINER_CHECK%"
 
     if "%CONTAINER_CHECK%"=="" (
-        echo Container is already running...
-    ) else (
         echo Container is not running. Starting the container...
         docker start %container%
+    ) else (
+        echo Container is already running...
     )
 )
 echo Installing Plugins
