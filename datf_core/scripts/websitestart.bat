@@ -10,19 +10,8 @@ if "%CONTAINER_EXISTS%"=="" (
     echo Container does not exist. Creating a new container...
     docker run -dt -p 8501-8510:8501-8510 -v %datfpath%:/app -w /app --name %container% apache/spark-py bash
 ) else (
-    echo Container exists. Checking if it is running...
-
-    docker ps -a --filter "name=%container%" --filter "status=running" --format "{{.Names}}" > temp_check.txt
-    set /p CONTAINER_CHECK=<temp_check.txt
-    del temp_check.txt
-    echo "%CONTAINER_CHECK%"
-
-    if "%CONTAINER_CHECK%"=="" (
-        echo Container is not running. Starting the container...
-        docker start %container%
-    ) else (
-        echo Container is already running...
-    )
+    echo Starting/Running the container...
+    docker start %container%
 )
 echo Installing Plugins
 docker exec -u root %container% bash -c "pip config set global.trusted-host 'pypi.org files.pythonhosted.org pypi.python.org' --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org"
