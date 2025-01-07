@@ -7,7 +7,7 @@ import pytz
 import os
 from cryptography.fernet import Fernet
 
-protocol_engine = "docker" # options: default, databricks, docker
+protocol_engine = "databricks" # options: default, databricks, docker
 
 if protocol_engine == "databricks":
     root_path = "file:" + os.getenv('CWD')
