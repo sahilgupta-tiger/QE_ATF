@@ -1,15 +1,23 @@
 # Databricks notebook source
-dbutils.widgets.text('test_protocol_name', 'contenttestprotocol')
+dbutils.widgets.text('test_protocol_name', 'traversedtestprotocol')
 dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
 dbutils.widgets.text('test_names', 'all')
-dbutils.widgets.text('work_path', '/Workspace/Shared/QE_ATF/datf_core/')
+dbutils.widgets.text('work_path', '/Workspace/Shared/QE_ATF_Latest/datf_core')
 
 # COMMAND ----------
 
 work_path = dbutils.widgets.get("work_path")
 install_path = f"{work_path}/scripts/requirements.txt"
 %pip install -r $install_path
+
+
+# COMMAND ----------
+
 dbutils.library.restartPython()
+
+# COMMAND ----------
+
+
 
 # COMMAND ----------
 
@@ -26,7 +34,10 @@ params = {
     "test_type": test_type,
     "test_names": test_names
 }
+print(work_path)
+print(py_file)
 test_protocol = f"{work_path}/test/testprotocol/{test_protocol_name}.xlsx"
+print(test_protocol)
 runner = f"{py_file} {test_protocol} {test_type} {test_names}"
 %run $runner
 
