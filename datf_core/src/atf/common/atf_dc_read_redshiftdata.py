@@ -1,16 +1,8 @@
-# Databricks notebook source
-# DBTITLE 1,Import Required Libraries
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
-# COMMAND ----------
 
-# DBTITLE 1,Load Common Functions notebook
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
-
-# DBTITLE 1,Function to read Redshift data
 def read_redshiftdata(tc_datasource_config, comparetype):
   
   log_info("Reading from Redshift Table")
