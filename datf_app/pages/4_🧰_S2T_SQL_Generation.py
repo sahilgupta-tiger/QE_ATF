@@ -59,8 +59,10 @@ def s2t_sql_generation():
     st.title("Source to Target SQL Generator")
     read_test_configs()
     src_table = exec_table_name
+
     if st.button("Test Connection with Source & Target"):
         pass
+
     with (st.expander("Click to Generate Source SQL Query")):
         source_columns = get_column_names(conn, src_table)
         source_column_selection = st.multiselect("Select Source Columns", source_columns)
@@ -90,7 +92,7 @@ def s2t_sql_generation():
             st.code(tgt_sql_query, language='sql')
             tgt_sql_query += " LIMIT 5"
             # Execute the SQL on the source or target connection
-            if st.button("Run SQL on Source"):
+            if st.button("Run SQL on Target"):
                 target_result = pd.read_sql(sql_query, conn)
                 st.write("Query Results from Target:")
                 st.dataframe(target_result)
