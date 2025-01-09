@@ -1,5 +1,3 @@
-# Databricks notebook source
-# DBTITLE 1,PDF Constants
 protocolreportheader = 'PROTOCOL SUMMARY REPORT'
 testcasereportheader = 'TESTCASE SUMMARY REPORT'
 testsubheading = "TESTCASE "
