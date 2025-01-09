@@ -1,7 +1,4 @@
-# Databricks notebook source
-# MAGIC %run ./atf_common_functions
 
-# COMMAND ----------
 
 def read_deltaschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']
@@ -27,13 +24,5 @@ def read_deltaschema(dict_connection, comparetype):
   
   return df_deltaschema
 
-# COMMAND ----------
 
-# dict_src = {'connectionname': 'aws_s3_adot_cleansed_conn', 'connectiontype': 'Databricks', 'filepath': 'suresh/atf/atf/testdata/testdata_schemacompare/delta/employee_data_json_matched/', 'filename': '', 'format': 'delta', 'delimiter': '', 'tablename': '', 'schemaname': '', 'comparetype': 'objectcompare'}
-# dict_tgt = {'connectionname': 'aws_s3_adot_cleansed_conn', 'connectiontype': 'Databricks', 'filepath': 'suresh/atf/atf/testdata/testdata_schemacompare/delta/employee_data1/', 'filename': '', 'format': 'delta', 'delimiter': '', 'tablename': '', 'schemaname': '', 'comparetype': 'objectcompare'}
-
-
-# df_deltaschema = read_deltaschema(dict_tgt, 'objectcompare')
-
-# COMMAND ----------
 
