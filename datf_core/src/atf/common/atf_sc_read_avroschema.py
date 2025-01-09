@@ -1,15 +1,9 @@
-# Databricks notebook source
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
 
 from datetime import datetime
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
 
-# COMMAND ----------
 
-# DBTITLE 1,Read Schema of Avro File
 def read_avroschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']
   s3bucket = get_connection_config(connectionname)['BUCKETNAME']
