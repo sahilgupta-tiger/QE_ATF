@@ -1,19 +1,11 @@
-# Databricks notebook source
-# DBTITLE 1,Import Required Libraries
+
 from pyspark.sql.functions import * 
 from pyspark.sql.types import *
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
 from atf.common.atf_dc_read_datasources import read_data
 from testconfig import *
 
-# COMMAND ----------
 
-# DBTITLE 1,Load Common Functions notebook
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
-
-# DBTITLE 1,Class for Loading script automatically based on S2T
 class S2TAutoLoadScripts:
   
   def __init__(self, s2tobj, tcdict,spark):
