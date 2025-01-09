@@ -1,4 +1,4 @@
-# Databricks notebook source
+
 def read_delimitedschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']
   s3bucket = get_connection_config(connectionname)['BUCKETNAME']
@@ -22,5 +22,5 @@ def read_delimitedschema(dict_connection, comparetype):
   
   return df_delimitedschema
 
-# COMMAND ----------
+
 
