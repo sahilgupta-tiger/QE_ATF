@@ -954,10 +954,10 @@ class S2TTester:
             pdfobj.write_text(mismatch_heading, 'section heading')
             pdfobj.write_text(
                 '5.1 Columns having nulls in source', 'section heading')
-            pdfobj.create_table_details(sample_source_only, 'mismatch')
+            pdfobj.create_table_details(sample_source_only, 'mismatch_details')
             pdfobj.write_text(
                 '5.2 Columns having nulls in target', 'section heading')
-            pdfobj.create_table_details(sample_target_only, 'mismatch')
+            pdfobj.create_table_details(sample_target_only, 'mismatch_details')
 
         elif (testcasetype == 'content' or testcasetype == 'count and content'):
             mismatch_heading = "5. Sample Mismatches " + \
