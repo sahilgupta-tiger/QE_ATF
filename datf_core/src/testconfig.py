@@ -23,6 +23,7 @@ rept_table_name = 'historical_trends'
 exec_db_name = 'DATF_EXECUTION'
 exec_table_name = 'testselection'
 exec_sheet_name = 'protocoltestcasedetails'
+protocol_tab_name = 'protocol'
 utctimezone = pytz.timezone("UTC")
 genai_conn_json = "azure_open_ai_connection"
 

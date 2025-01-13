@@ -21,7 +21,7 @@ def s2t_sql_generation():
     if st.button("Test Connection with Source & Target"):
         pass
 
-    with (st.expander("Click to Generate Source SQL Query")):
+    with (st.expander("Expand to Generate Source SQL Query")):
         source_columns = get_column_names(conn_exe, src_table)
         source_column_selection = st.multiselect("Select Source Columns", source_columns)
         prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
@@ -38,7 +38,7 @@ def s2t_sql_generation():
                 st.write("Query Results from Source:")
                 st.dataframe(source_result)
 
-    with (st.expander("Click to Generate Target SQL Query")):
+    with (st.expander("Expand to Generate Target SQL Query")):
         target_columns = get_column_names(conn_exe, src_table)
         target_column_selection = st.multiselect("Select Target Columns", target_columns)
         tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")

@@ -31,6 +31,7 @@ def edit_test_cases():
                            hide_index=True, use_container_width=True)
 
         edited_df.to_sql(con=conn_exe, name=selected_protocol, if_exists="replace", index=False)
+        conn_exe.commit()
 
         st.divider()
         st.markdown("**The Data Grid above will Auto-Save, if changes are made.**")

@@ -32,7 +32,7 @@
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
         
-            var pieChartData = [['Status', 'Count'], ['Failed', 1], ['Passed', 2]]
+            var pieChartData = [['Status', 'Count'], ['Failed', 3], ['Passed', 2]]
 
         function drawChart() {
           // Drawing Pie Chart for Test Case Execution Results
@@ -77,7 +77,7 @@
           timeData.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
           timeData.addRows([
-            ['0s-45s', 3, 'testcase24_snowflake_snowflake_etljob<br>testcase12_parquet_parquet_mismatch_manual<br>testcase23_parquet_snowflake_mismatch'],
+            ['0s-45s', 2, 'testcase12_parquet_parquet_mismatch_manual<br>testcase15_parquet_parquet_match_likeobject'],
         ['45s-2m', 0, 'No test cases'],
         ['2m-5m', 0, 'No test cases'],
         ['5m+', 0, 'No test cases'],
@@ -126,14 +126,34 @@
   </thead>
   <tbody>
     <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase24_snowflake_snowflake_etljob</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,169</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,169</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase3_csv_csv_match</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Duplicates</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:11</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Execution Error</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+    </tr>
+    <tr>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase11_parquet_parquet_match_manual</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Execution Error</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+    </tr>
+    <tr>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manual</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Execution Error</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
     </tr>
     <tr>
       <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase12_parquet_parquet_mismatch_manual</td>
@@ -143,24 +163,24 @@
       <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
       <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
       <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">No Duplicates</td>
-      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:09</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:07</td>
     </tr>
     <tr>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase23_parquet_snowflake_mismatch</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase15_parquet_parquet_match_likeobject</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">1,171</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Passed</td>
       <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">No Duplicates</td>
-      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:14</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:02</td>
     </tr>
   </tbody>
 </table></p>
             <h2><b>3. Protocol Run Details</b></h2>
-            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: etl_pipeline_goldlayer<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: SIT<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 26-Dec-2024 05:54:50 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 26-Dec-2024 05:55:26 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:36<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 1<br></p>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: etl_pipeline_goldlayer<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: SIT<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 13-Jan-2025 10:14:22 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 13-Jan-2025 10:14:55 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:33<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 5<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 3<br></p>
             <h2><b>4. Protocol Run Parameters</b></h2>
-            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: datf_core//test/testprotocol/traversedtestprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: duplicate<br></p>
+            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: datf_core//test/testprotocol/transposetestprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: duplicate<br></p>
            
         </body>
         </html>

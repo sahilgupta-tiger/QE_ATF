@@ -44,8 +44,8 @@ def load_homepage():
                    },
                    hide_index=True, use_container_width=True)
 
-        st.markdown('In order to change the Execution Selection, '
-                    "Please select \"Edit Test Configs\" from sidebar to update!")
+        st.text('**In order to change the Execution, '
+                    "Please select \"Edit Test Configs\" from sidebar to update!**")
         # Start Execution Button
         st.divider()
         start_execution(test_type, selected_protocol)
@@ -55,22 +55,10 @@ def load_homepage():
     report_generation("Generate Report")
 
 
-def get_selected_testcases(selected_df):
-
-    filtered_df = selected_df[selected_df['execute'] == True]
-    tcnames_list = filtered_df['test_case_name'].to_list()
-
-    if not tcnames_list:
-        tc_names = 'all'
-    else:
-        tc_names = ','.join(tcnames_list)
-
-    return tc_names
-
-
 def start_execution(test_type, selected_protocol):
 
-    protocol_file_path = f"{root_path}/test/testprotocol/{selected_protocol}"
+    write_protocol_to_excel(selected_protocol)
+    protocol_file_path = output_file_path
     execution_cmd = protocol_file_path + " " + test_type.lower()
     print(execution_cmd)
 
