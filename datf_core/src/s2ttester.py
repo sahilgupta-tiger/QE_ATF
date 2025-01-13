@@ -495,6 +495,8 @@ class S2TTester:
             log_info("Null validation stared for source data belongs to testcase") 
             totalsrcnullcols = 0
             totaltgtnullcols = 0
+            source_null_counts = []
+            target_null_counts = []
             for col_name in sourcedf.columns:
                 src_null_count = sourcedf.filter(col(col_name).isNull()).count()
                 source_null_counts.append((col_name, src_null_count))
