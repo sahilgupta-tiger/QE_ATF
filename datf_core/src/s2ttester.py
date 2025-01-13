@@ -502,6 +502,7 @@ class S2TTester:
                     sflag = 1
                     totalsrcnullcols = totalsrcnullcols +1
             src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
+            src_null_counts_df = src_null_counts_df.filter(col("Count") > 0)
             src_null_counts_df.show()
             log_info(f"Null validation stared for target data belongs to testcase {test_case_name}") 
             target_df = compare_input['targetdf']
@@ -513,6 +514,7 @@ class S2TTester:
                     tflag = 1
                     totaltgtnullcols = totaltgtnullcols +1
             tgt_null_counts_df = spark.createDataFrame(target_null_counts, ["Column", "Count"])
+            tgt_null_counts_df = tgt_null_counts_df.filter(col("Count") > 0)
             tgt_null_counts_df.show()
             if sflag ==0 and tflag == 0: 
                 test_result = "Passed"
@@ -524,6 +526,7 @@ class S2TTester:
                 log_info("Test Case Failed - Nulls in source or target")
             dict_results = {
                 'Test Result': test_result, 'No. of null columns in source': f"{totalsrcnullcols:,}", 'No. of null columns in target': f"{totaltgtnullcols:,}"}
+            rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
 
 
         if (testcasetype == 'content'):
