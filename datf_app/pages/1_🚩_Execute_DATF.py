@@ -1,14 +1,8 @@
 import base64
-import sqlite3
 import subprocess
-import streamlit.components.v1 as components
 import streamlit as st
-from os import listdir
-from os.path import isfile, join
-import pandas as pd
-from datf_core.src.testconfig import *
-
-conn = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db")
+import streamlit.components.v1 as components
+from datf_app.common.commonmethods import *
 
 
 def load_homepage():
@@ -27,12 +21,17 @@ def load_homepage():
         st.write(f"You selected: {test_type} as your testing type.")
     else:
         st.write("Please select a Testing Type from the list above.")
+    st.divider()
 
-    selected_protocol = read_test_protocol()
+    onlyfiles = read_test_protocol()
+    selected_protocol = st.selectbox(
+        "Choose one from Test Configs below...",
+        onlyfiles, index=None, placeholder="type to search",
+    )
+    st.write("You selected: ", selected_protocol)
+
     if selected_protocol is not None:
-        protocol_file_path = f"{root_path}/test/testprotocol/{selected_protocol}"
-        df = pd.read_excel(protocol_file_path, sheet_name=exec_sheet_name)
-        df['execute'].replace({'Y': True, 'N': False}, inplace=True)
+        df = pd.read_sql_query(f"SELECT * FROM '{selected_protocol}'", conn_exe)
 
         # Load the Test Cases as an interactive table
         st.dataframe(df, key='Sno.', on_select='ignore',
@@ -45,28 +44,15 @@ def load_homepage():
                    },
                    hide_index=True, use_container_width=True)
 
+        st.markdown('In order to change the Execution Selection, '
+                    "Please select \"Edit Test Configs\" from sidebar to update!")
         # Start Execution Button
         st.divider()
-        start_execution(test_type, protocol_file_path)
+        start_execution(test_type, selected_protocol)
 
     # Report Generation Button
     st.divider()
     report_generation("Generate Report")
-
-
-def read_test_protocol():
-    tc_path = f"{root_path}test/testprotocol"
-    onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
-    for loop in onlyfiles:
-        if loop.find("template") != -1:
-            onlyfiles.remove(loop)
-
-    option = st.selectbox(
-        "Choose one from Test Configs below...",
-        onlyfiles, index=None, placeholder="type to search",
-    )
-    st.write("You selected: ", option)
-    return option
 
 
 def get_selected_testcases(selected_df):
@@ -82,8 +68,9 @@ def get_selected_testcases(selected_df):
     return tc_names
 
 
-def start_execution(test_type, protocol_file_path):
+def start_execution(test_type, selected_protocol):
 
+    protocol_file_path = f"{root_path}/test/testprotocol/{selected_protocol}"
     execution_cmd = protocol_file_path + " " + test_type.lower()
     print(execution_cmd)
 

@@ -1,54 +1,5 @@
-import sqlite3
 import streamlit as st
-import pandas as pd
-from os import listdir
-from os.path import isfile, join
-import json
-from langchain_core.messages import HumanMessage
-from langchain_openai import AzureChatOpenAI
-from datf_core.src.testconfig import *
-
-conn = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db")
-
-openai_json = json.load(open(f"{root_path}/test/connections/{genai_conn_json}.json"))
-os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
-os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
-openai_api_version = openai_json['apiversion']
-azure_deployment = openai_json['deployment']
-
-
-def get_queries_from_ai(prompt):
-
-    model = AzureChatOpenAI(
-        openai_api_version=openai_api_version,
-        azure_deployment=azure_deployment,
-    )
-    message = HumanMessage(
-        content=prompt
-    )
-    output_value=model([message])
-    return output_value.content
-
-
-def read_test_configs():
-    tc_path = f"{root_path}test/testprotocol"
-    onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
-    for loop in onlyfiles:
-        if loop.find("template") != -1:
-            onlyfiles.remove(loop)
-
-    option = st.selectbox(
-        "Choose one from Test Configs below...",
-        onlyfiles, index=None, placeholder="type to search",
-    )
-    st.write("You selected: ", option)
-
-
-# Function to fetch column names
-def get_column_names(connection, table_name):
-    query = f"SELECT * FROM {table_name} WHERE 1=0"
-    df = pd.read_sql(query, connection)
-    return df.columns.tolist()
+from datf_app.common.commonmethods import *
 
 
 def s2t_sql_generation():
@@ -57,14 +8,21 @@ def s2t_sql_generation():
         page_title="S2T SQL Generator"
     )
     st.title("Source to Target SQL Generator")
-    read_test_configs()
+
+    onlyfiles = read_test_protocol()
+    selected_protocol = st.selectbox(
+        "Choose one from Test Configs below...",
+        onlyfiles, index=None, placeholder="type to search",
+    )
+    st.write("You selected: ", selected_protocol)
+
     src_table = exec_table_name
 
     if st.button("Test Connection with Source & Target"):
         pass
 
     with (st.expander("Click to Generate Source SQL Query")):
-        source_columns = get_column_names(conn, src_table)
+        source_columns = get_column_names(conn_exe, src_table)
         source_column_selection = st.multiselect("Select Source Columns", source_columns)
         prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
         if st.button("Generate Source SQL"):
@@ -76,12 +34,12 @@ def s2t_sql_generation():
             # Execute the SQL on the source or target connection
             if st.button("Run SQL on Source"):
                 sql_query += " LIMIT 5"
-                source_result = pd.read_sql(sql_query, conn)
+                source_result = pd.read_sql(sql_query, conn_exe)
                 st.write("Query Results from Source:")
                 st.dataframe(source_result)
 
     with (st.expander("Click to Generate Target SQL Query")):
-        target_columns = get_column_names(conn, src_table)
+        target_columns = get_column_names(conn_exe, src_table)
         target_column_selection = st.multiselect("Select Target Columns", target_columns)
         tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
         if st.button("Generate Target SQL"):
@@ -93,7 +51,7 @@ def s2t_sql_generation():
             tgt_sql_query += " LIMIT 5"
             # Execute the SQL on the source or target connection
             if st.button("Run SQL on Target"):
-                target_result = pd.read_sql(sql_query, conn)
+                target_result = pd.read_sql(sql_query, conn_exe)
                 st.write("Query Results from Target:")
                 st.dataframe(target_result)
 

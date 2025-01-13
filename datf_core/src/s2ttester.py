@@ -953,7 +953,7 @@ if __name__ == "__main__":
     log_info(f"Protocol Config path: {protocol_file_path}")
     log_info(f"TestType: {testtype}")
     log_info(f"TestCasesRunList: {testcasesrunlist}")
-    create_db(protocol_file_path)
+
     testerobj = S2TTester(spark)
     testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
    

@@ -2,6 +2,7 @@ import pathlib
 import sys; sys.path.append(str(pathlib.Path(__file__).parent.parent))
 import streamlit as st
 import openpyxl; openpyxl.reader.excel.warnings.simplefilter(action='ignore')
+from common.commonmethods import *
 
 
 def load_home_page():
@@ -32,6 +33,8 @@ def load_home_page():
         - Reach us at [QE Core Team](mailto:sahil.gupta@tigeranalytics.com)
     """
     )
+
+    create_execution_db()
 
 
 if __name__ == "__main__":
