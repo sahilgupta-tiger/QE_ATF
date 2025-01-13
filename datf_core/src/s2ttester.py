@@ -186,6 +186,18 @@ class S2TTester:
                 target_df = compare_input['targetdf']
                 target_null_counts = target_df.agg(*[count(when(col(c).isNull(), 1)).alias(c) for c in target_df.columns])
                 target_null_counts.show()
+                source_null_counts = []
+                target_null_counts = []
+                # Loop through each column and calculate the null count
+                for col_name in source_df.columns:
+                    src_null_count = source_df.filter(F.col(col_name).isNull()).count()
+                    source_null_counts.append((col_name, src_null_count))
+                    source_null_counts.show()
+                for col_name in target_df.columns:
+                    target_null_count = target_df.filter(F.col(col_name).isNull()).count()
+                    target_null_counts.append((col_name, target_null_count))
+                    target_null_counts.show()
+
                 '''
                 pd_sourcedf = compare_input['sourcedf']
                 pd_targetdf = compare_input['targetdf']
