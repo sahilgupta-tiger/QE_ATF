@@ -7,6 +7,8 @@ from testconfig import root_path
 
 def read_parquetdata(tc_datasource_config,spark):
   log_info("Reading parquet file")
+  print(f"root path : {root_path}")
+  print(f"Original path : {tc_datasource_config['path']}")
   tc_datasrc_path = root_path + tc_datasource_config['path']
   df = spark.read.parquet(tc_datasrc_path)
   df.createOrReplaceTempView(tc_datasource_config['aliasname'])

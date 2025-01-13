@@ -17,10 +17,6 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
-
-
-# COMMAND ----------
-
 #python
 import os
 work_path = dbutils.widgets.get("work_path")

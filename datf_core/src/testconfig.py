@@ -10,7 +10,7 @@ from cryptography.fernet import Fernet
 protocol_engine = "databricks" # options: default, databricks, docker
 
 if protocol_engine == "databricks":
-    print(os.getenv('CWD'))
+    #print(os.getenv('CWD'))
     #root_path = "file:" + os.getenv('CWD')
     root_path = os.getenv('CWD')
 elif protocol_engine == "docker":

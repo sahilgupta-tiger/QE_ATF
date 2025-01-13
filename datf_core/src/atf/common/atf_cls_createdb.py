@@ -6,7 +6,7 @@ from testconfig import *
 
 
 # Establish connection with the database and create one if it does not exist
-conn = sqlite3.connect(f'{root_path}utils/{exec_db_name}.db')
+conn = sqlite3.connect(f'{root_path}/utils/{exec_db_name}.db')
 cur = conn.cursor()
 
 

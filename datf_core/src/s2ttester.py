@@ -943,9 +943,8 @@ class S2TTester:
 
 
 if __name__ == "__main__":
-    print("Hi Program")
     os.environ["PYARROW_IGNORE_TIMEZONE"] = "1"
-    os.environ["POLARS_ALLOW_FORKING_THREAD"]="1"
+    #os.environ["POLARS_ALLOW_FORKING_THREAD"]="1"
     spark = createsparksession()
     testcasesrunlist = ['all']
     protocol_file_path = sys.argv[1]
