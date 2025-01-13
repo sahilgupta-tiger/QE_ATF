@@ -16,7 +16,7 @@ from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
 from testconfig import *
 from atf.common.atf_cls_createdb import create_db
-import databricks.koalas as ks
+#import databricks.koalas as ks
 
 # Use pandas profiling to generate a report
 #from pandas_profiling import ProfileReport
