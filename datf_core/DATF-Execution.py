@@ -39,7 +39,7 @@ runner = f"{py_file} {test_protocol} {test_type} {test_names}"
 
 # COMMAND ----------
 
-dbutils.fs.ls('/FileStore/tables/patients_source_parquet')
+dbutils.fs.ls('file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/patients_source_parquet')
 
 # COMMAND ----------
 
