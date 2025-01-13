@@ -39,6 +39,10 @@ runner = f"{py_file} {test_protocol} {test_type} {test_names}"
 
 # COMMAND ----------
 
+dbutils.fs.ls('/FileStore/tables/patients_source_parquet')
+
+# COMMAND ----------
+
 work_path = dbutils.widgets.get("work_path")
 html_file_content = open(f"{work_path}utils/reports/datfreport.html", 'r').read()
 displayHTML(html_file_content)

@@ -11,8 +11,8 @@ protocol_engine = "databricks" # options: default, databricks, docker
 
 if protocol_engine == "databricks":
     #print(os.getenv('CWD'))
-    #root_path = "file:" + os.getenv('CWD')
-    root_path = os.getenv('CWD')
+    root_path = "file:" + os.getenv('CWD')
+    #root_path = os.getenv('CWD')
 elif protocol_engine == "docker":
     root_path = "datf_core/"
 else:
