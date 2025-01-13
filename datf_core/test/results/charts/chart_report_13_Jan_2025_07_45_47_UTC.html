@@ -32,7 +32,7 @@
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(drawChart);
         
-            var pieChartData = [['Status', 'Count'], ['Passed', 2]]
+            var pieChartData = [['Status', 'Count'], ['Failed', 1], ['Passed', 2]]
 
         function drawChart() {
           // Drawing Pie Chart for Test Case Execution Results
@@ -42,7 +42,7 @@
             title: 'Test Result Distribution',
             is3D: true,
             legend: 'none',
-                   colors:['green']
+                   colors:['red','green']
 
           };
 
@@ -139,10 +139,18 @@
       <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Count matched</td>
       <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:00:01</td>
     </tr>
+    <tr>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase14_csv_parquet_mismatch_manual</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Execution Error</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto"></td>
+    </tr>
   </tbody>
 </table></p>
             <h2><b>3. Protocol Run Details</b></h2>
-            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: etl_pipeline_goldlayer<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: SIT<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 13-Jan-2025 07:51:30 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 13-Jan-2025 07:51:34 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:04<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 0<br></p>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: etl_pipeline_goldlayer<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: SIT<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 13-Jan-2025 07:45:47 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 13-Jan-2025 07:45:53 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:00:05<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 1<br></p>
             <h2><b>4. Protocol Run Parameters</b></h2>
             <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /Workspace/Shared/QE_ATF_Latest/datf_core/test/testprotocol/traversedtestprotocol.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: count<br></p>
            

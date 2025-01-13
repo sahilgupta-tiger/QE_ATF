@@ -18,6 +18,11 @@ from testconfig import *
 from atf.common.atf_cls_createdb import create_db
 
 
+# Use pandas profiling to generate a report
+from pandas_profiling import ProfileReport
+
+
+
 def createsparksession():
 
     if protocol_engine == "databricks":
@@ -173,6 +178,26 @@ class S2TTester:
                 testcase_exectime = str(testcase_exectime).split('.')[0]
                 log_info(f"Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
                 log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
+                pd_sourcedf = compare_input['sourcedf']
+                pd_targetdf = compare_input['targetdf']
+                src_pandas_df = pd_sourcedf.toPandas()
+                tgt_pandas_df = pd_targetdf.toPandas()
+
+                log_info(f"Data profiling stared for source data belongs to testcase {test_case_name}")
+
+
+
+                # Use pandas profiling to generate a report
+
+                profile = ProfileReport(src_pandas_df, title=f"{test_case_name}_source", explorative=True)
+                profile.to_file(f"/Workspace/Shared/QE_ATF_Latest/datf_core/test/{test_case_name}_source.html")
+
+                log_info(f"Data profiling stared for target data belongs to testcase {test_case_name}")
+                profile = ProfileReport(tgt_pandas_df, title=f"{test_case_name}_target", explorative=True)
+                profile.to_file(f"/Workspace/Shared/QE_ATF_Latest/datf_core/test/{test_case_name}_target.html")
+
+
+                
 
                 log_info(
                     f"{row['test_case_name']}: Test Results PDF Generation for Test Case Started for {test_case_name}")
