@@ -528,7 +528,10 @@ class S2TTester:
                 log_info("Test Case Failed - Nulls in source or target")
             dict_results = {
                 'Test Result': test_result, 'No. of null columns in source': f"{totalsrcnullcols:,}", 'No. of null columns in target': f"{totaltgtnullcols:,}"}
-            rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
+            sample_source_only = src_null_counts_df
+            sample_target_only = tgt_null_counts_df
+
+            rows_both_all = rows_mismatch = sample_mismatch = rows_only_source =rows_only_target = df_match_summary = dict_no_of_rows = dict_match_details = None
 
 
         if (testcasetype == 'content'):
@@ -863,7 +866,7 @@ class S2TTester:
         else:
             query_details = {
                 'Source Query': compare_input['sourcequery'], 'Target Query': compare_input['targetquery']}
-
+     
         sample_source_only = dict_compareoutput['sample_source']
         sample_target_only = dict_compareoutput['sample_target']
         sample_mismatch = dict_compareoutput['sample_mismatch']
@@ -946,6 +949,15 @@ class S2TTester:
             if col_match_summary != None:
                 pdfobj.create_table_summary(row_count)
             pdfobj.create_table_details(col_match_summary, 'mismatch_summary')
+        elif testcasetype == 'null':
+            mismatch_heading = "5. Columns having Nulls "
+            pdfobj.write_text(mismatch_heading, 'section heading')
+            pdfobj.write_text(
+                '5.1 Columns having nulls in source', 'section heading')
+            pdfobj.create_table_details(sample_source_only, 'mismatch')
+            pdfobj.write_text(
+                '5.2 Columns having nulls in target', 'section heading')
+            pdfobj.create_table_details(sample_target_only, 'mismatch')
 
         elif (testcasetype == 'content' or testcasetype == 'count and content'):
             mismatch_heading = "5. Sample Mismatches " + \
