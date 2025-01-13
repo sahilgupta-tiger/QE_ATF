@@ -178,6 +178,7 @@ class S2TTester:
                 testcase_exectime = str(testcase_exectime).split('.')[0]
                 log_info(f"Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
                 log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
+                '''
                 pd_sourcedf = compare_input['sourcedf']
                 pd_targetdf = compare_input['targetdf']
                 src_pandas_df = pd_sourcedf.toPandas()
@@ -194,7 +195,7 @@ class S2TTester:
 
                 log_info(f"Data profiling stared for target data belongs to testcase {test_case_name}")
                 profile = ProfileReport(tgt_pandas_df, title=f"{test_case_name}_target", explorative=True)
-                profile.to_file(f"/Workspace/Shared/QE_ATF_Latest/datf_core/test/{test_case_name}_target.html")
+                profile.to_file(f"/Workspace/Shared/QE_ATF_Latest/datf_core/test/{test_case_name}_target.html")'''
 
 
                 
