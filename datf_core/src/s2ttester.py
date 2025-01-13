@@ -115,6 +115,8 @@ class S2TTester:
         elif testcasetype == "duplicate":
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Distinct Rows in Source',
                                                'No. of Rows in Target', 'No. of Distinct Rows in Target', 'Test Result', 'Reason', 'Runtime'])
+        elif testcasetype == "null":
+            df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of null columns in source', 'No. of null columns in target', 'Test Result', 'Reason', 'Runtime'])
 
         elif testcasetype == "content" or testcasetype == "count and content":
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Rows in Target',
@@ -178,27 +180,24 @@ class S2TTester:
                 testcase_exectime = str(testcase_exectime).split('.')[0]
                 log_info(f"Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
                 log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
-                log_info(f"Null validation stared for source data belongs to testcase {test_case_name}") 
                 source_df = compare_input['sourcedf']
-                source_null_counts = source_df.agg(*[count(when(col(c).isNull(), 1)).alias(c) for c in source_df.columns])
-                source_null_counts.show()
-                log_info(f"Null validation stared for target data belongs to testcase {test_case_name}") 
                 target_df = compare_input['targetdf']
-                target_null_counts = target_df.agg(*[count(when(col(c).isNull(), 1)).alias(c) for c in target_df.columns])
-                target_null_counts.show()
                 source_null_counts = []
                 target_null_counts = []
                 # Loop through each column and calculate the null count
+                '''log_info(f"Null validation stared for source data belongs to testcase {test_case_name}") 
                 for col_name in source_df.columns:
                     src_null_count = source_df.filter(col(col_name).isNull()).count()
                     source_null_counts.append((col_name, src_null_count))
                 src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
                 src_null_counts_df.show()
+                log_info(f"Null validation stared for target data belongs to testcase {test_case_name}") 
+                target_df = compare_input['targetdf']
                 for col_name in target_df.columns:
                     tgt_null_count = target_df.filter(col(col_name).isNull()).count()
                     target_null_counts.append((col_name, tgt_null_count))
                 tgt_null_counts_df = spark.createDataFrame(target_null_counts, ["Column", "Count"])
-                tgt_null_counts_df.show()
+                tgt_null_counts_df.show()'''
 
                 '''
                 pd_sourcedf = compare_input['sourcedf']
@@ -282,6 +281,10 @@ class S2TTester:
                 elif testcasetype == "duplicate":
                     df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
                         dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                    
+                elif testcasetype == "null":
+                    df_protocol_summary.loc[index] = [test_case_name,str(dict_testresults['No. of null columns in source']), str(dict_testresults['No. of null columns in target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+
 
                 elif testcasetype == "content" or testcasetype == "count and content":
                     df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']), str(
@@ -488,6 +491,40 @@ class S2TTester:
         rowcount_source = sourcedf.count()
         print("Counting Target Rows now...")
         rowcount_target = targetdf.count()
+        if (testcasetype == 'null'):
+            log_info(f"Null validation stared for source data belongs to testcase {test_case_name}") 
+            totalsrcnullcols = 0
+            totaltgtnullcols = 0
+            for col_name in source_df.columns:
+                src_null_count = source_df.filter(col(col_name).isNull()).count()
+                source_null_counts.append((col_name, src_null_count))
+                if src_null_count > 0:
+                    sflag = 1
+                    totalsrcnullcols = totalsrcnullcols +1
+            src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
+            src_null_counts_df.show()
+            log_info(f"Null validation stared for target data belongs to testcase {test_case_name}") 
+            target_df = compare_input['targetdf']
+            tflag = 0
+            for col_name in target_df.columns:
+                tgt_null_count = target_df.filter(col(col_name).isNull()).count()
+                target_null_counts.append((col_name, tgt_null_count))
+                if tgt_null_count > 0:
+                    tflag = 1
+                    totaltgtnullcols = totaltgtnullcols +1
+            tgt_null_counts_df = spark.createDataFrame(target_null_counts, ["Column", "Count"])
+            tgt_null_counts_df.show()
+            if sflag ==0 and tflag == 0: 
+                test_result = "Passed"
+                result_desc = "No Null in any columns"
+                log_info("Test Case Passed - no nulls in source and target")
+            else:
+                test_result = "Failed"
+                result_desc = "Nulls in some columns"
+                log_info("Test Case Failed - Nulls in source or target")
+            dict_results = {
+                'Test Result': test_result, 'No. of null columns in source': f"{totalsrcnullcols:,}", 'No. of null columns in target': f"{totaltgtnullcols:,}"}
+
 
         if (testcasetype == 'content'):
             
