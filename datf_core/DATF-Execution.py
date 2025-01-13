@@ -44,7 +44,7 @@ dbutils.fs.ls('file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/p
 # COMMAND ----------
 
 work_path = dbutils.widgets.get("work_path")
-html_file_content = open(f"{work_path}utils/reports/datfreport.html", 'r').read()
+html_file_content = open(f"{work_path}/utils/reports/datfreport.html", 'r').read()
 displayHTML(html_file_content)
 
 # COMMAND ----------
