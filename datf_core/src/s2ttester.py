@@ -19,7 +19,7 @@ from atf.common.atf_cls_createdb import create_db
 #import databricks.koalas as ks
 
 # Use pandas profiling to generate a report
-#from pandas_profiling import ProfileReport
+from pandas_profiling import ProfileReport
 #from pandas_profiling import ProfilingReport
 
 

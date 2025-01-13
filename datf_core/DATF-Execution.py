@@ -52,3 +52,7 @@ displayHTML(html_file_content)
 work_path = dbutils.widgets.get("work_path")
 html_file_content = open(f"{work_path}utils/reports/datf_trends_report.html", 'r').read()
 displayHTML(html_file_content)
+
+# COMMAND ----------
+
+from pandas_profiling import ProfileReport
