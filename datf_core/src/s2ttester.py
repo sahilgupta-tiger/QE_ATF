@@ -180,11 +180,11 @@ class S2TTester:
                 log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
                 log_info(f"Null validation stared for source data belongs to testcase {test_case_name}") 
                 source_df = compare_input['sourcedf']
-                source_null_counts = source_df.select([sum(col(c).isNull().cast("int")).alias(c) for c in source_df.columns])
+                source_null_counts = source_df.agg(*[count(when(col(c).isNull(), 1)).alias(c) for c in df.columns])
                 source_null_counts.show()
                 log_info(f"Null validation stared for target data belongs to testcase {test_case_name}") 
                 target_df = compare_input['targetdf']
-                target_null_counts = target_df.select([sum(col(c).isNull().cast("int")).alias(c) for c in target_df.columns])
+                target_null_counts = target_df.agg(*[count(when(col(c).isNull(), 1)).alias(c) for c in df.columns])
                 target_null_counts.show()
                 '''
                 pd_sourcedf = compare_input['sourcedf']
