@@ -55,4 +55,7 @@ displayHTML(html_file_content)
 
 # COMMAND ----------
 
-from pandas_profiling import ProfileReport
+# MAGIC %pip install pydantic-settings
+# MAGIC %pip install pandas-profiling
+# MAGIC
+# MAGIC from pandas_profiling import ProfileReport

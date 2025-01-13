@@ -19,7 +19,7 @@ from atf.common.atf_cls_createdb import create_db
 #import databricks.koalas as ks
 
 # Use pandas profiling to generate a report
-from pandas_profiling import ProfileReport
+#from pandas_profiling import ProfileReport
 #from pandas_profiling import ProfilingReport
 
 
@@ -178,6 +178,14 @@ class S2TTester:
                 testcase_exectime = str(testcase_exectime).split('.')[0]
                 log_info(f"Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
                 log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
+                log_info(f"Null validation stared for source data belongs to testcase {test_case_name}") 
+                source_df = compare_input['sourcedf']
+                source_null_counts = source_df.select([F.sum(F.col(c).isNull().cast("int")).alias(c) for c in source_df.columns])
+                source_null_counts.show()
+                log_info(f"Null validation stared for target data belongs to testcase {test_case_name}") 
+                target_df = compare_input['targetdf']
+                target_null_counts = target_df.select([F.sum(F.col(c).isNull().cast("int")).alias(c) for c in target_df.columns])
+                target_null_counts.show()
                 '''
                 pd_sourcedf = compare_input['sourcedf']
                 pd_targetdf = compare_input['targetdf']
