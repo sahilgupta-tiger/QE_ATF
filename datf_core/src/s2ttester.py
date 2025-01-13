@@ -495,8 +495,8 @@ class S2TTester:
             log_info("Null validation stared for source data belongs to testcase") 
             totalsrcnullcols = 0
             totaltgtnullcols = 0
-            for col_name in source_df.columns:
-                src_null_count = source_df.filter(col(col_name).isNull()).count()
+            for col_name in sourcedf.columns:
+                src_null_count = sourcedf.filter(col(col_name).isNull()).count()
                 source_null_counts.append((col_name, src_null_count))
                 if src_null_count > 0:
                     sflag = 1
@@ -507,8 +507,8 @@ class S2TTester:
             log_info("Null validation stared for target data belongs to testcase") 
             target_df = compare_input['targetdf']
             tflag = 0
-            for col_name in target_df.columns:
-                tgt_null_count = target_df.filter(col(col_name).isNull()).count()
+            for col_name in targetdf.columns:
+                tgt_null_count = targetdf.filter(col(col_name).isNull()).count()
                 target_null_counts.append((col_name, tgt_null_count))
                 if tgt_null_count > 0:
                     tflag = 1
