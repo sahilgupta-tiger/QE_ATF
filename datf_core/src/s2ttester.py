@@ -16,11 +16,11 @@ from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
 from testconfig import *
 from atf.common.atf_cls_createdb import create_db
-from pandas_profiling import ProfilingReport
+import databricks.koalas as ks
 
 # Use pandas profiling to generate a report
 #from pandas_profiling import ProfileReport
-
+#from pandas_profiling import ProfilingReport
 
 
 def createsparksession():

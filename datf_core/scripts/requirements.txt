@@ -9,3 +9,4 @@ cryptography
 streamlit
 langchain-openai
 pandas-profiling
+koalas
