@@ -192,11 +192,13 @@ class S2TTester:
                 for col_name in source_df.columns:
                     src_null_count = source_df.filter(col(col_name).isNull()).count()
                     source_null_counts.append((col_name, src_null_count))
-                    source_null_counts.show()
+                    src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
+                    src_null_counts_df.show()
                 for col_name in target_df.columns:
-                    target_null_count = target_df.filter(col(col_name).isNull()).count()
-                    target_null_counts.append((col_name, target_null_count))
-                    target_null_counts.show()
+                    tgt_null_count = target_df.filter(col(col_name).isNull()).count()
+                    target_null_counts.append((col_name, tgt_null_count))
+                    tgt_null_counts_df = spark.createDataFrame(target_null_counts, ["Column", "Count"])
+                    tgt_null_counts_df.show()
 
                 '''
                 pd_sourcedf = compare_input['sourcedf']
