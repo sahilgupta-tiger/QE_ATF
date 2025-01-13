@@ -492,7 +492,7 @@ class S2TTester:
         print("Counting Target Rows now...")
         rowcount_target = targetdf.count()
         if (testcasetype == 'null'):
-            log_info(f"Null validation stared for source data belongs to testcase {test_case_name}") 
+            log_info("Null validation stared for source data belongs to testcase") 
             totalsrcnullcols = 0
             totaltgtnullcols = 0
             for col_name in source_df.columns:
@@ -504,7 +504,7 @@ class S2TTester:
             src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
             src_null_counts_df = src_null_counts_df.filter(col("Count") > 0)
             src_null_counts_df.show()
-            log_info(f"Null validation stared for target data belongs to testcase {test_case_name}") 
+            log_info("Null validation stared for target data belongs to testcase") 
             target_df = compare_input['targetdf']
             tflag = 0
             for col_name in target_df.columns:
