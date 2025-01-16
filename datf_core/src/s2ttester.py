@@ -543,16 +543,16 @@ class S2TTester:
                         tgt_null_col_count = targetdf.filter(col(tgt_col_name).isNull()).count()
                         print(f"{srccolpos} - src_col_name : {src_col_name}")
                         print(f"{tgtcolpos} - tgt_col_name : {tgt_col_name}")
-                        if src_null_col_count != tgt_null_col_count:
-                            nullflag=1
-                            null_col_counts.append((src_col_name,src_null_col_count,tgt_col_name, tgt_null_col_count))
-                            columns_mis_null_count = columns_mis_null_count + 1
-                            print(f"columns_mis_null_count : {columns_mis_null_count}")
-                        else:
-                            columns_match_null_count = columns_match_null_count + 1
-                            print(f"columns_match_null_count : {columns_match_null_count}")
-                    else:
-                        break
+                        if src_null_col_count!=0 or tgt_null_col_count != 0:
+                            if src_null_col_count != tgt_null_col_count:
+                                nullflag=1
+                                null_col_counts.append((src_col_name,src_null_col_count,tgt_col_name, tgt_null_col_count))
+                                columns_mis_null_count = columns_mis_null_count + 1
+                                print(f"columns_mis_null_count : {columns_mis_null_count}")
+                            else:
+                                columns_match_null_count = columns_match_null_count + 1
+                                print(f"columns_match_null_count : {columns_match_null_count}")
+
 
             #null_col_counts_df = spark.createDataFrame(null_col_counts, ["SourceColumnName", "SourceCount", "TargetColumnName", "TargetCount"])
             if len(null_col_counts) > 0:

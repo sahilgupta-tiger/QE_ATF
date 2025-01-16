@@ -59,3 +59,12 @@ displayHTML(html_file_content)
 # MAGIC %pip install pandas-profiling
 # MAGIC
 # MAGIC from pandas_profiling import ProfileReport
+
+# COMMAND ----------
+
+for i in range(10):
+    for j in range(10):
+        if i == j:
+            print(i,j)
+        
+
