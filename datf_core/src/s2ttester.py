@@ -283,7 +283,7 @@ class S2TTester:
                         dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
                     
                 elif testcasetype == "null":
-                    df_protocol_summary.loc[index] = [test_case_name,str(dict_testresults['No of column has null in source']),str(dict_testresults['No of column has null in target']),str(dict_testresults['No of columnns has null count match between source and target']),str(dict_testresults[]),str(dict_testresults['No of Columns has null count mismatch between source and target']), , dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                    df_protocol_summary.loc[index] = [test_case_name,str(dict_testresults['No of column has null in source']),str(dict_testresults['No of column has null in target']),str(dict_testresults['No of columnns has null count match between source and target']),str(dict_testresults['No of Columns has null count mismatch between source and target']), , dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
                 
                    
@@ -1000,6 +1000,7 @@ class S2TTester:
             pdfobj.write_text(
                 '5.2 Columns having nulls in target', 'section heading')
             pdfobj.create_table_details(sample_target_only, 'mismatch_details')
+            pdfobj.write_text(
                 '5.3 Columns having null count mismatch between source and target', 'section heading')
             pdfobj.create_table_details(sample_mismatch, 'mismatch_details')
 
