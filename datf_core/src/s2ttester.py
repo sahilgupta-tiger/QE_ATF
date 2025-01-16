@@ -494,8 +494,7 @@ class S2TTester:
         rowcount_source = sourcedf.count()
         print("Counting Target Rows now...")
         rowcount_target = targetdf.count()
-        if (testcasetype == 'null'):
-            log_info("Null validation started for source data belongs to testcase") 
+        if (testcasetype == 'null'): 
             totalsrcnullcols = 0
             totaltgtnullcols = 0
             source_null_counts = []
@@ -509,8 +508,7 @@ class S2TTester:
                     totalsrcnullcols = totalsrcnullcols +1
             src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
             src_null_counts_df = src_null_counts_df.filter(col("Count") > 0)
-            src_null_counts_df.show()
-            log_info("Null validation started for target data belongs to testcase") 
+            src_null_counts_df.show() 
             tflag = 0
             for col_name in targetdf.columns:
                 tgt_null_count = targetdf.filter(col(col_name).isNull()).count()
@@ -541,26 +539,19 @@ class S2TTester:
                     if srccolpos == tgtcolpos:
                         src_null_col_count = sourcedf.filter(col(src_col_name).isNull()).count()
                         tgt_null_col_count = targetdf.filter(col(tgt_col_name).isNull()).count()
-                        print(f"{srccolpos} - src_col_name : {src_col_name}")
-                        print(f"{tgtcolpos} - tgt_col_name : {tgt_col_name}")
                         if src_null_col_count!=0 or tgt_null_col_count != 0:
                             if src_null_col_count != tgt_null_col_count:
                                 nullflag=1
                                 null_col_counts.append((src_col_name,src_null_col_count,tgt_col_name, tgt_null_col_count))
                                 columns_mis_null_count = columns_mis_null_count + 1
-                                print(f"columns_mis_null_count : {columns_mis_null_count}")
                             else:
                                 columns_match_null_count = columns_match_null_count + 1
-                                print(f"columns_match_null_count : {columns_match_null_count}")
 
 
-            #null_col_counts_df = spark.createDataFrame(null_col_counts, ["SourceColumnName", "SourceCount", "TargetColumnName", "TargetCount"])
             if len(null_col_counts) == 0:
                 null_col_counts_df = None
             else:    
                 null_col_counts_df = spark.createDataFrame(null_col_counts, ["Source Column Name", "Src Null Count", "Target Column Name", "Tgt Null Count"])
-            
-            null_col_counts_df.show()
 
             if nullflag == 0: 
                 test_result = "Passed"
@@ -577,14 +568,6 @@ class S2TTester:
             sample_target_only = tgt_null_counts_df
 
             rows_both_all = rows_mismatch  = rows_only_source =rows_only_target = df_match_summary = dict_no_of_rows = dict_match_details = None
-
-                    
-
-
-
-                
-
-
 
         if (testcasetype == 'content'):
             
