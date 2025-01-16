@@ -555,7 +555,10 @@ class S2TTester:
                         break
 
             #null_col_counts_df = spark.createDataFrame(null_col_counts, ["SourceColumnName", "SourceCount", "TargetColumnName", "TargetCount"])
-            null_col_counts_df = None
+            if len(null_col_counts) > 0:
+                null_col_counts_df = spark.createDataFrame(null_col_counts, ["SourceColumnName", "SourceCount", "TargetColumnName", "TargetCount"])
+            else:    
+                null_col_counts_df = None
 
             if nullflag == 0: 
                 test_result = "Passed"
