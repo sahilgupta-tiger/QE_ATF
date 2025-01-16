@@ -557,10 +557,12 @@ class S2TTester:
 
 
             #null_col_counts_df = spark.createDataFrame(null_col_counts, ["SourceColumnName", "SourceCount", "TargetColumnName", "TargetCount"])
-            if len(null_col_counts) > 0:
-                null_col_counts_df = spark.createDataFrame(null_col_counts, ["SourceColumnName", "SourceCount", "TargetColumnName", "TargetCount"])
-            else:    
+            if len(null_col_counts) == 0:
                 null_col_counts_df = None
+            else:    
+                null_col_counts_df = spark.createDataFrame(null_col_counts, ["SourceColumnName", "SourceCount", "TargetColumnName", "TargetCount"])
+            
+            null_col_counts_df.show()
 
             if nullflag == 0: 
                 test_result = "Passed"
@@ -1012,7 +1014,7 @@ class S2TTester:
             pdfobj.create_table_details(sample_target_only, 'mismatch_details')
             pdfobj.write_text(
                 '5.3 Columns having null count mismatch between source and target', 'section heading')
-            pdfobj.create_table_details(sample_mismatch, 'mismatch_details')
+            pdfobj.create_table_details(sample_mismatch, 'mismatch_summary')
 
         elif (testcasetype == 'content' or testcasetype == 'count and content'):
             mismatch_heading = "5. Sample Mismatches " + \
