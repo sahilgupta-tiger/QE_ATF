@@ -1,6 +1,6 @@
 # Databricks notebook source
 dbutils.widgets.text('test_protocol_name', 'traversedtestprotocol')
-dbutils.widgets.dropdown("test_type", "duplicate", ['null','count', 'duplicate', 'content'])
+dbutils.widgets.dropdown("test_type", "null", ['null','count', 'duplicate', 'content'])
 dbutils.widgets.text('test_names', 'all')
 dbutils.widgets.text('work_path', '/Workspace/Shared/QE_ATF_Latest/datf_core')
 
@@ -30,16 +30,11 @@ params = {
     "test_type": test_type,
     "test_names": test_names
 }
-print(work_path)
-print(py_file)
+
 test_protocol = f"{work_path}/test/testprotocol/{test_protocol_name}.xlsx"
-print(test_protocol)
+
 runner = f"{py_file} {test_protocol} {test_type} {test_names}"
 %run $runner
-
-# COMMAND ----------
-
-dbutils.fs.ls('file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/patients_source_parquet')
 
 # COMMAND ----------
 
@@ -50,21 +45,5 @@ displayHTML(html_file_content)
 # COMMAND ----------
 
 work_path = dbutils.widgets.get("work_path")
-html_file_content = open(f"{work_path}utils/reports/datf_trends_report.html", 'r').read()
+html_file_content = open(f"{work_path}/utils/reports/datf_trends_report.html", 'r').read()
 displayHTML(html_file_content)
-
-# COMMAND ----------
-
-# MAGIC %pip install pydantic-settings
-# MAGIC %pip install pandas-profiling
-# MAGIC
-# MAGIC from pandas_profiling import ProfileReport
-
-# COMMAND ----------
-
-for i in range(10):
-    for j in range(10):
-        if i == j:
-            print(i,j)
-        
-

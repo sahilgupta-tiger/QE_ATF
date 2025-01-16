@@ -508,7 +508,6 @@ class S2TTester:
                     totalsrcnullcols = totalsrcnullcols +1
             src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
             src_null_counts_df = src_null_counts_df.filter(col("Count") > 0)
-            src_null_counts_df.show() 
             tflag = 0
             for col_name in targetdf.columns:
                 tgt_null_count = targetdf.filter(col(col_name).isNull()).count()
@@ -518,7 +517,6 @@ class S2TTester:
                     totaltgtnullcols = totaltgtnullcols +1
             tgt_null_counts_df = spark.createDataFrame(target_null_counts, ["Column", "Count"])
             tgt_null_counts_df = tgt_null_counts_df.filter(col("Count") > 0)
-            tgt_null_counts_df.show()
             '''if sflag ==0 and tflag == 0: 
                 test_result = "Passed"
                 result_desc = "No Null in any columns"
