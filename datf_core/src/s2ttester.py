@@ -566,11 +566,11 @@ class S2TTester:
 
             if nullflag == 0: 
                 test_result = "Passed"
-                result_desc = "Null count is matching between source and target for each column"
+                result_desc = "Null count is matching"
                 log_info("Test Case Passed - Null count is matching between source and target for each column")
             else:
                 test_result = "Failed"
-                result_desc = "Null count is not matching between source and target for each column. Please look into section 5.3 for more information"
+                result_desc = "Null count is not matching"
                 log_info("Test Case Failed - Null count is not matching between source and target for each column")
             dict_results = {
                 'Test Result': test_result, 'No of column has null in source':f"{totalsrcnullcols:,}",'No of column has null in target':f"{totaltgtnullcols:,}", 'No of columns has null count match':f"{columns_match_null_count:,}", 'No of columns has null count mismatch': f"{columns_mis_null_count:,}"}
