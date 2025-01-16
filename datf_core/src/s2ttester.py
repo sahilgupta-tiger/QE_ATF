@@ -116,7 +116,7 @@ class S2TTester:
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Distinct Rows in Source',
                                                'No. of Rows in Target', 'No. of Distinct Rows in Target', 'Test Result', 'Reason', 'Runtime'])
         elif testcasetype == "null":
-            df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No of column has null in source','No of column has null in target','No of columns has null count match','No of Columns has null count mismatch', 'Test Result', 'Reason', 'Runtime'])
+            df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No of column has null in source','No of column has null in target','No of columns has null count match','No of columns has null count mismatch', 'Test Result', 'Reason', 'Runtime'])
  
         elif testcasetype == "content" or testcasetype == "count and content":
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Rows in Target',
@@ -283,7 +283,7 @@ class S2TTester:
                         dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
                     
                 elif testcasetype == "null":
-                    df_protocol_summary.loc[index] = [test_case_name,str(dict_testresults['No of column has null in source']),str(dict_testresults['No of column has null in target']),str(dict_testresults['No of columns has null count match']),str(dict_testresults['No of Columns has null count mismatch']),dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                    df_protocol_summary.loc[index] = [test_case_name,str(dict_testresults['No of column has null in source']),str(dict_testresults['No of column has null in target']),str(dict_testresults['No of columns has null count match']),str(dict_testresults['No of columns has null count mismatch']),dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
                 
                    
@@ -573,7 +573,7 @@ class S2TTester:
                 result_desc = "Null count is not matching between source and target for each column. Please look into section 5.3 for more information"
                 log_info("Test Case Failed - Null count is not matching between source and target for each column")
             dict_results = {
-                'Test Result': test_result, 'No of column has null in source':f"{totalsrcnullcols:,}",'No of column has null in target':f"{totaltgtnullcols:,}", 'No of columns has null count match':f"{columns_match_null_count:,}", 'No of Columns has null count mismatch': f"{columns_mis_null_count:,}"}
+                'Test Result': test_result, 'No of column has null in source':f"{totalsrcnullcols:,}",'No of column has null in target':f"{totaltgtnullcols:,}", 'No of columns has null count match':f"{columns_match_null_count:,}", 'No of columns has null count mismatch': f"{columns_mis_null_count:,}"}
             sample_mismatch = null_col_counts_df
             sample_source_only = src_null_counts_df
             sample_target_only = tgt_null_counts_df
