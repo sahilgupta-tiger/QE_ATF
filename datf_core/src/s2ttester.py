@@ -495,6 +495,8 @@ class S2TTester:
         print("Counting Target Rows now...")
         rowcount_target = targetdf.count()
         if (testcasetype == 'null'):
+            sourcedf = sourcedf.withColumn("Column1",lit(None))
+            targetdf = targetdf.withColumn("Column1",lit(1))
             log_info("Null validation started for source data belongs to testcase") 
             totalsrcnullcols = 0
             totaltgtnullcols = 0
