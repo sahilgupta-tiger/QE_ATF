@@ -541,8 +541,8 @@ class S2TTester:
                     if srccolpos == tgtcolpos:
                         src_null_col_count = sourcedf.filter(col(src_col_name).isNull()).count()
                         tgt_null_col_count = targetdf.filter(col(tgt_col_name).isNull()).count()
-                        print(f"src_col_name : {src_col_name}")
-                        print(f"tgt_col_name : {tgt_col_name}")
+                        print(f"{srccolpos} - src_col_name : {src_col_name}")
+                        print(f"{tgtcolpos} - tgt_col_name : {tgt_col_name}")
                         if src_null_col_count != tgt_null_col_count:
                             nullflag=1
                             null_col_counts.append((src_col_name,src_null_col_count,tgt_col_name, tgt_null_col_count))
