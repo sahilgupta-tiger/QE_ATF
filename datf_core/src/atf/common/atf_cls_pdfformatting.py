@@ -5,7 +5,7 @@ class generatePDF:
     
     self.pdf = FPDF(format='A4', unit='mm')
     self.pdf.add_page()
-    self.pdf.add_font('DejaVu', '', 'file:/Workspace/Shared/QE_ATF_Latest/datf_core/dejavuDejaVuSans.ttf', uni=True)
+    self.pdf.add_font('DejaVu', '', 'file:/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/dejavuDejaVuSans.ttf', uni=True)
     self.pdf.set_font('Times','',10.0) 
     self.epw = self.pdf.w - 2*self.pdf.l_margin
     self.pdf.set_auto_page_break(True, 10)
