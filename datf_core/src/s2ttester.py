@@ -438,7 +438,7 @@ class S2TTester:
                            'filename':tc_config['sourcefilename']}
             source_df, source_query = read_data(tc_source_config,self.spark)
             source_df = source_df.withColumn("DescriptionD1",lit("24 oz Chefâ€™s Bottle"))
-            source_df.show()
+            source_df.printSchema()
            
             log_info(f"Reading the Target Data")
             tc_target_config = {'aliasname': tc_config['targetaliasname'], 'connectiontype': tc_config['targetconnectiontype'],
@@ -450,8 +450,7 @@ class S2TTester:
                            'filename':tc_config['targetfilename']}    
             target_df, target_query = read_data(tc_target_config,self.spark)
             target_df = target_df.withColumn("DescriptionD1",lit("4.5lb + ACANA® Fr"))
-            target_df.show()
-            
+            target_df.printSchema()            
 
         if (source_file_details_dict is not None):
             file_details_dict = {"sourcefile": source_file_details_dict["file_path"], "targetfile": target_file_details_dict["file_path"], "sourceconnectionname": source_conn_name,
@@ -589,6 +588,7 @@ class S2TTester:
             duplicate_rowcount_target = rowcount_target - distinct_rowcount_target
             rows_both_all = comparison_obj.rows_both_all
             rows_mismatch = comparison_obj.rows_both_mismatch
+            print(f"rows_mismatch :  {rows_mismatch}")
             rows_only_source = comparison_obj.rows_only_base
             rows_only_target = comparison_obj.rows_only_compare
             rowcount_common = comparison_obj.common_row_count
@@ -650,6 +650,7 @@ class S2TTester:
                     sample_mismatch, joincolumns)
                 sample_mismatch = sample_mismatch.select(
                     concat(*concat_list).alias("Key Columns"))
+                print(f"sample_mismatch : {sample_mismatch}")
             if rows_only_source.rdd.isEmpty():
                 rows_only_source = None
                 sample_source_only = None
