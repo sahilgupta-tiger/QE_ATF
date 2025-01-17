@@ -5,6 +5,7 @@ class generatePDF:
     
     self.pdf = FPDF(format='A4', unit='mm')
     self.pdf.add_page()
+    self.pdf.add_font('DejaVu', '', 'file:/Workspace/Shared/QE_ATF_Latest/datf_core/dejavuDejaVuSans.ttf', uni=True)
     self.pdf.set_font('Times','',10.0) 
     self.epw = self.pdf.w - 2*self.pdf.l_margin
     self.pdf.set_auto_page_break(True, 10)
@@ -127,7 +128,9 @@ class generatePDF:
       cth = factor * mth
       self.pdf.ln(cth)
 
-      self.pdf.set_font('Times','',10.0) 
+      #self.pdf.set_font('Times','',10.0) 
+      #Added the below line
+      self.pdf.set_font('DejaVu', '', 10.0)
       th = self.pdf.font_size
       
       for i,row in enumerate(table_data):
@@ -144,6 +147,7 @@ class generatePDF:
         x_pos = self.pdf.get_x() - col_width_list[0]
         y_pos = self.pdf.get_y()
         self.pdf.rect(x_pos, y_pos,col_width_list[0],factor*mth)
+        
         for j,val in enumerate(row):
             print(f"val : {val}")
             k = j+1
@@ -161,21 +165,21 @@ class generatePDF:
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'L')
-                self.pdf.cell(col_width, mth, txt=str(val).encode('utf-8').decode('utf-8'), border=0, align = 'L',ln=True)
+                self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'L',ln=True)
 
               else:
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'C')
-                self.pdf.cell(col_width, mth, txt=str(val).encode('utf-8').decode('utf-8'), border=0, align = 'C',ln=True) 
+                self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'C',ln=True) 
             else: 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'L') 
-                self.pdf.multi_cell(col_width, cth, txt=str(val).encode('utf-8').decode('utf-8'), border = 0, align= 'L',ln=True)
+                self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'L',ln=True)
               else:
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'C')
-                self.pdf.multi_cell(col_width, cth, txt=str(val).encode('utf-8').decode('utf-8'), border = 0, align= 'C',ln=True)
+                self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C',ln=True)
               self.pdf.set_xy(x_pos + col_width, y_pos)
             
             self.pdf.set_text_color(0,0,0)

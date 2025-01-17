@@ -95,3 +95,7 @@ df1 = spark.read.parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/da
 print(df1.count())
 df1.printSchema()'''
 
+
+# COMMAND ----------
+
+dbutils.fs.ls("file:/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu")
