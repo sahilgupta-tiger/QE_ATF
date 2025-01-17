@@ -1025,6 +1025,7 @@ class S2TTester:
                     header = "7." + str(sno) + " " + str(key)
                     pdfobj.write_text(header, 'section heading')
                     pdfobj.create_table_details(value, 'mismatch_details')
+                    print(f"What is key {key} - value : {value}")
                     sno = sno + 1
             else:
                 df_7 = None
