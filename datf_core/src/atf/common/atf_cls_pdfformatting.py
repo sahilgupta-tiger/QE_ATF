@@ -10,7 +10,6 @@ class generatePDF:
     self.pdf.set_auto_page_break(True, 10)
 
     
-    
   def write_text(self, text, texttype):
   
     if texttype == 'report header':

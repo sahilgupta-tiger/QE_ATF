@@ -483,6 +483,8 @@ class S2TTester:
         log_info(f"Data Compare Started for TestingType - {testcasetype} ")
         sourcedf = compare_input['sourcedf']
         targetdf = compare_input['targetdf']
+        sourcedf = sourcedf.withColumn("DescriptionD1",lit("24 oz Chefâ€™s Bottle (2 Pack), Honey with a Kick, Sweetness & Heat, 100% Pure Honey, Gluten-Free & Paleo, More than Sauce - it's Hot Honey,1.5 Pound (Pack of 2)"))
+        targetdf = targetdf.withColumn("DescriptionD1",lit("4.5lb + ACANA® Freeze Dried Dog Food, Duck Recipe, Morsels, 8oz + ACANA Chunks Duck Recipe in Bone Broth Case of 12"))
         joincolumns = compare_input['joincolumns']
         log_info(f"Joining with column names: {joincolumns}")
         colmapping = compare_input['colmapping']

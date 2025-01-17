@@ -1,6 +1,6 @@
 # Databricks notebook source
 dbutils.widgets.text('test_protocol_name', 'traversedtestprotocol')
-dbutils.widgets.dropdown("test_type", "null", ['null','count', 'duplicate', 'content'])
+dbutils.widgets.dropdown("test_type", "content", ['null','count', 'duplicate', 'content'])
 dbutils.widgets.text('test_names', 'all')
 dbutils.widgets.text('work_path', '/Workspace/Shared/QE_ATF_Latest/datf_core')
 
