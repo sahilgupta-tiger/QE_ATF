@@ -1,4 +1,8 @@
-# Databricks notebook source
+from atf.common.atf_common_functions import (get_connection_config, get_mount_path,
+                                             log_info, preproc_unnestfields)
+
+
+
 def read_jsonschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']
   s3bucket = get_connection_config(connectionname)['BUCKETNAME']

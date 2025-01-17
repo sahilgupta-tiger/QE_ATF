@@ -16,7 +16,6 @@ from atf.common.atf_common_functions import read_protocol_file, log_error, log_i
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
 from testconfig import *
-from atf.common.atf_cls_createdb import create_db
 
 
 def createsparksession():
@@ -110,16 +109,20 @@ class S2TTester:
 
         elif testcasetype == "duplicate":
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Distinct Rows in Source',
-                                               'No. of Rows in Target', 'No. of Distinct Rows in Target', 'Test Result', 'Reason', 'Runtime'])
+                                    'No. of Rows in Target', 'No. of Distinct Rows in Target', 'Test Result', 'Reason', 'Runtime'])
 
-        elif testcasetype == "content" or testcasetype == "count and content":
+        elif testcasetype == "null":
+            df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No of column has null in source','No of column has null in target',
+                                    'No of columns has null count match','No of columns has null count mismatch', 'Test Result', 'Reason', 'Runtime'])
+
+        elif testcasetype == "content":
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Rows in Target',
-                                               'No. of Rows matched', 'No. of Rows mismatched', 'Test Result', 'Reason', 'Runtime'])
+                                    'No. of Rows matched', 'No. of Rows mismatched', 'Test Result', 'Reason', 'Runtime'])
         
         elif testcasetype == "fingerprint":
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of KPIs in Source',
-                                                        'No. of KPIs in Target', 'No. of KPIs matched',
-                                                        'No. of KPIs mismatched', 'Test Result', 'Reason', 'Runtime'])
+                                    'No. of KPIs in Target', 'No. of KPIs matched',
+                                    'No. of KPIs mismatched', 'Test Result', 'Reason', 'Runtime'])
 
         pdfobj_combined_testcase = generatePDF()
 
@@ -174,6 +177,11 @@ class S2TTester:
                 testcase_exectime = str(testcase_exectime).split('.')[0]
                 log_info(f"Comparing Source and Target Data based on TestCase Configuration Completed for {test_case_name}")
                 log_info(f"Execution of Test Case {test_case_name} completed in {testcase_exectime}")
+
+                source_df = compare_input['sourcedf']
+                target_df = compare_input['targetdf']
+                source_null_counts = []
+                target_null_counts = []
 
                 log_info(
                     f"{row['test_case_name']}: Test Results PDF Generation for Test Case Started for {test_case_name}")
@@ -233,16 +241,24 @@ class S2TTester:
                         dict_testresults['No. of rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
 
                 elif testcasetype == "duplicate":
-                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']), str(
-                        dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of distinct rows in Source']),
+                                    str(dict_testresults['No. of rows in Target']), str(dict_testresults['No. of distinct rows in Target']), dict_compareoutput['test_result'],
+                                                      dict_compareoutput['result_desc'], str(testcase_exectime)]
 
-                elif testcasetype == "content" or testcasetype == "count and content":
-                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']), str(
-                        dict_testresults['No. of matched rows']), str(dict_testresults['No. of mismatched rows']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                elif testcasetype == "null":
+                    df_protocol_summary.loc[index] = [test_case_name,str(dict_testresults['No of column has null in source']),str(dict_testresults['No of column has null in target']),
+                                    str(dict_testresults['No of columns has null count match']),str(dict_testresults['No of columns has null count mismatch']),dict_compareoutput['test_result'],
+                                                      dict_compareoutput['result_desc'], str(testcase_exectime)]
+
+                elif testcasetype == "content":
+                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']),
+                                    str(dict_testresults['No. of matched rows']), str(dict_testresults['No. of mismatched rows']), dict_compareoutput['test_result'],
+                                                      dict_compareoutput['result_desc'], str(testcase_exectime)]
                 
                 elif testcasetype == "fingerprint":
-                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of KPIs in Source']), str(dict_testresults['No. of KPIs in Target']), str(
-                        dict_testresults['No. of KPIs matched']), str(dict_testresults['No. of KPIs mismatched']), dict_compareoutput['test_result'], dict_compareoutput['result_desc'], str(testcase_exectime)]
+                    df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of KPIs in Source']), str(dict_testresults['No. of KPIs in Target']),
+                                    str(dict_testresults['No. of KPIs matched']), str(dict_testresults['No. of KPIs mismatched']), dict_compareoutput['test_result'],
+                                                      dict_compareoutput['result_desc'], str(testcase_exectime)]
                     
                 log_info(
                     f"{row['test_case_name']}: Testcase Execution Completed for {row['test_case_name']}")
@@ -504,9 +520,9 @@ class S2TTester:
             dict_no_of_rows = {'No. of rows in Source': rowcount_source,
                                'No. of rows in Target': rowcount_target}
 
-            if rows_only_source.rdd.isEmpty() and rows_only_target.rdd.isEmpty():
-                rows_both_all = None
-            if rows_mismatch.rdd.isEmpty():
+            if rows_only_source.limit(1).count()==0 and rows_only_target.limit(1).count()==0:
+                pass
+            if rows_mismatch.limit(1).count()==0:
                 rows_mismatch = None
                 sample_mismatch = None
             else:
@@ -516,7 +532,7 @@ class S2TTester:
                     sample_mismatch, joincolumns)
                 sample_mismatch = sample_mismatch.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_source.rdd.isEmpty():
+            if rows_only_source.limit(1).count()==0:
                 rows_only_source = None
                 sample_source_only = None
             else:
@@ -526,7 +542,7 @@ class S2TTester:
                     sample_source_only, joincolumns)
                 sample_source_only = sample_source_only.select(
                     concat(*concat_list).alias("Key Columns"))
-            if rows_only_target.rdd.isEmpty():
+            if rows_only_target.limit(1).count()==0:
                 rows_only_target = None
                 sample_target_only = None
             else:
@@ -631,6 +647,69 @@ class S2TTester:
                 'Test Result': test_result, 'No. of rows in Source': f"{rowcount_source:,}", 'No. of rows in Target': f"{rowcount_target:,}"
             }
             rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
+
+        elif (testcasetype == 'null'):
+            totalsrcnullcols = 0
+            totaltgtnullcols = 0
+            source_null_counts = []
+            target_null_counts = []
+            sflag=0
+            for col_name in sourcedf.columns:
+                src_null_count = sourcedf.filter(col(col_name).isNull()).count()
+                source_null_counts.append((col_name, src_null_count))
+                if src_null_count > 0:
+                    sflag = 1
+                    totalsrcnullcols = totalsrcnullcols +1
+            src_null_counts_df = spark.createDataFrame(source_null_counts, ["Column", "Count"])
+            src_null_counts_df = src_null_counts_df.filter(col("Count") > 0)
+            tflag = 0
+            for col_name in targetdf.columns:
+                tgt_null_count = targetdf.filter(col(col_name).isNull()).count()
+                target_null_counts.append((col_name, tgt_null_count))
+                if tgt_null_count > 0:
+                    tflag = 1
+                    totaltgtnullcols = totaltgtnullcols +1
+            tgt_null_counts_df = spark.createDataFrame(target_null_counts, ["Column", "Count"])
+            tgt_null_counts_df = tgt_null_counts_df.filter(col("Count") > 0)
+
+            nullflag = 0
+            null_col_counts = []
+            columns_match_null_count = 0
+            columns_mis_null_count = 0
+            for srccolpos, src_col_name in enumerate(sourcedf.columns):
+                for tgtcolpos, tgt_col_name in enumerate(targetdf.columns):
+                    if srccolpos == tgtcolpos:
+                        src_null_col_count = sourcedf.filter(col(src_col_name).isNull()).count()
+                        tgt_null_col_count = targetdf.filter(col(tgt_col_name).isNull()).count()
+                        if src_null_col_count!=0 or tgt_null_col_count != 0:
+                            if src_null_col_count != tgt_null_col_count:
+                                nullflag=1
+                                null_col_counts.append((src_col_name,src_null_col_count,tgt_col_name, tgt_null_col_count))
+                                columns_mis_null_count = columns_mis_null_count + 1
+                            else:
+                                columns_match_null_count = columns_match_null_count + 1
+
+
+            if len(null_col_counts) == 0:
+                null_col_counts_df = None
+            else:
+                null_col_counts_df = spark.createDataFrame(null_col_counts, ["Source Column Name", "Src Null Count", "Target Column Name", "Tgt Null Count"])
+
+            if nullflag == 0:
+                test_result = "Passed"
+                result_desc = "Nulls are matching for each column"
+                log_info("Test Case Passed - Null count is matching between source and target for each column")
+            else:
+                test_result = "Failed"
+                result_desc = "Nulls are not matching for each column"
+                log_info("Test Case Failed - Null count is not matching between source and target for each column")
+            dict_results = {
+                'Test Result': test_result, 'No of column has null in source':f"{totalsrcnullcols:,}",'No of column has null in target':f"{totaltgtnullcols:,}", 'No of columns has null count match':f"{columns_match_null_count:,}", 'No of columns has null count mismatch': f"{columns_mis_null_count:,}"}
+            sample_mismatch = null_col_counts_df
+            sample_source_only = src_null_counts_df
+            sample_target_only = tgt_null_counts_df
+
+            rows_both_all = rows_mismatch  = rows_only_source =rows_only_target = df_match_summary = dict_no_of_rows = dict_match_details = None
 
         elif (testcasetype == "fingerprint"):
             special_srcdf = sourcedf
@@ -858,7 +937,20 @@ class S2TTester:
                 pdfobj.create_table_summary(row_count)
             pdfobj.create_table_details(col_match_summary, 'mismatch_summary')
 
-        elif (testcasetype == 'content' or testcasetype == 'count and content'):
+        elif testcasetype == 'null':
+            mismatch_heading = "5. Columns having nulls at source and target"
+            pdfobj.write_text(mismatch_heading, 'section heading')
+            pdfobj.write_text(
+                '5.1 Columns having nulls in source', 'section heading')
+            pdfobj.create_table_details(sample_source_only, 'mismatch_details')
+            pdfobj.write_text(
+                '5.2 Columns having nulls in target', 'section heading')
+            pdfobj.create_table_details(sample_target_only, 'mismatch_details')
+            pdfobj.write_text(
+                '5.3 Columns having null count mismatch between source and target', 'section heading')
+            pdfobj.create_table_details(sample_mismatch, 'mismatch_summary')
+
+        elif (testcasetype == 'content'):
             mismatch_heading = "5. Sample Mismatches " + \
                 str(compare_input['limit']) + " rows"
             pdfobj.write_text(mismatch_heading, 'section heading')

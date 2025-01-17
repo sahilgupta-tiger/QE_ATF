@@ -1,7 +1,4 @@
-# Databricks notebook source
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
+from atf.common.atf_common_functions import get_connection_config, get_mount_path, log_info
 
 def read_deltaschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']

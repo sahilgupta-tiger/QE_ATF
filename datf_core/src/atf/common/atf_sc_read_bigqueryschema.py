@@ -1,13 +1,8 @@
-# Databricks notebook source
-from pyspark.sql.functions import * 
+from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,readconnectionconfig
 import os
-# COMMAND ----------
 
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
 
 def read_bigqueryschema(dict_connection, comparetype):
 

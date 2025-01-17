@@ -14,8 +14,9 @@ def load_homepage():
     st.title('DATF Execution Portal')
     # Choose the testing type
     test_type = st.radio(
-        "Choose the testing type for execution:", ["Count", "Duplicate", "Content"],
-        captions=["Row counts from src & tgt.", "Duplicate and Null checks.", "Reconciliation checks."])
+        "Choose the testing type for execution:", ["Count", "Null", "Duplicate", "Content"],
+        captions=["Row counts from src & tgt.", "Check for Nulls in each column.",
+                  "Duplicate checks via P-key.", "Complete Reconciliation checks."])
 
     if test_type is not None:
         st.write(f"You selected: {test_type} as your testing type.")
@@ -44,7 +45,7 @@ def load_homepage():
                    },
                    hide_index=True, use_container_width=True)
 
-        st.text('**In order to change the Execution, '
+        st.text('**In order to change the Execution order, '
                     "Please select \"Edit Test Configs\" from sidebar to update!**")
         # Start Execution Button
         st.divider()

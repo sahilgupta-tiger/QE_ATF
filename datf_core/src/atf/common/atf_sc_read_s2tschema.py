@@ -1,11 +1,7 @@
-# Databricks notebook source
-# MAGIC %run ./atf_cls_loads2t
+from atf.common.atf_common_functions import (get_connection_config, get_mount_path,
+                                             log_info, preproc_unnestfields)
+from atf.common.atf_cls_loads2t import LoadS2T
 
-# COMMAND ----------
-
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
 
 def read_S2Tschema(dict_connection,comparetype):
   connectionname = dict_connection['connectionname']

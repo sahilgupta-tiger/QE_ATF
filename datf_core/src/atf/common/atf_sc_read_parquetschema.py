@@ -1,7 +1,8 @@
-# Databricks notebook source
 from pyspark.sql.functions import lit
+from atf.common.atf_common_functions import (get_connection_config, get_mount_path,
+                                             log_info, preproc_unnestfields)
 
-# COMMAND ----------
+
 
 def read_parquetschema(dict_connection, comparetype):
   connectionname = dict_connection['connectionname']

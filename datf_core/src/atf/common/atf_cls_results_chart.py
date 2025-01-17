@@ -94,13 +94,13 @@ def generate_results_charts(df_protocol_summary, protocol_run_details, protocol_
 def create_html_report(trends_code, chart_code, created_time, output_path, combined_path, summary_path):
     # Create the HTML file
     html_file_name = f"chart_report_{created_time}.html"
-    html_file_path = f"{root_path}test/results/charts/{html_file_name}"
+    html_file_path = f"{root_path}/test/results/charts/{html_file_name}"
 
     with open(html_file_path, 'w') as file:
         file.write(chart_code)
     log_info(f"Chart generated at: {html_file_path}")
 
-    trends_path = f"{root_path}test/results/trends/datf_trends_report.html"
+    trends_path = f"{root_path}/test/results/trends/datf_trends_report.html"
     # index_path = f"{root_path}utils/index.html"
 
     with open(trends_path, 'w') as file:
@@ -108,7 +108,7 @@ def create_html_report(trends_code, chart_code, created_time, output_path, combi
     log_info(f"Trends generated at: {trends_path}")
 
     # copy all current reports to single folder after emptying it
-    final_report_path = f"{root_path}utils/reports"
+    final_report_path = f"{root_path}/utils/reports"
     for filename in os.listdir(final_report_path):
         file_path = os.path.join(final_report_path, filename)
         try:
@@ -152,7 +152,7 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
     new_df['DB Stored Time'] = time_stored_in_db
 
     # Connect to SQLITE DB and update the table if exists
-    conn = sqlite3.connect(f'{root_path}utils/{results_db_name}.db')
+    conn = sqlite3.connect(f'{root_path}/utils/{results_db_name}.db')
     new_df.to_sql(rept_table_name, conn, if_exists='append', index=False)
     log_info("Execution Data stored in DB successfully")
     conn.close()
@@ -160,7 +160,7 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
 
 def retrieve_from_db(sql_query):
 
-    conn = sqlite3.connect(f'{root_path}utils/{results_db_name}.db')
+    conn = sqlite3.connect(f'{root_path}/utils/{results_db_name}.db')
     # Filter data from DB using SQL and create a DF
     df_from_db = pd.read_sql_query(sql_query, conn)
 
