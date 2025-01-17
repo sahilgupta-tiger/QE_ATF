@@ -165,12 +165,12 @@ class generatePDF:
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'L')
-                self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'L',ln=True)
+                self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'L')
 
               else:
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'C')
-                self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'C',ln=True) 
+                self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'C') 
             else: 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
