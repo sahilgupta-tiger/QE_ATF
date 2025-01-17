@@ -98,4 +98,11 @@ df1.printSchema()'''
 
 # COMMAND ----------
 
-dbutils.fs.ls("file:/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu")
+dbutils.fs.ls("/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/DejaVuSansCondensed.ttf")
+
+# COMMAND ----------
+
+from fpdf import FPDF
+pdf = FPDF(format='A4', unit='mm')
+pdf.add_page()
+pdf.add_font('DejaVu', '', '/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/DejaVuSansCondensed.ttf', uni=True)
