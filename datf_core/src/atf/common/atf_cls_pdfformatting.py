@@ -161,21 +161,21 @@ class generatePDF:
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'L')
-                self.pdf.cell(col_width, mth, txt=str(val).encode('utf-8').decode('utf-8'), border=0, align = 'L')
+                self.pdf.cell(col_width, mth, txt=str(val).encode('utf-8').decode('utf-8'), border=0, align = 'L',ln=True)
 
               else:
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'C')
-                self.pdf.cell(col_width, mth, txt=str(val).encode('utf-8').decode('utf-8'), border=0, align = 'C') 
+                self.pdf.cell(col_width, mth, txt=str(val).encode('utf-8').decode('utf-8'), border=0, align = 'C',ln=True) 
             else: 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'L') 
-                self.pdf.multi_cell(col_width, cth, txt=str(val).encode('utf-8').decode('utf-8'), border = 0, align= 'L')
+                self.pdf.multi_cell(col_width, cth, txt=str(val).encode('utf-8').decode('utf-8'), border = 0, align= 'L',ln=True)
               else:
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'C')
-                self.pdf.multi_cell(col_width, cth, txt=str(val).encode('utf-8').decode('utf-8'), border = 0, align= 'C')
+                self.pdf.multi_cell(col_width, cth, txt=str(val).encode('utf-8').decode('utf-8'), border = 0, align= 'C',ln=True)
               self.pdf.set_xy(x_pos + col_width, y_pos)
             
             self.pdf.set_text_color(0,0,0)
