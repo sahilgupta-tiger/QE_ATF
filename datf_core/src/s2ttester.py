@@ -489,8 +489,6 @@ class S2TTester:
         log_info(f"Data Compare Started for TestingType - {testcasetype} ")
         sourcedf = compare_input['sourcedf']
         targetdf = compare_input['targetdf']
-
-        targetdf.show()
         joincolumns = compare_input['joincolumns']
         log_info(f"Joining with column names: {joincolumns}")
         colmapping = compare_input['colmapping']
