@@ -383,6 +383,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
                            'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],
                            'schemastruct': s2tobj.getSchemaStruct("source"),'comparetype':tc_config['comparetype'],'filename':tc_config['sourcefilename']}
+            source_df, source_query = read_data(tc_source_config,self.spark)
 
 
 
@@ -394,6 +395,7 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
                            'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],
                            'schemastruct': s2tobj.getSchemaStruct("target"),'comparetype':tc_config['comparetype'],'filename':tc_config['targetfilename']}    
+            target_df, target_query = read_data(tc_target_config,self.spark)
 
 
         elif (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Auto'):
@@ -435,7 +437,6 @@ class S2TTester:
                            'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['sourcefilename']}
             source_df, source_query = read_data(tc_source_config,self.spark)
-            source_df, source_query = read_data(tc_source_config,self.spark)
             source_df = source_df.withColumn("DescriptionD1",lit("24 oz Chefâ€™s Bottle (2 Pack), Honey with a Kick, Sweetness & Heat, 100% Pure Honey, Gluten-Free & Paleo, More than Sauce - it's Hot Honey,1.5 Pound (Pack of 2)"))
             source_df.show()
            
@@ -447,7 +448,6 @@ class S2TTester:
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
                            'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}    
-            target_df, target_query = read_data(tc_target_config,self.spark)
             target_df, target_query = read_data(tc_target_config,self.spark)
             target_df = target_df.withColumn("DescriptionD1",lit("4.5lb + ACANA® Freeze Dried Dog Food, Duck Recipe, Morsels, 8oz + ACANA Chunks Duck Recipe in Bone Broth Case of 12"))
             target_df.show()
