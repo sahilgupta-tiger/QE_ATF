@@ -106,6 +106,7 @@ class generatePDF:
       factor = int(factor)+1 if(factor>=int(factor)) else int(factor)
       cth = mth * factor   
       table_data = df.toPandas().values.tolist()
+      print(f"table_data : {table_data}")
 
       for i,hd in enumerate(table_header):
         col_width = col_width_list[i]
@@ -130,6 +131,7 @@ class generatePDF:
       th = self.pdf.font_size
       
       for i,row in enumerate(table_data):
+        print(f"row -- {row}")
         str_width =[self.pdf.get_string_width(str(i)) for i in row]
         factor_list = [i/j for (i,j) in zip(str_width,col_width_reduced[1:])]
         factor_list.sort()
@@ -143,6 +145,7 @@ class generatePDF:
         y_pos = self.pdf.get_y()
         self.pdf.rect(x_pos, y_pos,col_width_list[0],factor*mth)
         for j,val in enumerate(row):
+            print(f"val : {val}")
             k = j+1
             col_width = col_width_list[k]
             
