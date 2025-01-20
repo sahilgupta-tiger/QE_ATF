@@ -54,7 +54,7 @@ dbutils.fs.ls("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/p
 
 # COMMAND ----------
 
-'''import pyspark.sql.functions as F
+import pyspark.sql.functions as F
 df = spark.read.parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/patients_source_parquet/part-00000-2138c990-5aab-4a32-9f94-39ca44b8f791-c000.snappy.parquet")
 print(df.count())
 df.select("id").show(truncate=False)
@@ -62,7 +62,7 @@ df = df.withColumn(
     "DName",
     F.when(
         F.col("id") == "1d604da9-9a81-4ba9-80c2-de3375d59b40",
-        F.lit("ACANA®Freeze+")
+        F.lit("ACANA商品名称Freeze+")
     ).when(
         F.col("id") == "034e9e3b-2def-4559-bb2a-7850888ae060",
         F.lit("Chefâ€™s")
@@ -72,12 +72,12 @@ df.write.mode("overwrite").parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_co
 
 df1 = spark.read.parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/latin_source/")
 print(df1.count())
-df1.printSchema()'''
+df1.printSchema()
 
 
 # COMMAND ----------
 
-'''import pyspark.sql.functions as F
+import pyspark.sql.functions as F
 df = spark.read.parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/patients_source_parquet/part-00000-2138c990-5aab-4a32-9f94-39ca44b8f791-c000.snappy.parquet")
 df.select("id").show(truncate=False)
 df = df.withColumn(
@@ -93,7 +93,7 @@ df.write.mode("overwrite").parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_co
 
 df1 = spark.read.parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/latin_target/")
 print(df1.count())
-df1.printSchema()'''
+df1.printSchema()
 
 
 # COMMAND ----------
