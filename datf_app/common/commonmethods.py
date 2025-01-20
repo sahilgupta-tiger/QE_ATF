@@ -7,7 +7,7 @@ import json
 from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
 
-tc_path = f"{root_path}test/testprotocol"
+tc_path = f"{root_path}/test/testprotocol"
 output_file_path = f"{root_path}/test/testprotocol/{exec_table_name}_template.xlsx"
 conn_exe = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db", check_same_thread=False)
 
