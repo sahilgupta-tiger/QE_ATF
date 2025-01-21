@@ -163,6 +163,7 @@ class generatePDF:
             cth = new_factor * mth 
             if(col_factor == 1): 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
+                print("---------Using Cell ---------")
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'L')
                 self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'L')
@@ -172,6 +173,7 @@ class generatePDF:
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'C')
                 self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'C') 
             else: 
+              print("---------Using MultiCell ---------")
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'L') 
