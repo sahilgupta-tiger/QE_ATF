@@ -179,7 +179,7 @@ class generatePDF:
               else:
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'C')
-                self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
+                self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, ln=0,align= 'C')
               self.pdf.set_xy(x_pos + col_width, y_pos)
             
             self.pdf.set_text_color(0,0,0)

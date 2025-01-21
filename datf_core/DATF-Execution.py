@@ -54,7 +54,7 @@ dbutils.fs.ls("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/p
 
 # COMMAND ----------
 
-import pyspark.sql.functions as F
+'''import pyspark.sql.functions as F
 df = spark.read.parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/patients_source_parquet/part-00000-2138c990-5aab-4a32-9f94-39ca44b8f791-c000.snappy.parquet")
 print(df.count())
 df.select("id").show(truncate=False)
@@ -62,17 +62,18 @@ df = df.withColumn(
     "DName",
     F.when(
         F.col("id") == "1d604da9-9a81-4ba9-80c2-de3375d59b40",
-        F.lit("ACANA商品名称Freeze+")
+        F.lit("Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)")
     ).when(
         F.col("id") == "034e9e3b-2def-4559-bb2a-7850888ae060",
-        F.lit("Chefâ€™s")
+        F.lit("Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4) Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)")
     ).otherwise(F.col("FIRST"))
 )
 df.write.mode("overwrite").parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/latin_source/")
 
 df1 = spark.read.parquet("file:/Workspace/Shared/QE_ATF_Latest/datf_core/test/data/source/latin_source/")
 print(df1.count())
-df1.printSchema()
+df1.printSchema()'''
+#◆ � Tin 🍒 ✔ Sign Beware Ç 𝐃 Dog Sign 8 ⧫🌟
 
 
 # COMMAND ----------
@@ -84,7 +85,7 @@ df = df.withColumn(
     "DName",
     F.when(
         F.col("id") == "1d604da9-9a81-4ba9-80c2-de3375d59b40",
-        F.lit("abcdtest")
+        F.lit("Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible with Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)Community Coffee Vanilla Waffle Cone 96 Count Coffee Pods, Ice Cream Flavored, Compatible  Keurig 2.0 K-Cup Brewers, 24 Count (Pack of 4)")
     ).otherwise(F.col("FIRST"))
 )
 df.show()
@@ -102,7 +103,32 @@ dbutils.fs.ls("/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/DejaVuSansConden
 
 # COMMAND ----------
 
-from fpdf import FPDF
+'''from fpdf import FPDF
 pdf = FPDF(format='A4', unit='mm')
 pdf.add_page()
-pdf.add_font('DejaVu', '', '/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/DejaVuSansCondensed.ttf', uni=True)
+pdf.add_font('DejaVu', '', '/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/DejaVuSansCondensed.ttf', uni=True)'''
+
+# COMMAND ----------
+
+'''from fpdf import FPDF
+
+# Create PDF instance
+pdf = FPDF()
+
+# Add a page
+pdf.add_page()
+
+# Set font
+pdf.set_font('Arial', size=12)
+
+# Draw a rectangle
+pdf.rect(10, 10, 100, 50)  # Draw a rectangle with top-left corner at (10, 10) with width 100 and height 50
+
+# Draw a filled rectangle
+pdf.rect(30, 10, 50, 30)  # Fill the rectangle with a solid color
+
+# Draw a rectangle with both fill and border
+pdf.rect(50, 50, 80, 40)  # Fill and draw the rectangle border
+
+# Output the PDF
+pdf.output("/Workspace/Shared/QE_ATF_Latest/datf_core/example_rect.pdf")'''
