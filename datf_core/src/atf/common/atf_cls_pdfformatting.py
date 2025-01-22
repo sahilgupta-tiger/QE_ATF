@@ -140,8 +140,8 @@ class generatePDF:
       #Added the below line
       self.pdf.set_font('DejaVu', '', 10.0)
       th = self.pdf.font_size
-      print(f"table_type: {table_type}")
-      print(f"table_data: {table_data}")
+      #print(f"table_type: {table_type}")
+      #print(f"table_data: {table_data}")
 
       if(table_type == 'mismatch_details'):
         table_data1 = [[None for _ in row] for row in table_data]
@@ -190,7 +190,7 @@ class generatePDF:
             #print(f"val : {val}  - col_factor : {col_factor}  -  cth : {cth} - col_width : {col_width}")
             if(col_factor == 1): 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
-                print("---------Using Cell ---------")
+                #print("---------Using Cell ---------")
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'L')
                 self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'L')
@@ -200,7 +200,7 @@ class generatePDF:
                 #self.pdf.cell(col_width, mth, str(val), border=0, align = 'C')
                 self.pdf.cell(col_width, mth, txt=str(val), border=0, align = 'C') 
             else: 
-              print("---------Using MultiCell ---------")
+              #print("---------Using MultiCell ---------")
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'L') 
