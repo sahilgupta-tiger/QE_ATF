@@ -165,7 +165,7 @@ class generatePDF:
             y_pos = self.pdf.get_y() 
             new_factor = factor / (col_factor + 1)
             cth = new_factor * mth 
-            print(f"val : {val}  - col_factor : {col_factor}  -  cth : {cth}")
+            print(f"val : {val}  - col_factor : {col_factor}  -  cth : {cth} - col_width : {col_width}")
             if(col_factor == 1): 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 print("---------Using Cell ---------")

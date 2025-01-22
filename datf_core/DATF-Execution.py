@@ -118,7 +118,7 @@ pip install fpdf
 
 # COMMAND ----------
 
-from fpdf import FPDF
+'''from fpdf import FPDF
 
 # Create PDF instance
 pdf = FPDF()
@@ -145,4 +145,4 @@ for row in data:
         pdf.multi_cell(col_widths[i], row_height, row[i], border=1, align='L')
 
 # Output the PDF
-pdf.output("/Workspace/Shared/QE_ATF_Latest/datf_core/example_rect.pdf")
+pdf.output("/Workspace/Shared/QE_ATF_Latest/datf_core/example_rect.pdf")'''
