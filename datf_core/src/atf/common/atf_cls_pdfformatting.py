@@ -147,8 +147,8 @@ class generatePDF:
         table_data1 = [[None for _ in row] for row in table_data]
         for i,row in enumerate(table_data):
           for j,data in enumerate(row):
-            if(j==1 and len(str(data)))>200:
-                data = str(data)[:200] + " NOTE"
+            if(j>=1 and len(str(data)))>200:
+                data = str(data)[:200] + " - Note: Characters more than 150 has been trimmed for reporting. Please refer tables to see the complete data"
             table_data1[i][j] = data
             print(table_data1)
         table_data = table_data1
@@ -173,9 +173,9 @@ class generatePDF:
         self.pdf.rect(x_pos, y_pos,col_width_list[0],factor*mth)
         
         for j,val in enumerate(row):
-            if(len(str(val))>=150):
+            '''if(len(str(val))>=150):
                   val = val[0:150] + "---Note: Characters more than 150 has been trimmed for reporting. Please refer tables to see the complete data"
-                  print(f" print statement of val : {val}")
+                  print(f" print statement of val : {val}")'''
             k = j+1
             col_width = col_width_list[k]
             
