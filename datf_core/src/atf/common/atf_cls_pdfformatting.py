@@ -10,6 +10,8 @@ class generatePDF:
     self.epw = self.pdf.w - 2*self.pdf.l_margin
     self.pdf.set_auto_page_break(True, 10)
 
+    print(f"pdf.w : {self.pdf.w}   --- self.pdf.l_margin  {self.pdf.l_margin}")
+
     
   def write_text(self, text, texttype):
   
@@ -108,11 +110,13 @@ class generatePDF:
       cth = mth * factor   
       table_data = df.toPandas().values.tolist()
       print(f"table_data : {table_data}")
+      print(f"table_header : {table_header}")
 
       for i,hd in enumerate(table_header):
         col_width = col_width_list[i]
         col_factor = self.pdf.get_string_width(str(hd))/col_width_reduced[i]   
         col_factor = int(col_factor)+1 if(col_factor>=int(col_factor)) else int(col_factor)
+        print(f"col_factor : {col_factor}")
         x_pos = self.pdf.get_x()
         y_pos = self.pdf.get_y() 
         new_factor = factor / (col_factor + 1)
@@ -149,7 +153,7 @@ class generatePDF:
         self.pdf.rect(x_pos, y_pos,col_width_list[0],factor*mth)
         
         for j,val in enumerate(row):
-            print(f"val : {val}")
+            
             k = j+1
             col_width = col_width_list[k]
             
@@ -161,6 +165,7 @@ class generatePDF:
             y_pos = self.pdf.get_y() 
             new_factor = factor / (col_factor + 1)
             cth = new_factor * mth 
+            print(f"val : {val}  - col_factor : {col_factor}  -  cth : {cth}")
             if(col_factor == 1): 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 print("---------Using Cell ---------")

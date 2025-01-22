@@ -99,6 +99,10 @@ df1.printSchema()
 
 # COMMAND ----------
 
+dbutils.data.summarize(df1)
+
+# COMMAND ----------
+
 dbutils.fs.ls("/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/DejaVuSansCondensed.ttf")
 
 # COMMAND ----------
@@ -110,7 +114,11 @@ pdf.add_font('DejaVu', '', '/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/Dej
 
 # COMMAND ----------
 
-'''from fpdf import FPDF
+pip install fpdf
+
+# COMMAND ----------
+
+from fpdf import FPDF
 
 # Create PDF instance
 pdf = FPDF()
@@ -121,14 +129,20 @@ pdf.add_page()
 # Set font
 pdf.set_font('Arial', size=12)
 
-# Draw a rectangle
-pdf.rect(10, 10, 100, 50)  # Draw a rectangle with top-left corner at (10, 10) with width 100 and height 50
 
-# Draw a filled rectangle
-pdf.rect(30, 10, 50, 30)  # Fill the rectangle with a solid color
+col_widths = [40, 40, 60, 60]
 
-# Draw a rectangle with both fill and border
-pdf.rect(50, 50, 80, 40)  # Fill and draw the rectangle border
+# Row height
+row_height = 10
+data = [
+    ["Value 1", "Value 2", "Very long text that should wrap inside column 3", "Very long text that should wrap inside column 4"],
+    ["Value 1", "Value 2", "Another large value that needs to wrap inside column 3", "Another large value to wrap in column 4"]
+]
+
+# Add data rows
+for row in data:
+    for i in range(4):
+        pdf.multi_cell(col_widths[i], row_height, row[i], border=1, align='L')
 
 # Output the PDF
-pdf.output("/Workspace/Shared/QE_ATF_Latest/datf_core/example_rect.pdf")'''
+pdf.output("/Workspace/Shared/QE_ATF_Latest/datf_core/example_rect.pdf")
