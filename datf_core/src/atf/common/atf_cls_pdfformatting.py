@@ -192,7 +192,16 @@ class generatePDF:
               else:
                 self.pdf.rect(x_pos,y_pos,col_width,factor*mth)
                 #self.pdf.multi_cell(col_width, cth, str(val), border = 0, align= 'C')
-                self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
+                #self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
+                if(len(str(val))>=150):
+                  val = val[0:150]
+                  self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
+                  pdf.set_text_color(255, 0, 0)
+                  note = "Note: This data has length more than 200. Hence trimmed characters for reporting. Please refer tables to see the complete data"
+                  self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
+                  pdf.set_text_color(0, 0, 0)
+                else:
+                  self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
               self.pdf.set_xy(x_pos + col_width, y_pos)
             
             self.pdf.set_text_color(0,0,0)
