@@ -10,7 +10,7 @@ class generatePDF:
     self.epw = self.pdf.w - 2*self.pdf.l_margin
     self.pdf.set_auto_page_break(True, 10)
 
-    print(f"pdf.w : {self.pdf.w}   --- self.pdf.l_margin  {self.pdf.l_margin}")
+    #print(f"pdf.w : {self.pdf.w}   --- self.pdf.l_margin  {self.pdf.l_margin}")
 
     
   def write_text(self, text, texttype):
@@ -69,7 +69,7 @@ class generatePDF:
       self.pdf.set_text_color(0,0,0) 
   
   def create_table_details(self,df, table_type=''):
-      print(f"table_type -- {table_type}")
+      #print(f"table_type -- {table_type}")
       self.pdf.ln(5)
       self.pdf.set_font('Times','B',12.0) 
       th = self.pdf.font_size
@@ -90,8 +90,8 @@ class generatePDF:
         mth = 1.2*th
       elif(table_type == 'mismatch_details'):
         #col_width_list = [10,30,30,30,40,40,10] #old one
-        #col_width_list = [10,80,45,45]  #Commented by Venkatesh
-        col_width_list = [10,60,60,60]
+        col_width_list = [10,80,45,45]  
+        #col_width_list = [10,60,60,60]
         mth = 1.2*th
       elif(table_type == 'mismatch_summary'):
         col_width_list =[10,30,35,20,20,25,20,25,25]
@@ -100,27 +100,27 @@ class generatePDF:
         col_width_list =[10,20,25,50,20,50,20]
         mth = 1.25*th
       col_width_reduced = [x - (0.1 * x) for x in col_width_list]
-      print(f"col_width_reduced -- {col_width_reduced}")
+      #print(f"col_width_reduced -- {col_width_reduced}")
       table_header = df.columns[::-1]
 
       table_header.append('S.No')
       table_header = table_header[::-1]
       str_width =[self.pdf.get_string_width(str(i)) for i in table_header]
-      print(f"str_width -- {str_width}")
+      #print(f"str_width -- {str_width}")
       factor_list = [i/j for (i,j) in zip(str_width,col_width_reduced)]
       factor_list.sort()
       factor = factor_list[-1]
       factor = int(factor)+1 if(factor>=int(factor)) else int(factor)
       cth = mth * factor   
       table_data = df.toPandas().values.tolist()
-      print(f"table_data : {table_data}")
-      print(f"table_header : {table_header}")
+      #print(f"table_data : {table_data}")
+      #print(f"table_header : {table_header}")
 
       for i,hd in enumerate(table_header):
         col_width = col_width_list[i]
         col_factor = self.pdf.get_string_width(str(hd))/col_width_reduced[i]   
         col_factor = int(col_factor)+1 if(col_factor>=int(col_factor)) else int(col_factor)
-        print(f"col_factor : {col_factor}")
+        #print(f"col_factor : {col_factor}")
         x_pos = self.pdf.get_x()
         y_pos = self.pdf.get_y() 
         new_factor = factor / (col_factor + 1)
@@ -142,11 +142,11 @@ class generatePDF:
       th = self.pdf.font_size
       
       for i,row in enumerate(table_data):
-        print(f"row -- {row}")
+        #print(f"row -- {row}")
         str_width =[self.pdf.get_string_width(str(i)) for i in row]
-        print(f"str_width -- {str_width}")
+        #print(f"str_width -- {str_width}")
         factor_list = [i/j for (i,j) in zip(str_width,col_width_reduced[1:])]
-        print(f"factor_list -- {factor_list}")
+        #print(f"factor_list -- {factor_list}")
         factor_list.sort()
         factor = factor_list[-1]
         factor = int(factor)+1 if(factor>=int(factor)) else int(factor)
@@ -171,7 +171,7 @@ class generatePDF:
             y_pos = self.pdf.get_y() 
             new_factor = factor / (col_factor + 1)
             cth = new_factor * mth 
-            print(f"val : {val}  - col_factor : {col_factor}  -  cth : {cth} - col_width : {col_width}")
+            #print(f"val : {val}  - col_factor : {col_factor}  -  cth : {cth} - col_width : {col_width}")
             if(col_factor == 1): 
               if(table_header[k] == 'Key Columns' or table_header[k] == 'Testcase Name'):
                 print("---------Using Cell ---------")
