@@ -140,7 +140,18 @@ class generatePDF:
       #Added the below line
       self.pdf.set_font('DejaVu', '', 10.0)
       th = self.pdf.font_size
-      
+      print(f"table_type: {table_type}")
+      print(f"table_data: {table_data}")
+
+      if(table_type == 'mismatch_details'):
+        table_data1 = table_data
+        for row in table_data:
+          for i in row:
+            print(f"row {row}")
+            print(f"i {i}")
+          '''if(i==2 and len(str(row[2]))>=200):
+            row[2] = row[2][0:200] + "---Note: Characters more than 200 has been trimmed for reporting. Please refer the reason column for the full text."
+          table_data'''
       for i,row in enumerate(table_data):
         #print(f"row -- {row}")
         str_width =[self.pdf.get_string_width(str(i)) for i in row]
@@ -160,7 +171,7 @@ class generatePDF:
         
         for j,val in enumerate(row):
             if(len(str(val))>=150):
-                  val = val[0:150] + "---      Note: This data has length more than 200. Hence trimmed characters for reporting. Please refer tables to see the complete data"
+                  val = val[0:150] + "---Note: Characters more than 150 has been trimmed for reporting. Please refer tables to see the complete data"
                   print(f" print statement of val : {val}")
             k = j+1
             col_width = col_width_list[k]
