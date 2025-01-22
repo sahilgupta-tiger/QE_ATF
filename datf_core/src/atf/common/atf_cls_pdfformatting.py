@@ -144,12 +144,15 @@ class generatePDF:
       print(f"table_data: {table_data}")
 
       if(table_type == 'mismatch_details'):
-        table_data1 = table_data
-        for row in table_data:
-          for i in row:
-            print(f"row {row}")
-            print(f"i {i}")
-          '''if(i==2 and len(str(row[2]))>=200):
+        table_data1 = [[None for _ in row] for row in table_data]
+        for i,row in enumerate(table_data):
+          for j,data in enumerate(row):
+            if(j==1 and len(str(data)))>200:
+                data = str(data)[:200] + " NOTE"
+            table_data1[i][j] = data
+            print(table_data1)
+        table_data = table_data1
+        '''if(i==2 and len(str(row[2]))>=200):
             row[2] = row[2][0:200] + "---Note: Characters more than 200 has been trimmed for reporting. Please refer the reason column for the full text."
           table_data'''
       for i,row in enumerate(table_data):
