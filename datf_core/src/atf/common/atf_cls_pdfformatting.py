@@ -91,7 +91,7 @@ class generatePDF:
       elif(table_type == 'mismatch_details'):
         #col_width_list = [10,30,30,30,40,40,10]
         #col_width_list = [10,80,45,45]
-        col_width_list = [10,70,50,50]
+        col_width_list = [10,50,60,60]
         mth = 1.2*th
       elif(table_type == 'mismatch_summary'):
         col_width_list =[10,30,35,20,20,25,20,25,25]
