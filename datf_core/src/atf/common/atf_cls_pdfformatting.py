@@ -195,6 +195,7 @@ class generatePDF:
                 #self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
                 if(len(str(val))>=150):
                   val = val[0:150] + "---      Note: This data has length more than 200. Hence trimmed characters for reporting. Please refer tables to see the complete data"
+                  print(f" print statement of val : {val}")
                 self.pdf.multi_cell(col_width, cth, txt=str(val), border = 0, align= 'C')
               self.pdf.set_xy(x_pos + col_width, y_pos)
             
