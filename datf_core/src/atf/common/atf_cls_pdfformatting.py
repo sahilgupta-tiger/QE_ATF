@@ -138,7 +138,10 @@ class generatePDF:
 
       #self.pdf.set_font('Times','',10.0) 
       #Added the below line
-      self.pdf.set_font('DejaVu', '', 10.0)
+      if (table_type == 'mismatch_details'):
+        self.pdf.set_font('DejaVu', '', 10.0)
+      else:
+        self.pdf.set_font('Times','',10.0) 
       th = self.pdf.font_size
       #print(f"table_type: {table_type}")
       #print(f"table_data: {table_data}")
