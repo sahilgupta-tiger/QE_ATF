@@ -6,9 +6,13 @@ from datf_core.src.testconfig import *
 import json
 from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
+import sweetviz as sv
+from datetime import datetime
+
 
 tc_path = f"{root_path}/test/testprotocol"
 output_file_path = f"{root_path}/test/testprotocol/{exec_table_name}_template.xlsx"
+profile_output_path = f"{root_path}/test/results/profiles"
 conn_exe = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db", check_same_thread=False)
 
 openai_json = json.load(open(f"{root_path}/test/connections/{genai_conn_json}.json"))
@@ -38,6 +42,13 @@ def read_test_protocol():
         if loop.find("template") != -1:
             onlyfiles.remove(loop)
     return onlyfiles
+
+# Function to read the test case name within the chosen protocol
+def read_test_cases(protocol_name):
+    excel_sheet_path = f"{tc_path}/{protocol_name}"
+    protocol_df = pd.read_excel(excel_sheet_path, sheet_name=exec_sheet_name)
+    list_test_cases = protocol_df["test_case_name"].tolist()
+    return list_test_cases
 
 # Function to create the tables for each protocol file in execution DB
 def create_execution_db():
@@ -82,3 +93,17 @@ def write_protocol_to_excel(protocol_name):
         updated_df.to_excel(writer, sheet_name=exec_sheet_name, index=False)
 
     print(f"Excel file '{output_file_path}' with multiple sheets created successfully.")
+
+
+# Function to buid the report for data profiling based on dataframe
+def create_data_profile_report(input_df, type_str):
+    # Analyze the Pandas DataFrame
+    report = sv.analyze([input_df, type_str])
+    # Get the current date time from UTC timezone
+    timenow = datetime.now(utctimezone)
+    created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
+    # Generate the report as an HTML file
+    profile_report_path = f"{profile_output_path}/data_profile_report_{created_time}.html"
+    report.show_html(profile_report_path)
+
+    return profile_report_path

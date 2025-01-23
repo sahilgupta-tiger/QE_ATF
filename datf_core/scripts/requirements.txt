@@ -8,3 +8,4 @@ tabulate
 cryptography
 streamlit
 langchain-openai
+sweetviz

@@ -16,6 +16,14 @@ def s2t_sql_generation():
     )
     st.write("You selected: ", selected_protocol)
 
+    if selected_protocol is not None:
+        onlytestcases = read_test_cases(selected_protocol)
+        selected_testcase = st.selectbox(
+            "Choose one from Test Case below...",
+            onlytestcases, index=None, placeholder="type to search",
+        )
+        st.write("You selected: ", selected_testcase)
+
     src_table = exec_table_name
 
     if st.button("Test Connection with Source & Target"):

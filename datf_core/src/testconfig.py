@@ -14,7 +14,7 @@ if protocol_engine == "databricks":
 elif protocol_engine == "docker":
     root_path = "datf_core/"
 else:
-    root_path = "app/datf_core/"
+    root_path = "datf_core/"
 
 
 # *** DO NOT CHANGE BELOW VALUES ***

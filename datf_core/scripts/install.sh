@@ -1,10 +1,1 @@
-pip install datacompy[spark]
-pip install datacompy[fugue]
-pip install fpdf
-pip install openpyxl
-pip install fsspec
-pip install pretty-html-table
-pip install tabulate
-pip install cryptography
-pip install streamlit
-pip install langchain-openai
+pip install --no-cache-dir -r requirements.txt

@@ -15,7 +15,7 @@ def load_homepage():
     # Choose the testing type
     test_type = st.radio(
         "Choose the testing type for execution:", ["Count", "Null", "Duplicate", "Content"],
-        captions=["Row counts from src & tgt.", "Check for Nulls in each column.",
+        captions=["Row counts from src & tgt.", "Check for Nulls in each columns.",
                   "Duplicate checks via P-key.", "Complete Reconciliation checks."])
 
     if test_type is not None:
