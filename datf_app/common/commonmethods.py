@@ -94,6 +94,12 @@ def write_protocol_to_excel(protocol_name):
 
     print(f"Excel file '{output_file_path}' with multiple sheets created successfully.")
 
+# Functions to save uploaded file to desired path
+def save_uploadedfile(uploadedfile, filepath):
+    with open(os.path.join(filepath, uploadedfile.name), "wb") as f:
+        f.write(uploadedfile.getbuffer())
+    success_text = f"Saved File: {uploadedfile.name} to '{filepath}' in framework!"
+    return success_text
 
 # Function to buid the report for data profiling based on dataframe
 def create_data_profile_report(input_df, type_str):

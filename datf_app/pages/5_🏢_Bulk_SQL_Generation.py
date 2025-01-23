@@ -2,12 +2,6 @@ import streamlit as st
 from datf_app.common.commonmethods import *
 
 
-def save_uploadedfile(uploadedfile, filepath):
-    with open(os.path.join(filepath, uploadedfile.name), "wb") as f:
-        f.write(uploadedfile.getbuffer())
-    return st.success(f"Saved File: {uploadedfile.name} to '{filepath}' in framework!")
-
-
 def file_upload_all(uploaded_file, file_type, convention):
 
     if uploaded_file is not None:
@@ -26,7 +20,8 @@ def file_upload_all(uploaded_file, file_type, convention):
             st.error(f"Filename must start with '{convention}'. Please rename and reupload.")
             return False
         else:
-            save_uploadedfile(uploaded_file, tc_path)
+            success_message = save_uploadedfile(uploaded_file, tc_path)
+            st.success(success_message)
             return True
 
 
