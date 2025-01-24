@@ -167,7 +167,7 @@ class S2TTester:
 
                 log_info(f"Reading Source and Target Data based on TestCase Configuration:  {test_case_name}")
 
-                compare_input = self.execute_testcase(testcase_details, auto_script_path, testcasetype)
+                compare_input = self.execute_testcase(test_case_name, testcase_details, auto_script_path, testcasetype)
 
                 log_info(f"Comparing Source and Target Data based on TestCase Configuration Started:  {test_case_name}")
                 dict_compareoutput = self.compare_data(compare_input, testcasetype)
@@ -313,7 +313,7 @@ class S2TTester:
         return df_protocol_summary, protocol_run_details, protocol_run_params
     
 
-    def execute_testcase(self, tc_config, auto_script_path, testcasetype):
+    def execute_testcase(self, test_case_name, tc_config, auto_script_path, testcasetype):
         print(tc_config)
         s2tmappingsheet = tc_config['s2tmappingsheet']
         
@@ -366,7 +366,7 @@ class S2TTester:
                            'path': tc_config['sourcefilepath'], 'format': tc_config['sourcefileformat'], 'name': tc_config['sourcefilename'],
                            'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'],
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'],
-                           'test_case_name': tc_config['test_case_name'], 'autoscripttype': 'source', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
+                           'test_case_name': test_case_name, 'autoscripttype': 'source', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
                            'filename':tc_config['sourcefilename']}
             autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_source_config, self.spark)
             scriptpath, source_df, source_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
@@ -379,7 +379,7 @@ class S2TTester:
                            'path': tc_config['targetfilepath'], 'format': tc_config['targetfileformat'], 'name': tc_config['targetfilename'],
                            'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'],
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'],
-                           'test_case_name': tc_config['test_case_name'], 'autoscripttype': 'target', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
+                           'test_case_name': test_case_name, 'autoscripttype': 'target', 'autoscriptpath': auto_script_path,'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}
             autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_target_config, self.spark)
             scriptpath, target_df, target_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)

@@ -1,3 +1,5 @@
+from time import sleep
+
 import streamlit as st
 from datf_app.common.commonmethods import *
 
@@ -24,10 +26,14 @@ def s2t_sql_generation():
         )
         st.write("You selected: ", selected_testcase)
 
-    src_table = exec_table_name
 
     if st.button("Test Connection with Source & Target"):
-        pass
+        with st.spinner('Processing, Please wait...(this may take a while)'):
+            for i in range(50):
+                sleep(1)
+
+    src_table = exec_table_name
+    tgt_table = exec_table_name
 
     with (st.expander("Expand to Generate Source SQL Query")):
         source_columns = get_column_names(conn_exe, src_table)
@@ -47,7 +53,7 @@ def s2t_sql_generation():
                 st.dataframe(source_result)
 
     with (st.expander("Expand to Generate Target SQL Query")):
-        target_columns = get_column_names(conn_exe, src_table)
+        target_columns = get_column_names(conn_exe, tgt_table)
         target_column_selection = st.multiselect("Select Target Columns", target_columns)
         tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
         if st.button("Generate Target SQL"):

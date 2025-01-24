@@ -2,29 +2,6 @@ import streamlit as st
 from datf_app.common.commonmethods import *
 
 
-def file_upload_all(uploaded_file, file_type, convention):
-
-    if uploaded_file is not None:
-        name_present = False
-        tc_path = f"{root_path}/test/{file_type}"
-        onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
-        for loop in onlyfiles:
-            if uploaded_file.name == loop:
-                name_present = True
-                break
-
-        if name_present:
-            st.error("Filename is already in use. Please rename and reupload.")
-            return False
-        elif not uploaded_file.name.startswith(convention):
-            st.error(f"Filename must start with '{convention}'. Please rename and reupload.")
-            return False
-        else:
-            success_message = save_uploadedfile(uploaded_file, tc_path)
-            st.success(success_message)
-            return True
-
-
 def bulk_generation():
 
     st.set_page_config(
@@ -35,7 +12,15 @@ def bulk_generation():
     st.divider()
     testcase_file = st.file_uploader("Template Excel file",
                                      type='xlsx', accept_multiple_files=False)
-    upl_bulk = file_upload_all(testcase_file, 'sqlbulk', 'bulk_')
+    convention = 'bulk_'
+    upload_status = file_upload_all(testcase_file, 'sqlbulk', convention)
+    if upload_status is not None:
+        if upload_status == "issue1":
+            st.error("Bulk Upload filename is already in use. Please rename and reupload.")
+        elif upload_status == "issue2":
+            st.error(f"Filename must start with '{convention}'. Please rename and reupload.")
+        else:
+            st.success(upload_status)
 
 
 if __name__ == "__main__":

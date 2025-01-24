@@ -33,6 +33,7 @@ def load_homepage():
 
     if selected_protocol is not None:
         df = pd.read_sql_query(f"SELECT * FROM '{selected_protocol}'", conn_exe)
+        df = df[df['execute']==1]
 
         # Load the Test Cases as an interactive table
         st.dataframe(df, key='Sno.', on_select='ignore',
@@ -45,8 +46,8 @@ def load_homepage():
                    },
                    hide_index=True, use_container_width=True)
 
-        st.text('**In order to change the Execution order, '
-                    "Please select \"Edit Test Configs\" from sidebar to update!**")
+        st.text('***In order to change the Execution order, '
+                    "Please select \"Edit Test Configs\" from sidebar to update!***")
         # Start Execution Button
         st.divider()
         start_execution(test_type, selected_protocol)

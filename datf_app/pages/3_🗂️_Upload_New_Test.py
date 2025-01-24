@@ -4,29 +4,6 @@ import streamlit as st
 from datf_app.common.commonmethods import *
 
 
-def file_upload_all(uploaded_file, file_type, convention):
-
-    if uploaded_file is not None:
-        name_present = False
-        tc_path = f"{root_path}/test/{file_type}"
-        onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
-        for loop in onlyfiles:
-            if uploaded_file.name == loop:
-                name_present = True
-                break
-
-        if name_present:
-            st.error("Filename is already in use. Please rename and reupload.")
-            return False
-        elif not uploaded_file.name.startswith(convention):
-            st.error(f"Filename must start with '{convention}'. Please rename and reupload.")
-            return False
-        else:
-            success_message = save_uploadedfile(uploaded_file, tc_path)
-            st.success(success_message)
-            return True
-
-
 def upload_new_test_page():
 
     st.set_page_config(
@@ -37,19 +14,43 @@ def upload_new_test_page():
     st.divider()
     testcase_file = st.file_uploader("Test Case Protocol Excel file",
                                      type='xlsx', accept_multiple_files=False)
-    upl_tc = file_upload_all(testcase_file, 'testprotocol', 'test_')
+    conv_test = 'test_'
+    upl_tc = file_upload_all(testcase_file, 'testprotocol', conv_test)
+    if upl_tc is not None:
+        if upl_tc == "issue1":
+            st.error("Protocol filename is already in use. Please rename and reupload.")
+        elif upl_tc == "issue2":
+            st.error(f"Filename must start with '{conv_test}'. Please rename and reupload.")
+        else:
+            st.success(upl_tc)
 
     connection_file = st.file_uploader("Credential JSON file",
                                      type='json', accept_multiple_files=False)
-    upl_con = file_upload_all(connection_file, 'connections', 'conn_')
+    conv_conn = 'conn_'
+    upl_con = file_upload_all(connection_file, 'connections', conv_conn)
+    if upl_con is not None:
+        if upl_con == "issue1":
+            st.error("Connection filename is already in use. Please rename and reupload.")
+        elif upl_con == "issue2":
+            st.error(f"Filename must start with '{conv_conn}'. Please rename and reupload.")
+        else:
+            st.success(upl_con)
 
     s2t_file = st.file_uploader("Source to Target Mapping file (optional)",
                                      type='xlsx', accept_multiple_files=False)
-    upl_s2t = file_upload_all(s2t_file, 's2t', 's2t_')
+    conv_s2t = 's2t_'
+    upl_s2t = file_upload_all(s2t_file, 's2t', conv_s2t)
+    if upl_s2t is not None:
+        if upl_s2t == "issue1":
+            st.error("S2T Mapping Filename is already in use. Please rename and reupload.")
+        elif upl_s2t == "issue2":
+            st.error(f"Filename must start with '{conv_s2t}'. Please rename and reupload.")
+        else:
+            st.success(upl_s2t)
 
-    if upl_tc or upl_con or upl_s2t:
-        st.divider()
-        st.markdown("**👈 Select the required page from the sidebar** to continue!")
+
+    st.divider()
+    st.markdown("**👈 Select the required page from the sidebar** to continue!")
 
 
 if __name__ == "__main__":

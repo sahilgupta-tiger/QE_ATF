@@ -246,7 +246,7 @@ class S2TAutoLoadScripts:
     
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
-    autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["testcasename"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
+    autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["test_case_name"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
     autoScriptFile= autoScriptFile.replace('//','/')
 
     f=open(autoScriptFile,"w+")

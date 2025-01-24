@@ -113,3 +113,23 @@ def create_data_profile_report(input_df, type_str):
     report.show_html(profile_report_path)
 
     return profile_report_path
+
+
+def file_upload_all(uploaded_file, file_type, convention):
+
+    if uploaded_file is not None:
+        name_present = False
+        tc_path = f"{root_path}/test/{file_type}"
+        onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
+        for loop in onlyfiles:
+            if uploaded_file.name == loop:
+                name_present = True
+                break
+
+        if name_present:
+            return "issue1"
+        elif not uploaded_file.name.startswith(convention):
+            return "issue2"
+        else:
+            success_message = save_uploadedfile(uploaded_file, tc_path)
+            return success_message
