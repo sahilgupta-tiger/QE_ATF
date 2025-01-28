@@ -1,7 +1,7 @@
 {
     "connnectiontype":"snowsqldatabase",
     "connectname":"pyspark_snowflake_connection",
-    "url":"yifgzee-nkb46151.snowflakecomputing.com",
+    "url":"oxsereo-lib18377.snowflakecomputing.com",
     "user":"tigersgupta17",
     "password":"gAAAAABmzBudsxC-U55R6WXGmSXqZuF6sxMGjC6XqViSrN7Cd8Q6UJt3E85ZpVNwa3VkwRNgLGlozx6T510u9SiyHRriPpnWiA==",
     "database":"TIGERDEMO",
