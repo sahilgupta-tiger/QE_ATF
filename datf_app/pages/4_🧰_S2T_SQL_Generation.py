@@ -2,6 +2,11 @@ import streamlit as st
 import openai
 from datf_app.common.commonmethods import *
 
+if 'source_columns' not in st.session_state:
+    st.session_state['source_columns'] = []
+if 'target_columns' not in st.session_state:
+    st.session_state['target_columns'] = []
+
 
 def s2t_sql_generation():
 
@@ -30,7 +35,7 @@ def s2t_sql_generation():
 
         if selected_testcase is not None:
 
-            if st.button("Test Connection with Source & Target"):
+            if st.button("Click to Connect Source & Target systems"):
                 with st.spinner('Processing, Please wait...'):
                     source_df, target_df = test_connectivity_from_testcase(
                         selected_protocol, selected_testcase)
@@ -44,11 +49,6 @@ def s2t_sql_generation():
                     st.success("Connection Success. Proceed with query generation below...")
                 else:
                     st.error("Unable to load columns from either Source or Target. Please check test configs and retry.")
-
-            if 'source_columns' not in st.session_state:
-                st.session_state['source_columns'] = []
-            if 'target_columns' not in st.session_state:
-                st.session_state['target_columns'] = []
 
             st.header("Generate SQLs using GenAI LLM")
             tab1, tab2 = st.tabs(["Source Test Query", "Target Test Query"])
