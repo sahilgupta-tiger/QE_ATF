@@ -1,5 +1,3 @@
-
-import datacompy
 import pandas as pd
 import json
 import os
@@ -17,8 +15,8 @@ def log_error(msg):
 
 
 def read_protocol_file(filepath):
-  df_protocol = pd.read_excel(filepath, engine='openpyxl',sheet_name='protocol',keep_default_na=False, header=None) 
-  df_testcases = pd.read_excel(filepath, engine='openpyxl',sheet_name='protocoltestcasedetails') #,keep_default_na=False
+  df_protocol = pd.read_excel(filepath, engine='openpyxl',sheet_name=protocol_tab_name,keep_default_na=False, header=None)
+  df_testcases = pd.read_excel(filepath, engine='openpyxl',sheet_name=exec_sheet_name) #,keep_default_na=False
   df_testcases=df_testcases[df_testcases['Sno.']!='']
   #df_testcases=df_testcases.iloc[:,0:4]
   #df_testcases= df_testcases.dropna()

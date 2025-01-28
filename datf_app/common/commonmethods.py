@@ -1,4 +1,5 @@
 import sqlite3
+import subprocess
 from os import listdir
 from os.path import isfile, join
 import pandas as pd
@@ -10,9 +11,6 @@ import sweetviz as sv
 from datetime import datetime
 
 
-tc_path = f"{root_path}/test/testprotocol"
-output_file_path = f"{root_path}/test/testprotocol/{exec_table_name}_template.xlsx"
-profile_output_path = f"{root_path}/test/results/profiles"
 conn_exe = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db", check_same_thread=False)
 
 openai_json = json.load(open(f"{root_path}/test/connections/{genai_conn_json}.json"))
@@ -65,7 +63,7 @@ def create_execution_db():
     protocoldetails_df.to_sql(con=conn_exe, name=protocol_tab_name, if_exists='replace', index=False)
     conn_exe.commit()
 
-# Function to fetch column names
+# Function to fetch column names from connected DB
 def get_column_names(connection, table_name):
     query = f"SELECT * FROM {table_name} WHERE 1=0"
     df = pd.read_sql(query, connection)
@@ -114,13 +112,13 @@ def create_data_profile_report(input_df, type_str):
 
     return profile_report_path
 
-
+# Functional to upload files from UI to appropriate location in framework
 def file_upload_all(uploaded_file, file_type, convention):
 
     if uploaded_file is not None:
         name_present = False
-        tc_path = f"{root_path}/test/{file_type}"
-        onlyfiles = [f for f in listdir(tc_path) if isfile(join(tc_path, f))]
+        testc_path = f"{root_path}/test/{file_type}"
+        onlyfiles = [f for f in listdir(testc_path) if isfile(join(testc_path, f))]
         for loop in onlyfiles:
             if uploaded_file.name == loop:
                 name_present = True
@@ -131,5 +129,19 @@ def file_upload_all(uploaded_file, file_type, convention):
         elif not uploaded_file.name.startswith(convention):
             return "issue2"
         else:
-            success_message = save_uploadedfile(uploaded_file, tc_path)
+            success_message = save_uploadedfile(uploaded_file, testc_path)
             return success_message
+
+# Function to save the edited DF into DB
+def save_df_into_db(modified_df, selected_protocol):
+    modified_df.to_sql(con=conn_exe, name=selected_protocol, if_exists="replace", index=False)
+    conn_exe.commit()
+
+# Function to test the Source and Target Connection and load the pandas dataframes
+def test_connectivity_from_testcase(chosen_protocol, chosen_testcase):
+    chosen_protocol_path = f"{tc_path}/{chosen_protocol}"
+    subprocess.run(f"sh {root_path}scripts/conncheck.sh {chosen_protocol_path} {chosen_testcase}",shell=True)
+    src_col_df = pd.read_excel(src_column_path)
+    tgt_col_df = pd.read_excel(tgt_column_path)
+    return src_col_df, tgt_col_df
+

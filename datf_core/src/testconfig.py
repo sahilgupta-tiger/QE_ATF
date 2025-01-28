@@ -18,14 +18,21 @@ else:
 
 
 # *** DO NOT CHANGE BELOW VALUES ***
+utctimezone = pytz.timezone("UTC")
 results_db_name = 'DATF_RESULTS'
 rept_table_name = 'historical_trends'
 exec_db_name = 'DATF_EXECUTION'
 exec_table_name = 'testselection'
 exec_sheet_name = 'protocoltestcasedetails'
 protocol_tab_name = 'protocol'
-utctimezone = pytz.timezone("UTC")
 genai_conn_json = "azure_open_ai_connection"
+tc_path = f"{root_path}/test/testprotocol"
+output_file_path = f"{root_path}/test/testprotocol/{exec_table_name}_template.xlsx"
+profile_output_path = f"{root_path}/test/results/profiles"
+column_data_path = f"{root_path}test/data/columndata"
+src_column_path = f"{column_data_path}/source_columns.xlsx"
+tgt_column_path = f"{column_data_path}/target_columns.xlsx"
+
 
 spark_conf_JSON = """ {
     "spark.executor.instances": "18",

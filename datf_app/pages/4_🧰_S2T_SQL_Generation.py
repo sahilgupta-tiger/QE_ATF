@@ -1,6 +1,5 @@
-from time import sleep
-
 import streamlit as st
+import openai
 from datf_app.common.commonmethods import *
 
 
@@ -18,6 +17,9 @@ def s2t_sql_generation():
     )
     st.write("You selected: ", selected_protocol)
 
+    src_column_list = []
+    tgt_column_list = []
+
     if selected_protocol is not None:
         onlytestcases = read_test_cases(selected_protocol)
         selected_testcase = st.selectbox(
@@ -26,48 +28,84 @@ def s2t_sql_generation():
         )
         st.write("You selected: ", selected_testcase)
 
+        if selected_testcase is not None:
 
-    if st.button("Test Connection with Source & Target"):
-        with st.spinner('Processing, Please wait...(this may take a while)'):
-            for i in range(50):
-                sleep(1)
+            if st.button("Test Connection with Source & Target"):
+                with st.spinner('Processing, Please wait...'):
+                    source_df, target_df = test_connectivity_from_testcase(
+                        selected_protocol, selected_testcase)
 
-    src_table = exec_table_name
-    tgt_table = exec_table_name
+                source_collist = list(source_df.columns[1:])
+                target_collist = list(target_df.columns[1:])
+                src_column_list = source_collist.copy()
+                tgt_column_list = target_collist.copy()
 
-    with (st.expander("Expand to Generate Source SQL Query")):
-        source_columns = get_column_names(conn_exe, src_table)
-        source_column_selection = st.multiselect("Select Source Columns", source_columns)
-        prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
-        if st.button("Generate Source SQL"):
-            final_prompt = f"Generate a SQL query with following requirements-{prompt}"
-            final_prompt += f"\nAnd use these Columns names as reference: {', '.join(source_column_selection)}"
-            response = get_queries_from_ai(final_prompt)
-            sql_query = response.strip()
-            st.code(sql_query, language='sql')
-            # Execute the SQL on the source or target connection
-            if st.button("Run SQL on Source"):
-                sql_query += " LIMIT 5"
-                source_result = pd.read_sql(sql_query, conn_exe)
-                st.write("Query Results from Source:")
-                st.dataframe(source_result)
+                if len(source_collist) != 0 and len(target_collist) != 0:
+                    st.success("Connection Success. Proceed with query generation below...")
+                else:
+                    st.error("Unable to load columns from either Source or Target. Please check test configs and retry.")
 
-    with (st.expander("Expand to Generate Target SQL Query")):
-        target_columns = get_column_names(conn_exe, tgt_table)
-        target_column_selection = st.multiselect("Select Target Columns", target_columns)
-        tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
-        if st.button("Generate Target SQL"):
-            final_tgt_prompt = f"Generate a SQL query with following requirements-{tgt_prompt}"
-            final_tgt_prompt += f"\nAnd use these Columns names as reference: {', '.join(target_column_selection)}"
-            tgt_response = get_queries_from_ai(final_tgt_prompt)
-            tgt_sql_query = tgt_response.strip()
-            st.code(tgt_sql_query, language='sql')
-            tgt_sql_query += " LIMIT 5"
-            # Execute the SQL on the source or target connection
-            if st.button("Run SQL on Target"):
-                target_result = pd.read_sql(sql_query, conn_exe)
-                st.write("Query Results from Target:")
-                st.dataframe(target_result)
+            if 'source_columns' not in st.session_state:
+                st.session_state['source_columns'] = []
+            if 'target_columns' not in st.session_state:
+                st.session_state['target_columns'] = []
+
+            st.header("Generate SQLs using GenAI LLM")
+            tab1, tab2 = st.tabs(["Source Test Query", "Target Test Query"])
+
+            with tab1:
+                with st.form("src_query"):
+                    # Function to update session state with columns
+                    def update_source_columns():
+                        st.session_state['source_columns'] = src_column_list
+                    if st.session_state['source_columns']:
+                        src_column_list = st.session_state['source_columns']
+                    try:
+                        source_column_selection = st.multiselect("Select Source Columns", src_column_list)
+                        prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
+                        if st.form_submit_button("Generate Source SQL", on_click=update_source_columns):
+                            final_prompt = f"Generate a SQL query with following requirements: {prompt}"
+                            final_prompt += f"\nAnd use these Columns names as reference: {', '.join(source_column_selection)}"
+                            with st.spinner("Getting results from AI now..."):
+                                response = get_queries_from_ai(final_prompt)
+                            sql_query = response.strip()
+                            st.code(sql_query, language='sql')
+                            sql_query += " LIMIT 5"
+                            source_result = source_df.query(sql_query)
+                            st.write("Running Query and Output Results from Source:")
+                            st.dataframe(source_result, hide_index=True, use_container_width=True)
+                    except openai.APIConnectionError:
+                        st.error("Unable to connect to GenAI API. Please check Network Settings!")
+                    except Exception as error:
+                        st.error("EXECUTION ERRORED! Please check logs.")
+                        print(error)
+
+            with tab2:
+                with st.form("tgt_query"):
+                    # Function to update session state with selected columns
+                    def update_target_columns():
+                        st.session_state['target_columns'] = tgt_column_list
+                    if st.session_state['target_columns']:
+                        tgt_column_list = st.session_state['target_columns']
+                    try:
+                        target_column_selection = st.multiselect("Select Target Columns", tgt_column_list)
+                        tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
+                        if st.form_submit_button("Generate Target SQL", on_click=update_target_columns):
+                            final_tgt_prompt = f"Generate a SQL query with following requirements-{tgt_prompt}"
+                            final_tgt_prompt += f"\nAnd use these Columns names as reference: {', '.join(target_column_selection)}"
+                            with st.spinner("Getting results from AI now..."):
+                                tgt_response = get_queries_from_ai(final_tgt_prompt)
+                            tgt_sql_query = tgt_response.strip()
+                            st.code(tgt_sql_query, language='sql')
+                            tgt_sql_query += " LIMIT 5"
+                            target_result = target_df.query(sql_query)
+                            st.write("Running Query and Output Results from Target:")
+                            st.dataframe(target_result, hide_index=True, use_container_width=True)
+                    except openai.APIConnectionError:
+                        st.error("Unable to connect to GenAI API. Please check Network Settings!")
+                    except Exception as error:
+                        st.error("EXECUTION ERRORED! Please check logs.")
+                        print(error)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ import json
 import os
 import traceback
 from datetime import datetime
+import datacompy
 import pandas as pd
 from datacompy.spark.legacy import LegacySparkCompare
 from pyspark.conf import SparkConf

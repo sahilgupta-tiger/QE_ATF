@@ -46,7 +46,7 @@ def load_homepage():
                    },
                    hide_index=True, use_container_width=True)
 
-        st.text('***In order to change the Execution order, '
+        st.markdown('***In order to change the Execution order, '
                     "Please select \"Edit Test Configs\" from sidebar to update!***")
         # Start Execution Button
         st.divider()
@@ -99,7 +99,7 @@ def report_generation(button_text):
         with tab1:
             html_file = open(f"{root_path}/utils/reports/datfreport.html", 'r', encoding='utf-8')
             source_code = html_file.read()
-            components.html(source_code, height=500, width=850, scrolling=True)
+            components.html(source_code, height=800, width=850, scrolling=True)
 
         with tab2:
             html_file = open(f"{root_path}/utils/reports/datf_trends_report.html", 'r', encoding='utf-8')
