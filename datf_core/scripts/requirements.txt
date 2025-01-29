@@ -11,3 +11,4 @@ langchain-openai
 pandas-profiling
 koalas
 pydantic-settings
+sweetviz

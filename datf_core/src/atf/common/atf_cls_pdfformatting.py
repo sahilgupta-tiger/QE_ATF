@@ -151,7 +151,7 @@ class generatePDF:
         for i,row in enumerate(table_data):
           for j,data in enumerate(row):
             if(j>=1 and len(str(data)))>200:
-                data = str(data)[:200] + " - Note: Characters more than 150 has been trimmed for reporting. Please refer tables to see the complete data"
+                data = str(data)[:200] + " - Note: Characters more than 200 has been trimmed for reporting. Please refer tables to see the complete data"
             table_data1[i][j] = data
             print(table_data1)
         table_data = table_data1
