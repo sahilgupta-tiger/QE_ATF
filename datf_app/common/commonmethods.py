@@ -3,6 +3,7 @@ import subprocess
 from os import listdir
 from os.path import isfile, join
 import pandas as pd
+from pandasql import sqldf
 from datf_core.src.testconfig import *
 import json
 from langchain_core.messages import HumanMessage
@@ -145,3 +146,20 @@ def test_connectivity_from_testcase(chosen_protocol, chosen_testcase):
     tgt_col_df = pd.read_excel(tgt_column_path)
     return src_col_df, tgt_col_df
 
+# Function to provide prompt engineering for LLM to respond accordingly
+def build_sql_generation_prompt(initial_prompt, list_of_columns):
+    table_name = "source_target_table"
+    final_prompt = f"Generate a SQL query using table name {table_name} and requirement as: {initial_prompt}"
+    if len(list_of_columns) > 1:
+        final_prompt += f" And use these Columns names as reference: {', '.join(list_of_columns)}"
+    elif len(list_of_columns) == 1:
+        final_prompt += f" And use this Column name as reference: {list_of_columns[0]}"
+    final_prompt += " And Strictly only provide the SQL query as the output response."
+    return final_prompt, table_name
+
+# Function to run the generated sql query on dataframe
+def running_sql_query_on_df(input_df, temp_tbl_name, generated_query):
+    generated_query.replace(f"FROM {temp_tbl_name}", "FROM input_df")
+    generated_query += " LIMIT 5"
+    output_df = sqldf(generated_query)
+    return output_df

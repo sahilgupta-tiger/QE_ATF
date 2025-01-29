@@ -68,8 +68,4 @@ def read_data(tc_datasource_config,spark):
   elif connectiontype == 'postgres' and resourceformat == 'table':
     df, query = read_postgresdata(tc_datasource_config, spark)
 
-  else:
-    df = None
-    query = ''
-
   return df, query

@@ -64,14 +64,12 @@ def s2t_sql_generation():
                         source_column_selection = st.multiselect("Select Source Columns", src_column_list)
                         prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
                         if st.form_submit_button("Generate Source SQL", on_click=update_source_columns):
-                            final_prompt = f"Generate a SQL query with following requirements: {prompt}"
-                            final_prompt += f"\nAnd use these Columns names as reference: {', '.join(source_column_selection)}"
+                            final_prompt, temp_table = build_sql_generation_prompt(prompt, source_column_selection)
                             with st.spinner("Getting results from AI now..."):
                                 response = get_queries_from_ai(final_prompt)
                             sql_query = response.strip()
                             st.code(sql_query, language='sql')
-                            sql_query += " LIMIT 5"
-                            source_result = source_df.query(sql_query)
+                            source_result = running_sql_query_on_df(source_df, temp_table, sql_query)
                             st.write("Running Query and Output Results from Source:")
                             st.dataframe(source_result, hide_index=True, use_container_width=True)
                     except openai.APIConnectionError:
@@ -91,14 +89,12 @@ def s2t_sql_generation():
                         target_column_selection = st.multiselect("Select Target Columns", tgt_column_list)
                         tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
                         if st.form_submit_button("Generate Target SQL", on_click=update_target_columns):
-                            final_tgt_prompt = f"Generate a SQL query with following requirements-{tgt_prompt}"
-                            final_tgt_prompt += f"\nAnd use these Columns names as reference: {', '.join(target_column_selection)}"
+                            final_tgt_prompt, temp_name = build_sql_generation_prompt(tgt_prompt, target_column_selection)
                             with st.spinner("Getting results from AI now..."):
                                 tgt_response = get_queries_from_ai(final_tgt_prompt)
                             tgt_sql_query = tgt_response.strip()
                             st.code(tgt_sql_query, language='sql')
-                            tgt_sql_query += " LIMIT 5"
-                            target_result = target_df.query(sql_query)
+                            target_result = running_sql_query_on_df(target_df, temp_name, tgt_sql_query)
                             st.write("Running Query and Output Results from Target:")
                             st.dataframe(target_result, hide_index=True, use_container_width=True)
                     except openai.APIConnectionError:
