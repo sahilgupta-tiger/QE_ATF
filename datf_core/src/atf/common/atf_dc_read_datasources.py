@@ -22,6 +22,9 @@ def read_data(tc_datasource_config,spark):
   connectiontype = tc_datasource_config['connectiontype'].lower().split()[0]
   resourceformat = tc_datasource_config['format']
 
+  df = None
+  query = ''
+
   # Call the read function based on connectiontype
   if connectiontype == 'adls':
     if resourceformat == 'delta':
