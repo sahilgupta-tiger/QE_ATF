@@ -55,7 +55,7 @@ class S2TTester:
         self.var = ""
         self.spark = spark
     
-    def starttestexecute(self, protocol_file_path, testcasetype, testcasesrunlist):
+    def starttestexecute(self, protocol_file_path, testcasetype, testcasesrunlist,work_path):
         log_info(f"Protocol Execution Started")
         try:
             log_info(
@@ -64,6 +64,7 @@ class S2TTester:
                 protocol_file_path)
             log_info("Protocol read completed :- ")
             log_info(dict_protocol)
+            work_path = work_path
 
             results_path = str(root_path+dict_protocol['protocol_results_path'])
             #Creating directory for results folder
@@ -91,10 +92,10 @@ class S2TTester:
                 "_" + created_time + ".pdf"
 
             df_protocol_summary, protocol_run_details, protocol_run_params = self.execute_protocol(
-                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype, testcasesrunlist)
+                dict_protocol, df_testcases, testcase_output_path, combined_testcase_output_path, testcasetype, testcasesrunlist,work_path )
 
             summary_output_path = self.generate_protocol_summary_report(
-                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype)
+                df_protocol_summary, protocol_run_details, protocol_run_params, protocol_output_path, created_time, testcasetype, work_path)
             # generate HTML report ** new function **
             generate_results_charts(df_protocol_summary, protocol_run_details, protocol_run_params, created_time, testcasetype, cloud_results_folder, combined_testcase_output_path, summary_output_path)
             log_info("Protocol Execution Completed")
@@ -102,9 +103,10 @@ class S2TTester:
         except Exception as e2:
             log_error(f"Protocol Execution ERRORED: {str(e2)}")
 
-    def execute_protocol(self, dict_protocol, df_testcases, output_path, combined_testcase_output_path, testcasetype,testcasesrunlist):
+    def execute_protocol(self, dict_protocol, df_testcases, output_path, combined_testcase_output_path, testcasetype,testcasesrunlist,work_path):
 
         log_info("Protocol Testcases Execution Started")
+        dejavu_path = work_path
         protocol_starttime = datetime.now(utctimezone)
         # auto_script_path = generate_autoscript_path(combined_testcase_output_path)
         auto_script_path = ""
@@ -127,7 +129,7 @@ class S2TTester:
                                                         'No. of KPIs in Target', 'No. of KPIs matched',
                                                         'No. of KPIs mismatched', 'Test Result', 'Reason', 'Runtime'])
 
-        pdfobj_combined_testcase = generatePDF()
+        pdfobj_combined_testcase = generatePDF(dejavu_path)
 
         testcases_run_list = []
 
@@ -252,7 +254,7 @@ class S2TTester:
                 comparison_type = testcase_details['comparetype']
                 dict_testresults = dict_compareoutput['dict_results']
                 testcasereportheader = ""
-                pdfobj = generatePDF()
+                pdfobj = generatePDF(dejavu_path)
                 pdfobj.write_text(testcasereportheader, 'report header')
                 pdfobj.write_text(
                     dict_runsummary['Testcase Name'], 'subheading')
@@ -1034,7 +1036,8 @@ class S2TTester:
 
 
     def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time, testcasetype):
-        pdfobj_protocol = generatePDF()
+        dejavu_path=work_path
+        pdfobj_protocol = generatePDF(dejavu_path)
         comparison_type = testcasetype + " comparison"
         pdfobj_protocol.write_text(protocolreportheader, 'report header')
         pdfobj_protocol.write_text(protocol_run_details['Test Protocol Name'], 'subheading')
@@ -1092,11 +1095,12 @@ if __name__ == "__main__":
     testcasesrunlist = ['all']
     protocol_file_path = sys.argv[1]
     testtype = sys.argv[2]
+    work_path = sys.argv[3]
 
     log_info(f"Protocol Config path: {protocol_file_path}")
     log_info(f"TestType: {testtype}")
     log_info(f"TestCasesRunList: {testcasesrunlist}")
     create_db(protocol_file_path)
     testerobj = S2TTester(spark)
-    testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist)
+    testerobj.starttestexecute(protocol_file_path, testtype, testcasesrunlist,work_path)
    
