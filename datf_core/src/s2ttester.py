@@ -1095,7 +1095,7 @@ if __name__ == "__main__":
     testcasesrunlist = ['all']
     protocol_file_path = sys.argv[1]
     testtype = sys.argv[2]
-    work_path = sys.argv[3]
+    work_path = sys.argv[4]
 
     log_info(f"Protocol Config path: {protocol_file_path}")
     log_info(f"TestType: {testtype}")
