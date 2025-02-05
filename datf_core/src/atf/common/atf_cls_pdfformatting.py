@@ -2,7 +2,7 @@ from fpdf import FPDF
 class generatePDF:
   
   def __init__(self, work_path):
-    dejav_path = f"{work_path}/dejavu/DejaVuSans.ttf"
+    dejavu_path = f"{work_path}/dejavu/DejaVuSans.ttf"
     self.pdf = FPDF(format='A4', unit='mm')
     self.pdf.add_page()
     #self.pdf.add_font('DejaVu', '', '/Workspace/Shared/QE_ATF_Latest/datf_core/dejavu/DejaVuSans.ttf', uni=True)
