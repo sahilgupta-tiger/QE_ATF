@@ -1035,7 +1035,7 @@ class S2TTester:
         return pdfobj
 
 
-    def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time, testcasetype):
+    def generate_protocol_summary_report(self, df_protocol_summary, protocol_run_details, protocol_run_params, output_path, created_time, testcasetype,work_path):
         dejavu_path=work_path
         pdfobj_protocol = generatePDF(dejavu_path)
         comparison_type = testcasetype + " comparison"
