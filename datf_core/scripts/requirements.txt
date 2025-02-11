@@ -12,3 +12,4 @@ pandas-profiling
 koalas
 pydantic-settings
 sweetviz
+great_expectations
