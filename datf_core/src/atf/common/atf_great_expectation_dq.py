@@ -2,8 +2,8 @@ import great_expectations as gx
 import os
 import pandas as pd
 import json
-from atf_cls_pdfformatting import generatePDF
-from atf_pdf_constants import *
+from atf.common.atf_cls_pdfformatting import generatePDF
+from atf.common.atf_pdf_constants import *
 
 def dq_analyser(tcname,dejavu_path, rows, df):
     pdfobj = generatePDF(dejavu_path)
