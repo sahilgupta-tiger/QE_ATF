@@ -8,7 +8,7 @@ def data_profiling():
     st.set_page_config(
         page_title="Generate Data Profiles"
     )
-    st.title("Source & Target Data Profile Generator")
+    st.title("Source & Target Data Profiler")
 
     onlyfiles = read_test_protocol()
     selected_protocol = st.selectbox(
@@ -28,7 +28,7 @@ def data_profiling():
 
         if selected_testcase is not None:
 
-            if st.button("Connect & Generate for Source & Target"):
+            if st.button("Start Profiling for Source & Target"):
                 with st.spinner('Processing, Please wait...'):
                     source_df, target_df = test_connectivity_from_testcase(selected_protocol, selected_testcase)
 

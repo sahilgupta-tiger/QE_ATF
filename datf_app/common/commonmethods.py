@@ -102,6 +102,7 @@ def save_uploadedfile(uploadedfile, filepath):
 
 # Function to buid the report for data profiling based on dataframe
 def create_data_profile_report(input_df, type_str):
+    input_df = input_df.drop(input_df.columns[0],axis=1)
     # Analyze the Pandas DataFrame
     report = sv.analyze([input_df, type_str])
     # Get the current date time from UTC timezone
@@ -159,7 +160,120 @@ def build_sql_generation_prompt(initial_prompt, list_of_columns):
 
 # Function to run the generated sql query on dataframe
 def running_sql_query_on_df(input_df, temp_tbl_name, generated_query):
+    input_df = input_df.copy()
     generated_query.replace(f"FROM {temp_tbl_name}", "FROM input_df")
     generated_query += " LIMIT 5"
-    output_df = sqldf(generated_query)
+    output_df = sqldf(f"""{generated_query}""")
     return output_df
+
+# Function to read SQL Bulk files from the framework
+def read_sqlbulk_files():
+    onlyfiles = [f for f in listdir(sqlbulk_path) if isfile(join(sqlbulk_path, f))]
+    for loop in onlyfiles:
+        if loop.find(".html") != -1 or loop.find("ai-output-") != -1:
+            onlyfiles.remove(loop)
+    return onlyfiles
+
+# Function to read the bulk sql generator excel and generate queries
+def generate_bulk_sql_queries(selected_bulk_file):
+    dictionary_to_print = {}
+    read_sqlbulk_file = f"{sqlbulk_path}/{selected_bulk_file}"
+    input_bulk_df = pd.read_excel(read_sqlbulk_file)
+    for row, col in input_bulk_df.iterrows():
+        pass
+
+    html_output = query_validation_report(dictionary_to_print)
+    return html_output
+
+def query_validation_report(tables):
+    # Manipulate and process data as needed
+    # To Initialize the HTML content with the header
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Tiger ETL Tool Report</title>
+        <style>
+            /* Add CSS styles here */
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            /* Adjust the width and enable wrapping for the results column */
+            .results {
+            width: 30%;
+            word-wrap: break-word;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tiger ETL Tool Report</h1>
+    """
+
+    # Add Run Summary and Run Date
+    run_summary = "Run Summary"
+    run_date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    function_name = "QueryValidationAndReport"
+    function_value = "Validating the query generated from AI against DB and retrieving only the first 5 rows"
+
+    html_content += f"<h2>{run_summary}</h2>"
+    html_content += f"<p><strong>Run Date:</strong> {run_date}</p>"
+    html_content += f"<p><strong>Function Name:</strong> {function_name}</p>"
+    html_content += f"<p><strong>Function Value:</strong> {function_value}</p>"
+    html_content += f"<h2>Results</h2>"
+
+    # Create the table header
+    html_content += "<table>"
+    html_content += "<tr><th>No.</th><th>Prompt</th><th>SQL Query</th><th>Explanation</th><th>Results</th></tr>"
+
+    # Counter for numbering prompts
+    prompt_counter = 1
+
+    # Iterate over each key-value pair in the dictionary
+    for key, value in tables.items():
+        # Extracting elements from the key
+        prompt, sql_query = key
+
+        # Add row for each key-value pair
+        html_content += "<tr>"
+        html_content += f"<td>{prompt_counter}</td>"
+        html_content += f"<td>{prompt}</td>"
+        html_content += f"<td>{sql_query}</td>"
+
+        # Add results if available
+        if value:
+            html_content += "<td class='results'>"
+            html_content += "<ul>"
+            for result in value:
+                html_content += f"<li>{result}</li>"
+            html_content += "</ul>"
+            html_content += "</td>"
+        else:
+            html_content += "<td>No results</td>"
+
+        html_content += "</tr>"
+
+        # Increment prompt counter
+        prompt_counter += 1
+
+    # Close the table and HTML content
+    html_content += "</table>"
+    html_content += """
+    </body>
+    </html>
+    """
+
+    # Step 4: Save HTML
+    report_file = f"{sqlbulk_path}/reportcheck-{run_date}.html"
+    with open(report_file, 'w') as f:
+        f.write(html_content)
+
+    return html_content

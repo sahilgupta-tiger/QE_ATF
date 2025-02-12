@@ -1,1 +1,1 @@
-pip install --no-cache-dir -r datf_core/scripts/requirements.txt
+pip install -r datf_core/scripts/requirements.txt

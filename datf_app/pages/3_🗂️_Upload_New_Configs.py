@@ -1,5 +1,3 @@
-from os import listdir
-from os.path import isfile, join
 import streamlit as st
 from datf_app.common.commonmethods import *
 
@@ -11,7 +9,6 @@ def upload_new_test_page():
     )
     st.title("Upload new Test Configuration")
 
-    st.divider()
     testcase_file = st.file_uploader("Test Case Protocol Excel file",
                                      type='xlsx', accept_multiple_files=False)
     conv_test = 'test_'
@@ -36,7 +33,7 @@ def upload_new_test_page():
         else:
             st.success(upl_con)
 
-    s2t_file = st.file_uploader("Source to Target Mapping file (optional)",
+    s2t_file = st.file_uploader("Source to Target Mapping file",
                                      type='xlsx', accept_multiple_files=False)
     conv_s2t = 's2t_'
     upl_s2t = file_upload_all(s2t_file, 's2t', conv_s2t)
@@ -48,6 +45,17 @@ def upload_new_test_page():
         else:
             st.success(upl_s2t)
 
+    bulk_generate_file = st.file_uploader("Bulk SQL Generation Excel file",
+                                          type='xlsx', accept_multiple_files=False)
+    convention = 'bulk_'
+    upload_status = file_upload_all(bulk_generate_file, 'sqlbulk', convention)
+    if upload_status is not None:
+        if upload_status == "issue1":
+            st.error("Bulk Upload filename is already in use. Please rename and reupload.")
+        elif upload_status == "issue2":
+            st.error(f"Filename must start with '{convention}'. Please rename and reupload.")
+        else:
+            st.success(upload_status)
 
     st.divider()
     st.markdown("**👈 Select the required page from the sidebar** to continue!")

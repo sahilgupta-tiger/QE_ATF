@@ -9,18 +9,20 @@ def bulk_generation():
     )
     st.title("Bulk Test Configs SQL Generator")
 
-    st.divider()
-    testcase_file = st.file_uploader("Template Excel file",
-                                     type='xlsx', accept_multiple_files=False)
-    convention = 'bulk_'
-    upload_status = file_upload_all(testcase_file, 'sqlbulk', convention)
-    if upload_status is not None:
-        if upload_status == "issue1":
-            st.error("Bulk Upload filename is already in use. Please rename and reupload.")
-        elif upload_status == "issue2":
-            st.error(f"Filename must start with '{convention}'. Please rename and reupload.")
-        else:
-            st.success(upload_status)
+    onlyfiles = read_sqlbulk_files()
+    selected_bulkfile = st.selectbox(
+        "Choose one from Bulk Files below...",
+        onlyfiles, index=None, placeholder="type to search",
+    )
+    st.write("You selected: ", selected_bulkfile)
+
+    if selected_bulkfile is not None:
+        if st.button("Run and Validate Generated SQL Queries"):
+            with st.spinner('Processing, Please wait...'):
+                html = generate_bulk_sql_queries(selected_bulkfile)
+            st.divider()
+            st.markdown(html, unsafe_allow_html=True)  # Display HTML content
+            st.write("Query Generated and results are validated")
 
 
 if __name__ == "__main__":

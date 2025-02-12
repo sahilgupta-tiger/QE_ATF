@@ -27,6 +27,7 @@ exec_sheet_name = 'protocoltestcasedetails'
 protocol_tab_name = 'protocol'
 genai_conn_json = "azure_open_ai_connection"
 tc_path = f"{root_path}/test/testprotocol"
+sqlbulk_path = f"{root_path}/test/sqlbulk"
 output_file_path = f"{root_path}/test/testprotocol/{exec_table_name}_template.xlsx"
 profile_output_path = f"{root_path}/test/results/profiles"
 column_data_path = f"{root_path}test/data/columndata"
