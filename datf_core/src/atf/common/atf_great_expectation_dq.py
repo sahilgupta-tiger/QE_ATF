@@ -181,5 +181,21 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Failed"
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}", 'section heading')
             dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+        if check == "Sum" and check_type == "Between":
+            expectation  = gx.expectations.ExpectColumnValueLengthsToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
+            validation_results = batch.validate(expectation)
+            #print(validation_results)
+            Dqtype = check
+            dqtype_valid = check_type
+            expected = value
+            status = validation_results.success
+            observed_value = validation_results.result["observed_value"]
+            columnname = validation_results.expectation_config.kwargs["column"]
+            if status:
+                Result = "Passed"
+            else:
+                Result = "Failed"
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}", 'section heading')
+            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Sum Range": expected,  "Actual Sum": observed_value}
         pdfobj.create_table_summary(dict_result)
     return pdfobj
