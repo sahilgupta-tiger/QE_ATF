@@ -25,7 +25,8 @@ def ge_test_initalization(df):
     batch = batch_definition.get_batch(batch_parameters=batch_parameters)   
     return batch
 
-def ge_test_execution(batch,rows):
+def ge_test_execution(pdfobj,batch,rows):
+    pdfobj = pdfobj
     batch = batch
     rows = rows
     for i,row in enumerate(rows):
