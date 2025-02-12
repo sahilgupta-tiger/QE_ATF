@@ -149,7 +149,7 @@ def ge_test_execution(pdfobj,batch,rows):
             status = validation_results.success
             expectation  = gx.expectations.ExpectTableColumnCountToEqual(value=value)
             validation_results = batch.validate(expectation)
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = value
@@ -166,7 +166,7 @@ def ge_test_execution(pdfobj,batch,rows):
         if check == "Regexp":
             expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=value,match_on="any")
             validation_results = batch.validate(expectation)
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = value
@@ -184,7 +184,7 @@ def ge_test_execution(pdfobj,batch,rows):
         if check == "Sum" and check_type == "Between":
             expectation  = gx.expectations.ExpectColumnSumToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
             validation_results = batch.validate(expectation)
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = value
@@ -201,7 +201,7 @@ def ge_test_execution(pdfobj,batch,rows):
         if check == "ColumnOrder":
             expectation  = gx.expectations.ExpectTableColumnsToMatchOrderedList(column_list=value)
             validation_results = batch.validate(expectation)
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = value
