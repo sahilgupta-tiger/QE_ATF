@@ -207,7 +207,7 @@ def ge_test_execution(pdfobj,batch,rows):
             expected = value
             status = validation_results.success
             observed_value = validation_results.result["observed_value"]
-            mismatch = validation_results.result.details["mismatched"]
+            mismatch = validation_results.result["details"]["mismatched"]
             if status:
                 Result = "Passed"
             else:
