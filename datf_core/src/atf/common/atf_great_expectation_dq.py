@@ -52,12 +52,12 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Length": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Length": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
         if check == "Length" and check_type == "Between":
             expectation  = gx.expectations.ExpectColumnValueLengthsToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
             validation_results = batch.validate(expectation)
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = value
@@ -70,12 +70,12 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Length Range": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Length Range": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
         if check == "Null":
             expectation  = gx.expectations.ExpectColumnValuesToBeNull(column=column)
             validation_results = batch.validate(expectation)
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = "'null'"
@@ -88,8 +88,8 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
         if check == "NotBeNull":
             expectation  = gx.expectations.ExpectColumnValuesToNotBeNull(column=column)
             validation_results = batch.validate(expectation)
@@ -106,12 +106,12 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
         if check == "Unique":
             expectation  = gx.expectations.ExpectColumnValuesToBeUnique(column=column)
             validation_results = batch.validate(expectation)
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = "to be unique"
@@ -124,13 +124,13 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Duplicate Values": observed_value}
         if check == "DistinctSet":
             expectation  = gx.expectations.ExpectColumnDistinctValuesToBeInSet(column=column, value_set=value)
             validation_results = batch.validate(expectation)
             
-            #print(validation_results)
+            print(validation_results)
             Dqtype = check
             dqtype_valid = check_type
             expected = value
@@ -143,8 +143,8 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Additional Values Other Than Expected": observed_value}
         if check == "ColumnCount":
             status = validation_results.success
             expectation  = gx.expectations.ExpectTableColumnCountToEqual(value=value)
@@ -161,8 +161,8 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}", 'section heading')
-            dict_result = {"Test_Status": Result, "DQ Check": Dqtype, "Expected Count": expected,  "Actual Count": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Count": expected,  "Actual Column Count": observed_value}
         if check == "Regexp":
             expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=value,match_on="any")
             validation_results = batch.validate(expectation)
@@ -179,8 +179,8 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "column Name": columnname, "DQ Validation": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
         if check == "Sum" and check_type == "Between":
             expectation  = gx.expectations.ExpectColumnSumToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
             validation_results = batch.validate(expectation)
@@ -196,8 +196,8 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}", 'section heading')
-            dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Sum Range": expected,  "Actual Sum": observed_value}
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Sum Range": expected,  "Actual Sum": observed_value}
         if check == "ColumnOrder":
             expectation  = gx.expectations.ExpectTableColumnsToMatchOrderedList(column_list=value)
             validation_results = batch.validate(expectation)
@@ -212,7 +212,7 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Passed"
             else:
                 Result = "Failed"
-            pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}", 'section heading')
-            dict_result = {"Test_Status": Result, "DQ Check": Dqtype, "Expected Column Order": expected,  "Actual Column Order": observed_value, "Mismatch Details": mismatch}
+            pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Order": expected,  "Actual Column Order": observed_value, "Column Order Mismatch": mismatch}
         pdfobj.create_table_summary(dict_result)
     return pdfobj
