@@ -198,5 +198,21 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Failed"
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}", 'section heading')
             dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Sum Range": expected,  "Actual Sum": observed_value}
+        if check == "ColumnOrder":
+            expectation  = gx.expectations.ExpectTableColumnsToMatchOrderedList(column_list=value)
+            validation_results = batch.validate(expectation)
+            #print(validation_results)
+            Dqtype = check
+            dqtype_valid = check_type
+            expected = value
+            status = validation_results.success
+            observed_value = validation_results.result["observed_value"]
+            mismatch = validation_results.result.details["mismatched"]
+            if status:
+                Result = "Passed"
+            else:
+                Result = "Failed"
+            pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}", 'section heading')
+            dict_result = {"Test_Status": Result, "DQ Check": Dqtype, "Expected Column Order": expected,  "Actual Column Order": observed_value, "Mismatch Details": mismatch}
         pdfobj.create_table_summary(dict_result)
     return pdfobj
