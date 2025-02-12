@@ -182,4 +182,4 @@ def ge_test_execution(pdfobj,batch,rows):
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}", 'section heading')
             dict_result = {"Test_Status": Result, "column Name": columnname, "DQ Check": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
         pdfobj.create_table_summary(dict_result)
-        return pdfobj
+    return pdfobj
