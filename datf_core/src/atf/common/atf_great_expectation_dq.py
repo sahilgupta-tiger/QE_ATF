@@ -146,7 +146,7 @@ def ge_test_execution(pdfobj,batch,rows):
             else:
                 Result = "Failed"
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
-            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected, "Actual Value": observed_value}
+            dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Distinct Value": expected, "Actual Distinct Value": observed_value}
         if check == "ColumnCount":
             status = validation_results.success
             expectation  = gx.expectations.ExpectTableColumnCountToEqual(value=value)
