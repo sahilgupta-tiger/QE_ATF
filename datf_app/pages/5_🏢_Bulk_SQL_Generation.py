@@ -7,7 +7,7 @@ def bulk_generation():
     st.set_page_config(
         page_title="Bulk SQL Generator"
     )
-    st.title("Bulk Test Configs SQL Generator")
+    st.title("Bulk SQL Generator using GenAI")
 
     onlyfiles = read_sqlbulk_files()
     selected_bulkfile = st.selectbox(
@@ -18,11 +18,14 @@ def bulk_generation():
 
     if selected_bulkfile is not None:
         if st.button("Run and Validate Generated SQL Queries"):
-            with st.spinner('Processing, Please wait...'):
+            with st.spinner('Processing, Please wait...(this may take a while)'):
                 html = generate_bulk_sql_queries(selected_bulkfile)
             st.divider()
-            st.markdown(html, unsafe_allow_html=True)  # Display HTML content
-            st.write("Query Generated and results are validated")
+            if html is not None:
+                st.html(html)  # Display HTML content
+                st.success("Queries Generated and Results are validated.")
+            else:
+                st.error("Unable to load SQL report. Please check test configs in excel and retry.")
 
 
 if __name__ == "__main__":

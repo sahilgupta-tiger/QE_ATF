@@ -142,50 +142,93 @@ def save_df_into_db(modified_df, selected_protocol):
 # Function to test the Source and Target Connection and load the pandas dataframes
 def test_connectivity_from_testcase(chosen_protocol, chosen_testcase):
     chosen_protocol_path = f"{tc_path}/{chosen_protocol}"
-    subprocess.run(f"sh {root_path}scripts/conncheck.sh {chosen_protocol_path} {chosen_testcase}",shell=True)
+    sub_out = subprocess.run(f"sh {root_path}scripts/conncheck.sh {chosen_protocol_path} {chosen_testcase}",
+                   shell=True)
+    print(sub_out)
     src_col_df = pd.read_excel(src_column_path)
     tgt_col_df = pd.read_excel(tgt_column_path)
     return src_col_df, tgt_col_df
 
 # Function to provide prompt engineering for LLM to respond accordingly
-def build_sql_generation_prompt(initial_prompt, list_of_columns):
-    table_name = "source_target_table"
-    final_prompt = f"Generate a SQL query using table name {table_name} and requirement as: {initial_prompt}"
+def build_sql_generation_prompt(initial_prompt, list_of_columns, table_name):
+    final_prompt = f"Generate a sqlite3 based SQL query using table name '{table_name}' and requirement as: {initial_prompt}"
     if len(list_of_columns) > 1:
-        final_prompt += f" And use these Columns names as reference: {', '.join(list_of_columns)}"
+        final_prompt += f". And use these Columns names as reference: {', '.join(list_of_columns)}"
     elif len(list_of_columns) == 1:
         final_prompt += f" And use this Column name as reference: {list_of_columns[0]}"
-    final_prompt += " And Strictly only provide the SQL query as the output response."
-    return final_prompt, table_name
+    final_prompt += ". And Strictly only provide the SQL query as the output response."
+    return final_prompt
 
 # Function to run the generated sql query on dataframe
 def running_sql_query_on_df(input_df, temp_tbl_name, generated_query):
-    input_df = input_df.copy()
-    generated_query.replace(f"FROM {temp_tbl_name}", "FROM input_df")
-    generated_query += " LIMIT 5"
-    output_df = sqldf(f"""{generated_query}""")
+    generated_query = generated_query.replace(f"FROM {temp_tbl_name}", "FROM input_df")
+    generated_query = generated_query.replace(";", "")
+    generated_query += " LIMIT 5;"
+    output_df = sqldf(generated_query, locals())
     return output_df
 
 # Function to read SQL Bulk files from the framework
 def read_sqlbulk_files():
     onlyfiles = [f for f in listdir(sqlbulk_path) if isfile(join(sqlbulk_path, f))]
     for loop in onlyfiles:
-        if loop.find(".html") != -1 or loop.find("ai-output-") != -1:
+        if loop.find(".html") != -1 or loop.find("reportcheck-") != -1:
             onlyfiles.remove(loop)
     return onlyfiles
 
 # Function to read the bulk sql generator excel and generate queries
 def generate_bulk_sql_queries(selected_bulk_file):
-    dictionary_to_print = {}
+
+    df_to_print = pd.DataFrame(columns=['prompt','sql_query','results'])
     read_sqlbulk_file = f"{sqlbulk_path}/{selected_bulk_file}"
     input_bulk_df = pd.read_excel(read_sqlbulk_file)
-    for row, col in input_bulk_df.iterrows():
-        pass
 
-    html_output = query_validation_report(dictionary_to_print)
+    for index, row in input_bulk_df.iterrows():
+        user_protocol = row['ProtocolFileName']
+        user_testcasename = row['TestCaseName']
+        user_dropdown = row['Source/Target']
+        user_prompt = row['QueryPrompts']
+        user_columns = row['ListofColumns']
+
+        list_user_columns = []
+        user_columns = user_columns.replace(" ","")
+        if "," in user_columns:
+            list_user_columns = user_columns.split(",")
+        else:
+            list_user_columns.append(user_columns)
+
+        user_protocol = user_protocol.strip()
+        user_testcasename = user_testcasename.strip()
+
+        source_df, target_df = test_connectivity_from_testcase(user_protocol, user_testcasename)
+        temp_table_name = ''
+        loaded_df = None
+        if user_dropdown == "source":
+            loaded_df = source_df.copy()
+            temp_table_name = "source_table"
+        elif user_dropdown == "target":
+            loaded_df = target_df.copy()
+            temp_table_name = "target_table"
+
+        final_user_prompt = build_sql_generation_prompt(user_prompt, list_user_columns, temp_table_name)
+        get_ai_response = get_queries_from_ai(final_user_prompt)
+        final_user_query = get_ai_response.strip()
+        final_user_df = running_sql_query_on_df(loaded_df, temp_table_name, final_user_query)
+        final_user_results = repr(final_user_df.to_dict())
+
+        new_row = pd.DataFrame({"prompt": [final_user_prompt],
+                                "sql_query": [final_user_query],
+                                "results": [final_user_results]
+                                })
+        df_to_print = pd.concat([df_to_print, new_row], ignore_index=True)
+        remove_list = [new_row, final_user_df, loaded_df, source_df, target_df]
+        del remove_list
+
+    print(df_to_print)
+    html_output = query_validation_report(df_to_print.copy())
     return html_output
 
-def query_validation_report(tables):
+# Function to load the output results into an html report
+def query_validation_report(tables_df):
     # Manipulate and process data as needed
     # To Initialize the HTML content with the header
     html_content = """
@@ -215,14 +258,14 @@ def query_validation_report(tables):
         </style>
     </head>
     <body>
-        <h1>Tiger ETL Tool Report</h1>
+        <h1>Tiger SQL Generator Tool Report</h1>
     """
 
     # Add Run Summary and Run Date
-    run_summary = "Run Summary"
+    run_summary = "Report Run Summary"
     run_date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     function_name = "QueryValidationAndReport"
-    function_value = "Validating the query generated from AI against DB and retrieving only the first 5 rows"
+    function_value = "Validating the query generated from AI against DB and retrieving only the first few rows"
 
     html_content += f"<h2>{run_summary}</h2>"
     html_content += f"<p><strong>Run Date:</strong> {run_date}</p>"
@@ -230,50 +273,43 @@ def query_validation_report(tables):
     html_content += f"<p><strong>Function Value:</strong> {function_value}</p>"
     html_content += f"<h2>Results</h2>"
 
-    # Create the table header
-    html_content += "<table>"
-    html_content += "<tr><th>No.</th><th>Prompt</th><th>SQL Query</th><th>Explanation</th><th>Results</th></tr>"
+    if tables_df is not None:
+        # Create the table header
+        html_content += "<table>"
+        html_content += "<tr><th>No.</th><th>Prompt</th><th>SQL Query</th><th>Results</th></tr>"
 
-    # Counter for numbering prompts
-    prompt_counter = 1
+        # Counter for numbering prompts
+        prompt_counter = 1
 
-    # Iterate over each key-value pair in the dictionary
-    for key, value in tables.items():
-        # Extracting elements from the key
-        prompt, sql_query = key
+        # Iterate over each key-value pair in the df
+        for i, r in tables_df.iterrows():
+            # Add row for each key-value pair
+            html_content += "<tr>"
+            html_content += f"<td>{prompt_counter}</td>"
+            html_content += f"<td>{r['prompt']}</td>"
+            html_content += f"<td>{r['sql_query']}</td>"
+            if r['results'] == "":
+                html_content += "<td>No Results</td>"
+            else:
+                html_content += f"<td>{r['results']}</td>"
+            html_content += "</tr>"
+            # Increment prompt counter
+            prompt_counter += 1
 
-        # Add row for each key-value pair
-        html_content += "<tr>"
-        html_content += f"<td>{prompt_counter}</td>"
-        html_content += f"<td>{prompt}</td>"
-        html_content += f"<td>{sql_query}</td>"
-
-        # Add results if available
-        if value:
-            html_content += "<td class='results'>"
-            html_content += "<ul>"
-            for result in value:
-                html_content += f"<li>{result}</li>"
-            html_content += "</ul>"
-            html_content += "</td>"
-        else:
-            html_content += "<td>No results</td>"
-
-        html_content += "</tr>"
-
-        # Increment prompt counter
-        prompt_counter += 1
-
-    # Close the table and HTML content
-    html_content += "</table>"
+        # Close the table and HTML content
+        html_content += "</table>"
+    # Finish the tags
     html_content += """
     </body>
     </html>
     """
 
-    # Step 4: Save HTML
-    report_file = f"{sqlbulk_path}/reportcheck-{run_date}.html"
-    with open(report_file, 'w') as f:
-        f.write(html_content)
+    if tables_df is None:
+        html_content = None
+    else:
+        # Step 4: Save HTML
+        report_file = f"{sqlbulk_path}/reportcheck-{run_date}.html"
+        with open(report_file, 'w') as f:
+            f.write(html_content)
 
     return html_content

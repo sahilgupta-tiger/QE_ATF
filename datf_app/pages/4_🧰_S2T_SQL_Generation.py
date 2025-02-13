@@ -13,7 +13,7 @@ def s2t_sql_generation():
     st.set_page_config(
         page_title="S2T SQL Generator"
     )
-    st.title("Source to Target SQL Generator")
+    st.title("Source to Target SQL Generator using GenAI")
 
     onlyfiles = read_test_protocol()
     selected_protocol = st.selectbox(
@@ -64,7 +64,8 @@ def s2t_sql_generation():
                         source_column_selection = st.multiselect("Select Source Columns", src_column_list)
                         prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
                         if st.form_submit_button("Generate Source SQL", on_click=update_source_columns):
-                            final_prompt, temp_table = build_sql_generation_prompt(prompt, source_column_selection)
+                            temp_table = "source_table"
+                            final_prompt = build_sql_generation_prompt(prompt, source_column_selection, temp_table)
                             with st.spinner("Getting results from AI now..."):
                                 response = get_queries_from_ai(final_prompt)
                             sql_query = response.strip()
@@ -89,12 +90,13 @@ def s2t_sql_generation():
                         target_column_selection = st.multiselect("Select Target Columns", tgt_column_list)
                         tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
                         if st.form_submit_button("Generate Target SQL", on_click=update_target_columns):
-                            final_tgt_prompt, temp_name = build_sql_generation_prompt(tgt_prompt, target_column_selection)
+                            temp_tgt_table = "target_table"
+                            final_tgt_prompt = build_sql_generation_prompt(tgt_prompt, target_column_selection, temp_tgt_table)
                             with st.spinner("Getting results from AI now..."):
                                 tgt_response = get_queries_from_ai(final_tgt_prompt)
                             tgt_sql_query = tgt_response.strip()
                             st.code(tgt_sql_query, language='sql')
-                            target_result = running_sql_query_on_df(target_df, temp_name, tgt_sql_query)
+                            target_result = running_sql_query_on_df(target_df, temp_tgt_table, tgt_sql_query)
                             st.write("Running Query and Output Results from Target:")
                             st.dataframe(target_result, hide_index=True, use_container_width=True)
                     except openai.APIConnectionError:
