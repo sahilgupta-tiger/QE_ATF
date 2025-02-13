@@ -165,7 +165,9 @@ def ge_test_execution(pdfobj,batch,rows):
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Count": expected,  "Actual Column Count": observed_value}
         if check == "Regexp":
             print(value)
-            expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=value,match_on="any")
+            regex_list = [item["Value"] for item in rows if item["DQ Check"] == "Regexp"]
+            print(regex_list)
+            expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=regex_list,match_on="any")
             validation_results = batch.validate(expectation)
             print(validation_results)
             Dqtype = check
