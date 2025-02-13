@@ -184,6 +184,27 @@ def ge_test_execution(pdfobj,batch,rows):
                 Result = "Failed"
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "column Name": columnname, "DQ Validation": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
+        if check == "Regexplist":
+            print(value)
+            regex_list = [item["Value"] for item in rows if item["DQ Check"] == "Regexp"]
+            print(regex_list)
+            expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=regex_list,match_on = "any")
+            validation_results = batch.validate(expectation)
+            print(validation_results)
+            Dqtype = check
+            dqtype_valid = check_type
+            expected = value
+            status = validation_results.success
+            count = validation_results.result["element_count"]
+            unexpected_count = validation_results.result["unexpected_count"]
+            observed_value = validation_results.result["partial_unexpected_list"]
+            columnname = validation_results.expectation_config.kwargs["column"]
+            if status:
+                Result = "Passed"
+            else:
+                Result = "Failed"
+            pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
+            dict_result = {"Test Status": Result, "column Name": columnname, "DQ Validation": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
         if check == "Sum" and check_type == "Between":
             expectation  = gx.expectations.ExpectColumnSumToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
             validation_results = batch.validate(expectation)
