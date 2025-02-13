@@ -1,4 +1,5 @@
 import great_expectations as gx
+import ast
 def ge_test_initalization(df):
     df = df
     # Retrieve your Data Context
@@ -187,9 +188,11 @@ def ge_test_execution(pdfobj,batch,rows):
         if check == "Regexplist":
             print(value)
             print(type(value))
+            reg_list = ast.literal_eval(value)
+            print(type(reg_list))
             #regex_list = [item["Value"] for item in rows if item["DQ Check"] == "Regexplist"]
             #print(regex_list)
-            expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=value,match_on = "any")
+            expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=reg_list,match_on = "any")
             validation_results = batch.validate(expectation)
             print(validation_results)
             Dqtype = check
