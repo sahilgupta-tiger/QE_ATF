@@ -127,7 +127,7 @@ def ge_test_execution(pdfobj,batch,rows):
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Duplicate Values": observed_value}
         if check == "DistinctSet":
-            expectation  = gx.expectations.ExpectColumnDistinctValuesToBeInSet(column=column, value_set=value)
+            expectation  = gx.expectations.ExpectColumnDistinctValuesToEqualSet(column=column, value_set=value)
             validation_results = batch.validate(expectation)
             
             print(validation_results)
@@ -164,6 +164,7 @@ def ge_test_execution(pdfobj,batch,rows):
             pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Count": expected,  "Actual Column Count": observed_value}
         if check == "Regexp":
+            print(value)
             expectation = gx.expectations.ExpectColumnValuesToMatchRegexList(column=column,regex_list=value,match_on="any")
             validation_results = batch.validate(expectation)
             print(validation_results)
