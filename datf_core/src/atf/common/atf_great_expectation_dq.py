@@ -117,7 +117,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
             else:
                 Result = "Failed"
                 ftccount = ftccount + 1
-                Reason = f"{Unexpected_count} - No of values are not having null value"
+                Reason = f"{unexpected_count} - No of values are not having null value"
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
@@ -142,7 +142,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
             else:
                 Result = "Failed"
                 ftccount = ftccount + 1
-                Reason =  f"{Unexpected_count} - No of values are having null value"
+                Reason =  f"{unexpected_count} - No of values are having null value"
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
@@ -166,7 +166,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
             else:
                 Result = "Failed"
                 ftccount = ftccount + 1
-                Reason =  f"{Unexpected_count} - No of values are duplicated"
+                Reason =  f"{unexpected_count} - No of values are duplicated"
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Duplicate Values": observed_value}
