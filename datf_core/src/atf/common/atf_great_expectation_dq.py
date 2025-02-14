@@ -330,6 +330,9 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
         pdfobj.create_table_summary(dict_result)
     display(df_testsuite_summary)
     print(type(df_testsuite_summary))
+    df_testsuite_summary = spark.createDataFrame(df_testsuite_summary)
+    display(df_testsuite_summary)
+    print(type(df_testsuite_summary))
     pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocol_run_params,pdfobj_summary,spark)
     return pdfobj,pdfobj_summary
 
@@ -351,7 +354,6 @@ def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_r
         pdfobj_summary.write_text(testheader, 'section heading')
         print(f" 2--- {type(df_testsuite_summary)}")
         if (df_testsuite_summary is not None):
-            df_testsuite_summary = spark.createDataFrame(df_testsuite_summary)
             print(type(df_testsuite_summary))
             df_testsuite_summary_temp = df_testsuite_summary.select('*') \
                 .filter(col('Test Result') == test_result)
