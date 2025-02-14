@@ -329,7 +329,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
         pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocal_run_params,pdfobj_summary)
     return pdfobj,pdfobj_summary
 
-def generate_protocol_summary_report(self, df_testsuite_summary,  testsuite,protocol_run_params, pdfobj_summary):
+def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_run_params, pdfobj_summary):
         
        
     pdfobj_summary.write_text('Data Quality Analysis Summary Report', 'report header')
