@@ -6,7 +6,7 @@ import json
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from datetime import datetime,timezone
-def ge_test_initalization(df):
+def ge_test_initalization(dfname):
     df = df
     # Retrieve your Data Context
     context = gx.get_context()
@@ -28,7 +28,7 @@ def ge_test_initalization(df):
     batch_definition = data_asset.add_batch_definition_whole_dataframe(
         batch_definition_name
     )
-    batch_parameters = {"dataframe": df}
+    batch_parameters = {"dataframe": f"{dfname}"}
     batch = batch_definition.get_batch(batch_parameters=batch_parameters)   
     return batch
 
