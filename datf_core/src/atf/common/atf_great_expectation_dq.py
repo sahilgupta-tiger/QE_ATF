@@ -349,8 +349,10 @@ def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_r
     for test_result in test_results_list:
         testheader = "2." + str(sno) + ". " + test_result + " Testcases"
         pdfobj_summary.write_text(testheader, 'section heading')
+        print(f" 2--- {type(df_testsuite_summary)}")
         if (df_testsuite_summary is not None):
             df_testsuite_summary = spark.createDataFrame(df_testsuite_summary)
+            print(type(df_testsuite_summary))
             df_testsuite_summary_temp = df_testsuite_summary.select(
                 '*').filter(col('Test Result') == test_result)
             if (df_testsuite_summary_temp.count() == 0):
