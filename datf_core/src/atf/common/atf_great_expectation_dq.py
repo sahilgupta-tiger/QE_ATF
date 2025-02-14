@@ -31,6 +31,7 @@ def ge_test_initalization(df):
     return batch
 
 def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
+    utctimezone = timezone.utc
     DQValidation_starttime = datetime.now(utctimezone)
     pdfobj = pdfobj
     batch = batch
