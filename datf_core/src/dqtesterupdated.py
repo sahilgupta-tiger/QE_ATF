@@ -47,7 +47,7 @@ def createsparksession():
     print(spark)
     return spark
 
-def startdqtest(work_path, df,testsuite,json_file_path):
+def startdqtest(work_path,df,testsuite,json_file_path):
     spark = createsparksession()
     log_info("DQ test execution has been started")
     print(f"work path: {work_path}")

@@ -6,7 +6,7 @@ import json
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from datetime import datetime,timezone
-def ge_test_initalization(dfname):
+def ge_test_initalization(df):
     df = df
     # Retrieve your Data Context
     context = gx.get_context()
