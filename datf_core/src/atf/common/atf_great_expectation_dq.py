@@ -324,9 +324,9 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Order": expected,  "Actual Column Order": observed_value, "Column Order Mismatch": mismatch}
             df_testsuite_summary.loc[i] = [tcname, '', Dqtype, expected, Result, Reason ]
         DQValidation_endtime = datetime.now(utctimezone)
-        protocal_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
+        protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
-        pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocal_run_params,pdfobj_summary)
+        pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocol_run_params,pdfobj_summary)
     return pdfobj,pdfobj_summary
 
 def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_run_params, pdfobj_summary):
@@ -337,7 +337,7 @@ def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_r
         
     pdfobj_summary.write_text("1. Test Suite Run Summary ", 'section heading')
         
-    pdfobj_summary.create_table_summary(protocal_run_params)
+    pdfobj_summary.create_table_summary(protocol_run_params)
     pdfobj_summary.write_text("2. Test Result Summary", 'section heading')
     table_type = 'protocol'
     if (testcasetype == "count"):
