@@ -15,7 +15,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from src.atf.common.atf_cls_pdfformatting import generatePDF
 from src.atf.common.atf_pdf_constants import *
-from src.atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path
+from src.atf.common.atf_common_functions_dq import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path
 from src.testconfig import *
 
 #import databricks.koalas as ks
