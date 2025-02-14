@@ -47,7 +47,7 @@ def createsparksession():
     print(spark)
     return spark
 
-def startdqtest(work_path, dfname,testsuite,json_file_path):
+def startdqtest(work_path, df,testsuite,json_file_path):
     spark = createsparksession()
     log_info("DQ test execution has been started")
     print(f"work path: {work_path}")
@@ -79,7 +79,7 @@ def startdqtest(work_path, dfname,testsuite,json_file_path):
                     print(f"Skipping invalid JSON value: {item['Value']}")
 
         print(rows)
-        batch = ge_test_initalization(dfname)
+        batch = ge_test_initalization(df)
         pdfobj,pdfobj_summary = ge_test_execution(pdfobj,pdfobj_summary, testsuite, batch,rows,spark)
         DQValidation_endtime = datetime.now(utctimezone)  
         pdfobj.pdf.output(detailresultpath, 'F')

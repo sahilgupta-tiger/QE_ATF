@@ -28,7 +28,7 @@ def ge_test_initalization(dfname):
     batch_definition = data_asset.add_batch_definition_whole_dataframe(
         batch_definition_name
     )
-    batch_parameters = {"dataframe": f"{dfname}"}
+    batch_parameters = {"dataframe": df}
     batch = batch_definition.get_batch(batch_parameters=batch_parameters)   
     return batch
 
