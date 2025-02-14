@@ -70,7 +70,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Length": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result, Reason}
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason]
 
         if check == "Length" and check_type == "Between":
             expectation  = gx.expectations.ExpectColumnValueLengthsToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
@@ -95,7 +95,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Length Range": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result, Reason}
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason]
         if check == "Null":
             expectation  = gx.expectations.ExpectColumnValuesToBeNull(column=column)
             validation_results = batch.validate(expectation)
@@ -119,7 +119,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result, Reason}
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason]
 
         if check == "NotBeNull":
             expectation  = gx.expectations.ExpectColumnValuesToNotBeNull(column=column)
@@ -144,7 +144,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result,Reason}
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result,Reason]
         if check == "Unique":
             expectation  = gx.expectations.ExpectColumnValuesToBeUnique(column=column)
             validation_results = batch.validate(expectation)
@@ -168,7 +168,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Duplicate Values": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result,Reason}
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result,Reason]
         if check == "DistinctSet":
             print(type(value))
             expectation  = gx.expectations.ExpectColumnDistinctValuesToEqualSet(column=column, value_set=value)
@@ -194,7 +194,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Distinct Value": expected, "Actual Distinct Value": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result, Reason }
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
         if check == "ColumnCount":
             status = validation_results.success
             expectation  = gx.expectations.ExpectTableColumnCountToEqual(value=value)
@@ -218,7 +218,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Count": expected,  "Actual Column Count": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, '', Dqtype, expected, Result, Reason }
+            df_testsuite_summary.loc[i] = [tcname, '', Dqtype, expected, Result, Reason ]
         if check == "Regexp":
             print(value)
             regex_list = [item["Value"] for item in rows if item["DQ Check"] == "Regexp"]
@@ -245,7 +245,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "column Name": columnname, "DQ Validation": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result, Reason }
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
         if check == "Regexplist":
             print(value)
             print(type(value))
@@ -275,7 +275,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "column Name": columnname, "DQ Validation": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result, Reason }
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
         if check == "Sum" and check_type == "Between":
             expectation  = gx.expectations.ExpectColumnSumToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
             validation_results = batch.validate(expectation)
@@ -298,7 +298,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Sum Range": expected,  "Actual Sum": observed_value}
-            df_testsuite_summary.loc[i] = {tcname, column, Dqtype, expected, Result, Reason }
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
         if check == "ColumnOrder":
             col_list = ast.literal_eval(value)
             print(type(col_list))
@@ -322,7 +322,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
             tcname = f"{i+1}.Testcase_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Order": expected,  "Actual Column Order": observed_value, "Column Order Mismatch": mismatch}
-            df_testsuite_summary.loc[i] = {tcname, '', Dqtype, expected, Result, Reason }
+            df_testsuite_summary.loc[i] = [tcname, '', Dqtype, expected, Result, Reason ]
         DQValidation_endtime = datetime.now(utctimezone)
         protocal_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
