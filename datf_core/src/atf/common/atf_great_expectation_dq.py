@@ -355,11 +355,14 @@ def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_r
             print(type(df_testsuite_summary))
             df_testsuite_summary_temp = df_testsuite_summary.select(
                 '*').filter(col('Test Result') == test_result)
+            display(df_testsuite_summary_temp)
             if (df_testsuite_summary_temp.count() == 0):
                 df_testsuite_summary_temp = None
         else:
             df_testsuite_summary_temp = None
+        print("Before")
         pdfobj_summary.create_table_details(df_testsuite_summary_temp,table_type)
+        print("After")
         sno = sno + 1
     return pdfobj_summary
 
