@@ -26,7 +26,7 @@ dfname = dbutils.widgets.get("dfname")
 json_file_path = dbutils.widgets.get("json_file_path")
 testsuite = dbutils.widgets.get("testsuite")
 
-runner = f"{py_file} {testsuite} {dfname} {testsuite} {json_file_path}"
+runner = f"{py_file} {work_path} {dfname} {testsuite} {json_file_path}"
 %run $runner
 
 # COMMAND ----------

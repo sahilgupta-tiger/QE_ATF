@@ -124,7 +124,7 @@ if __name__ == "__main__":
     log_info(f"work_path: {work_path}")
     log_info(f"testsuite: {testsuite}")
     log_info(f"json_file_path: {json_file_path}")
-    create_db(work_path)
+    #create_db(work_path)
     testerobj = dqtester(spark)
     testerobj.startdqtest(work_path, df, testsuite,json_file_path)
    
