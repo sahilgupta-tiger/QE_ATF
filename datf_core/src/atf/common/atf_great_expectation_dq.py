@@ -368,11 +368,11 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
             pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Order": expected,  "Actual Column Order": observed_value, "Column Order Mismatch": mismatch}
             df_testsuite_summary.loc[i] = [tcname, '', Dqtype, Result, Reason,testcase_exectime]
-            DQValidation_endtime = datetime.now(utctimezone)
-            dqvalidation_exectime = DQValidation_endtime - DQValidation_starttime
-            dqvalidation_exectime = str(dqvalidation_exectime).split('.')[0]
-        protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Execution Duartion":dqvalidation_exectime,"Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
+    DQValidation_endtime = datetime.now(utctimezone)
+    dqvalidation_exectime = DQValidation_endtime - DQValidation_starttime
+    dqvalidation_exectime = str(dqvalidation_exectime).split('.')[0]
+    protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Execution Duartion":dqvalidation_exectime,"Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
     display(df_testsuite_summary)
     print(type(df_testsuite_summary))
     df_testsuite_summary = spark.createDataFrame(df_testsuite_summary)
