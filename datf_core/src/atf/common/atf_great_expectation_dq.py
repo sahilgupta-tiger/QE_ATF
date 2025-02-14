@@ -40,7 +40,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
     rows = rows
     ftccount = 0
     ptccount = 0
-    df_testsuite_summary = pd.DataFrame(columns=['Testcase Name', 'ColumnName','Data Quality Check','Value','Test Result', 'Reason'])
+    df_testsuite_summary = pd.DataFrame(columns=['Testcase Name', 'ColumnName','Data Quality Check','Test Result', 'Reason','ExecutionTime'])
     tccount = len(rows)
     for i,row in enumerate(rows):
 
@@ -50,6 +50,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
         check_type = row["Check Type"]
         print(column, value, check, check_type)
         if check == "Length" and check_type == "Equal":
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectColumnValueLengthsToEqual(column=column, value = value)
             validation_results = batch.validate(expectation)
             #print(validation_results)
@@ -69,12 +70,16 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason =  f"{Unexpected_count} - No of values are not having length as {expected}"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Length": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason,testcase_exectime]
 
         if check == "Length" and check_type == "Between":
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectColumnValueLengthsToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
             validation_results = batch.validate(expectation)
             print(validation_results)
@@ -94,11 +99,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = f"{Unexpected_count} - No of values are not having length as {expected}"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Length Range": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason,testcase_exectime]
         if check == "Null":
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectColumnValuesToBeNull(column=column)
             validation_results = batch.validate(expectation)
             print(validation_results)
@@ -118,12 +127,16 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = f"{unexpected_count} - No of values are not having null value"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason,testcase_exectime]
 
         if check == "NotBeNull":
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectColumnValuesToNotBeNull(column=column)
             validation_results = batch.validate(expectation)
             #print(validation_results)
@@ -143,11 +156,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason =  f"{unexpected_count} - No of values are having null value"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result,Reason]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result,Reason,testcase_exectime]
         if check == "Unique":
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectColumnValuesToBeUnique(column=column)
             validation_results = batch.validate(expectation)
             print(validation_results)
@@ -167,12 +184,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason =  f"{unexpected_count} - No of values are duplicated"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Value": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Duplicate Values": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result,Reason]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result,Reason,testcase_exectime]
         if check == "DistinctSet":
-            print(type(value))
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectColumnDistinctValuesToEqualSet(column=column, value_set=value)
             validation_results = batch.validate(expectation)
             
@@ -193,12 +213,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = "Actual distinct values are not macthing with Expected distinct values in the column"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Distinct Value": expected, "Actual Distinct Value": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason ,testcase_exectime]
         if check == "ColumnCount":
-            status = validation_results.success
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectTableColumnCountToEqual(value=value)
             validation_results = batch.validate(expectation)
             print(validation_results)
@@ -207,6 +230,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
             expected = value
             count = None
             unexpected_count = None
+            status = validation_results.success
             observed_value = validation_results.result["observed_value"]
             columnname = column
             if status:
@@ -217,11 +241,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = "Actual column count is not matching with Expected count"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Count": expected,  "Actual Column Count": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, '', Dqtype, expected, Result, Reason ]
+            df_testsuite_summary.loc[i] = [tcname, '', Dqtype, Result, Reason ,testcase_exectime]
         if check == "Regexp":
+            testcase_starttime = datetime.now(utctimezone)
             print(value)
             regex_list = [item["Value"] for item in rows if item["DQ Check"] == "Regexp"]
             print(regex_list)
@@ -244,11 +272,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = "Column has some other patterns apart from the expected one"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "column Name": columnname, "DQ Validation": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason ,testcase_exectime]
         if check == "Regexplist":
+            testcase_starttime = datetime.now(utctimezone)
             print(value)
             print(type(value))
             reg_list = ast.literal_eval(value)
@@ -274,11 +306,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = "Column has some other patterns apart from the expected one"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation"
             pdfobj.write_text(f"{i+1}.Testcase_{columnname}_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "column Name": columnname, "DQ Validation": Dqtype, "Expected Pattern": expected,  "Element Count": count, "Unexpected Count": unexpected_count, "Sample Mismatches": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason ,testcase_exectime]
         if check == "Sum" and check_type == "Between":
+            testcase_starttime = datetime.now(utctimezone)
             expectation  = gx.expectations.ExpectColumnSumToBeBetween(column=column, min_value = value.split("-")[0], max_value = value.split("-")[1])
             validation_results = batch.validate(expectation)
             print(validation_results)
@@ -297,11 +333,15 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = "Actual Sum is not matching with the range"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{columnname}_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(tcname, 'section heading')
             dict_result = {"Test Status": Result, "Column Name": columnname, "DQ Validation": Dqtype, "Expected Sum Range": expected,  "Actual Sum": observed_value}
-            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, expected, Result, Reason ]
+            df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason ,testcase_exectime]
         if check == "ColumnOrder":
+            testcase_starttime = datetime.now(utctimezone)
             col_list = ast.literal_eval(value)
             print(type(col_list))
             expectation  = gx.expectations.ExpectTableColumnsToMatchOrderedList(column_list=col_list)
@@ -321,12 +361,17 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
                 Result = "Failed"
                 ftccount = ftccount + 1
                 Reason = "Actual Column Order is not matching with the expected order"
+            testcase_endtime = datetime.now(utctimezone)
+            testcase_exectime = testcase_endtime - testcase_starttime
+            testcase_exectime = str(testcase_exectime).split('.')[0]
             tcname = f"{i+1}.Testcase_{Dqtype}_{dqtype_valid}_Validation"
             pdfobj.write_text(f"{i+1}.Testcase_{Dqtype}_Validation", 'section heading')
             dict_result = {"Test Status": Result, "DQ Validation": Dqtype, "Expected Column Order": expected,  "Actual Column Order": observed_value, "Column Order Mismatch": mismatch}
-            df_testsuite_summary.loc[i] = [tcname, '', Dqtype, expected, Result, Reason ]
-        DQValidation_endtime = datetime.now(utctimezone)
-        protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
+            df_testsuite_summary.loc[i] = [tcname, '', Dqtype, Result, Reason,testcase_exectime]
+            DQValidation_endtime = datetime.now(utctimezone)
+            dqvalidation_exectime = DQValidation_endtime - DQValidation_starttime
+            dqvalidation_exectime = str(dqvalidation_exectime).split('.')[0]
+        protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Execution Duartion":dqvalidation_exectime,Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
     display(df_testsuite_summary)
     print(type(df_testsuite_summary))

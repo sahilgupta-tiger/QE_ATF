@@ -48,6 +48,7 @@ def createsparksession():
     return spark
 
 def startdqtest(work_path,df,testsuite,json_file_path):
+    testcase_starttime = datetime.now(utctimezone)
     spark = createsparksession()
     log_info("DQ test execution has been started")
     print(f"work path: {work_path}")
