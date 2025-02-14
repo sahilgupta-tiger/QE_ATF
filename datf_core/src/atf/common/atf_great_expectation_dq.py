@@ -328,7 +328,8 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
         DQValidation_endtime = datetime.now(utctimezone)
         protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
-    print(df_testsuite_summary)
+    display(df_testsuite_summary)
+    print(type(df_testsuite_summary))
     pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocol_run_params,pdfobj_summary,spark)
     return pdfobj,pdfobj_summary
 
