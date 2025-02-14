@@ -54,7 +54,7 @@ def startdqtest(work_path, dfname,testsuite,json_file_path):
     try:
         pdfobj = generatePDF(work_path)
         pdfobj_summary = generatePDF(work_path)
-        self.testsuite = testsuite
+        testsuite = testsuite
         resultfolder =  work_path + "/test/results/data_quality/"+testsuite
         if not os.path.exists(resultfolder):
             os.mkdir(resultfolder)
