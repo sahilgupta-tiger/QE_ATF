@@ -3,6 +3,8 @@ import ast
 import os
 import pandas as pd
 import json
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
 from datetime import datetime,timezone
 def ge_test_initalization(df):
     df = df
@@ -30,7 +32,7 @@ def ge_test_initalization(df):
     batch = batch_definition.get_batch(batch_parameters=batch_parameters)   
     return batch
 
-def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
+def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
     utctimezone = timezone.utc
     DQValidation_starttime = datetime.now(utctimezone)
     pdfobj = pdfobj
@@ -326,10 +328,10 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
         DQValidation_endtime = datetime.now(utctimezone)
         protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
-        pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocol_run_params,pdfobj_summary)
+        pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocol_run_params,pdfobj_summary,spark)
     return pdfobj,pdfobj_summary
 
-def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_run_params, pdfobj_summary):
+def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_run_params, pdfobj_summary,spark):
         
        
     pdfobj_summary.write_text('Data Quality Analysis Summary Report', 'report header')
