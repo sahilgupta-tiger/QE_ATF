@@ -371,7 +371,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows,spark):
             DQValidation_endtime = datetime.now(utctimezone)
             dqvalidation_exectime = DQValidation_endtime - DQValidation_starttime
             dqvalidation_exectime = str(dqvalidation_exectime).split('.')[0]
-        protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Execution Duartion":dqvalidation_exectime,Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
+        protocol_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Execution Duartion":dqvalidation_exectime,"Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
     display(df_testsuite_summary)
     print(type(df_testsuite_summary))
