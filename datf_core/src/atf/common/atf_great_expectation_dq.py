@@ -325,7 +325,7 @@ def ge_test_execution(pdfobj,pdfobj_summary,testsuite,batch,rows):
         DQValidation_endtime = datetime.now(utctimezone)
         protocal_run_params = {"Application Name":"Data Quality Analyser", "Test Suite Name":testsuite, "Execution Start Time": DQValidation_starttime, "Execution End Time":DQValidation_endtime, "Total No of Testcases":tccount, "Total No of Testcases Pased":ptccount, "Total No of Testcases failed":ftccount}
         pdfobj.create_table_summary(dict_result)
-        generate_protocol_summary_report(df_testsuite_summary,testsuite,protocal_run_params,pdfobj_summary)
+        pdfobj_summary=generate_protocol_summary_report(df_testsuite_summary,testsuite,protocal_run_params,pdfobj_summary)
     return pdfobj,pdfobj_summary
 
 def generate_protocol_summary_report(self, df_testsuite_summary,  testsuite,protocol_run_params, pdfobj_summary):
@@ -355,5 +355,5 @@ def generate_protocol_summary_report(self, df_testsuite_summary,  testsuite,prot
             df_testsuite_summary_temp = None
         pdfobj_summary.create_table_details(df_testsuite_summary_temp,table_type)
         sno = sno + 1
-return pdfobj_summary
+    return pdfobj_summary
 
