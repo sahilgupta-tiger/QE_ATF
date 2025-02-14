@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import json
 from datetime import datetime,timezone
-from atf.common.atf_great_expectation_dq import *
+from src.atf.common.atf_great_expectation_dq import *
 import json
 import os
 import traceback
@@ -13,9 +13,9 @@ from datacompy.spark.legacy import LegacySparkCompare
 from pyspark.conf import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
-from atf.common.atf_cls_pdfformatting import generatePDF
-from atf.common.atf_pdf_constants import *
-from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path
+from src.atf.common.atf_cls_pdfformatting import generatePDF
+from src.atf.common.atf_pdf_constants import *
+from src.atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, get_connection_config, get_mount_src_path
 from testconfig import *
 
 #import databricks.koalas as ks
