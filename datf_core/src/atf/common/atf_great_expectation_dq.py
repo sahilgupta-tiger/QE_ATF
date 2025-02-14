@@ -340,8 +340,6 @@ def generate_protocol_summary_report(df_testsuite_summary,  testsuite,protocol_r
     pdfobj_summary.create_table_summary(protocol_run_params)
     pdfobj_summary.write_text("2. Test Result Summary", 'section heading')
     table_type = 'protocol'
-    if (testcasetype == "count"):
-        table_type = 'protocol_count'
     sno = 1
     test_results_list = ['Failed', 'Passed']
     for test_result in test_results_list:
