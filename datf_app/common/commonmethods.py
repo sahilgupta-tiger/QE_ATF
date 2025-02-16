@@ -109,7 +109,13 @@ def create_data_profile_report(input_df, type_str):
     timenow = datetime.now(utctimezone)
     created_time = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y_%H_%M_%S_%Z"))
     # Generate the report as an HTML file
-    profile_report_path = f"{profile_output_path}/data_profile_report_{created_time}.html"
+    if type_str.find("Source") != -1:
+        profile_report_path = f"{profile_output_path}/dataprofile_source_{created_time}.html"
+    elif type_str.find("Target") != -1:
+        profile_report_path = f"{profile_output_path}/dataprofile_target_{created_time}.html"
+    else:
+        profile_report_path = f"{profile_output_path}/dataprofile_general_{created_time}.html"
+
     report.show_html(profile_report_path)
 
     return profile_report_path

@@ -5,3 +5,4 @@ powershell.exe "Get-ChildItem -Path 'DATFDemo' -File -Recurse | Remove-Item -Rec
 powershell.exe "Get-ChildItem -Path 'DATFDemo' -Directory -Recurse | Remove-Item -Recurse -Confirm:$false -Force"
 powershell.exe "Get-ChildItem -Path 'charts' -File -Recurse | Remove-Item -Force"
 powershell.exe "Get-ChildItem -Path 'profiles' -File -Recurse | Remove-Item -Force"
+powershell.exe "Get-ChildItem -Path 'bulkresults' -File -Recurse | Remove-Item -Force"
