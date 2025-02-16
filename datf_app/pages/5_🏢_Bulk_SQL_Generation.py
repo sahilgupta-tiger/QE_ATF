@@ -14,7 +14,10 @@ def bulk_generation():
         "Choose one from Bulk Files below...",
         onlyfiles, index=None, placeholder="type to search",
     )
-    st.write("You selected: ", selected_bulkfile)
+    if selected_bulkfile is not None and selected_bulkfile.find(".html") != -1:
+        st.error("Please select only '.xlsx' files.")
+    else:
+        st.write("You selected: ", selected_bulkfile)
 
     if selected_bulkfile is not None:
         if st.button("Run and Validate Generated SQL Queries"):

@@ -214,6 +214,7 @@ def generate_bulk_sql_queries(selected_bulk_file):
         final_user_query = get_ai_response.strip()
         final_user_df = running_sql_query_on_df(loaded_df, temp_table_name, final_user_query)
         final_user_results = repr(final_user_df.to_dict())
+        final_user_prompt = final_user_prompt.replace("sqlite3 based ","")
 
         new_row = pd.DataFrame({"prompt": [final_user_prompt],
                                 "sql_query": [final_user_query],
@@ -226,6 +227,14 @@ def generate_bulk_sql_queries(selected_bulk_file):
     print(df_to_print)
     html_output = query_validation_report(df_to_print.copy())
     return html_output
+
+# Function to convert string representation back into dictionary and list
+def repr_eval_list(my_dict_str):
+    my_list = []
+    my_dict = eval(my_dict_str)
+    for key in my_dict:
+        my_list.append(f"{key}: {list(my_dict[key].values())}")
+    return my_list
 
 # Function to load the output results into an html report
 def query_validation_report(tables_df):
@@ -291,7 +300,14 @@ def query_validation_report(tables_df):
             if r['results'] == "":
                 html_content += "<td>No Results</td>"
             else:
-                html_content += f"<td>{r['results']}</td>"
+                html_content += "<td>"
+                html_content += "  <ul>"
+                list_of_values = repr_eval_list(r["results"])
+                for q in range(len(list_of_values)):
+                    html_content += f"    <li>{list_of_values[q]}</li>"
+                html_content += "  </ul>"
+                html_content += "</td>"
+
             html_content += "</tr>"
             # Increment prompt counter
             prompt_counter += 1
@@ -308,7 +324,7 @@ def query_validation_report(tables_df):
         html_content = None
     else:
         # Step 4: Save HTML
-        report_file = f"{sqlbulk_path}/reportcheck-{run_date}.html"
+        report_file = f"{bulkresults_path}/bulkresults-{run_date}.html"
         with open(report_file, 'w') as f:
             f.write(html_content)
 
