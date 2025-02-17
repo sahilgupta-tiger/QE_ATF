@@ -35,6 +35,9 @@ def s2t_sql_generation():
 
         if selected_testcase is not None:
 
+            source_df = pd.DataFrame()
+            target_df = pd.DataFrame()
+
             if st.button("Click to Connect Source & Target systems"):
                 with st.spinner('Processing, Please wait...'):
                     source_df, target_df = test_connectivity_from_testcase(
@@ -49,6 +52,7 @@ def s2t_sql_generation():
                     st.success("Connection Success. Proceed with query generation below...")
                 else:
                     st.error("Unable to load columns from either Source or Target. Please check test configs and retry.")
+
 
             st.header("Generate SQLs using GenAI LLM")
             tab1, tab2 = st.tabs(["Source Test Query", "Target Test Query"])

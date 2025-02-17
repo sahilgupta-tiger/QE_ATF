@@ -150,7 +150,7 @@ def test_connectivity_from_testcase(chosen_protocol, chosen_testcase):
     chosen_protocol_path = f"{tc_path}/{chosen_protocol}"
     sub_out = subprocess.run(f"sh {root_path}scripts/conncheck.sh {chosen_protocol_path} {chosen_testcase}",
                    shell=True)
-    print(sub_out)
+    # print(sub_out.stdout)
     src_col_df = pd.read_excel(src_column_path)
     tgt_col_df = pd.read_excel(tgt_column_path)
     return src_col_df, tgt_col_df
