@@ -4,5 +4,5 @@
     "url":"jdbc:oracle:thin:@//host.docker.internal:1521/XE",
     "database":"OracleDemoTiger",
     "user":"system",
-    "password":"gAAAAABmIRsaPikYrwXzyNKo_5vESLq2kTW2QcAwOUHvxJpfz3JznNM2SM-Q6XRzXjUWNgR44xxA9g1H8VEZAY11Pg2e9KwoBA=="
+    "password":"gAAAAABnszjJk2Z3_1DkkBIj0w4Lq5GyO3D0P_VfrkjdALpsdJxRqnMRbmvQS5ArfuRDFij2RD2u-qkOsMVPMbSo9tK-OqeCIQ=="
 }

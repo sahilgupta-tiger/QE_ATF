@@ -14,9 +14,12 @@ def load_homepage():
     st.title('DATF Execution Portal')
     # Choose the testing type
     test_type = st.radio(
-        "Choose the testing type for execution:", ["Count", "Null", "Duplicate", "Content"],
+        "Choose the testing type for execution:",
+        ["Count", "Null", "Duplicate", "Content", "Schema"],
         captions=["Row counts from src & tgt.", "Check for Nulls in each columns.",
-                  "Duplicate checks via P-key.", "Complete Reconciliation checks."])
+                  "Duplicate checks via P-key.", "Complete Reconciliation checks.",
+                  "Check Schemas based on S2T Mapping."],
+        horizontal=True)
 
     if test_type is not None:
         st.write(f"You selected: {test_type} as your testing type.")

@@ -21,6 +21,18 @@ def upload_new_test_page():
         else:
             st.success(upl_tc)
 
+    manualsql_file = st.file_uploader("Manual SQL Query File",
+                                       type='sql', accept_multiple_files=False)
+    conv_sql = 'sql_'
+    upl_sql = file_upload_all(manualsql_file, 'sql', conv_sql)
+    if upl_sql is not None:
+        if upl_sql == "issue1":
+            st.error("SQL filename is already in use. Please rename and reupload.")
+        elif upl_sql == "issue2":
+            st.error(f"Filename must start with '{conv_sql}'. Please rename and reupload.")
+        else:
+            st.success(upl_sql)
+
     connection_file = st.file_uploader("Credential JSON file",
                                      type='json', accept_multiple_files=False)
     conv_conn = 'conn_'

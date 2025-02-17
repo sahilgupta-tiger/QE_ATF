@@ -11,11 +11,11 @@ warnings.simplefilter(action='ignore', category=DeprecationWarning)
 def load_home_page():
 
     st.set_page_config(
-        page_title="TigerQE DATF SQL Generator",
+        page_title="Tiger QE DATF Accelerator",
         page_icon="✨",
     )
 
-    st.write("# Welcome to Tiger QE DATF with *GenAI* SQL Generator & Data Profiling! 👋")
+    st.write("# Welcome to Tiger QE DATF Tool with SQL Generator & Data Profiling! 👋")
 
     st.sidebar.success("Select an option page above")
 
@@ -24,7 +24,8 @@ def load_home_page():
         Our OpenAI powered SQL Generator along with Data-validation Automated Testing 
         Framework (DATF) **Spark Edition**, which helps you achieve the best solution namely, 
         High Volume Big Data Validations using Spark technology (clusters or compute), 
-        brand new GenAI LLM capabilities and Understanding the data using profiling methods.
+        brand new GenAI LLM capabilities. 
+        Additionally understanding the data using profiling methods and data quality validations.
         
         
         **👈 Select a page from the sidebar** to see some examples

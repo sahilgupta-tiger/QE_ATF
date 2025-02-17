@@ -360,7 +360,7 @@ class ConnectionS2T:
 
     
     def compare_data(self, compare_input):
-        log_info(f"Dataframe Save Started for Source and Target ")
+        log_info(f"Dataframe and Query Save Started for Source / Target ")
         sourcedf = compare_input['sourcedf']
         targetdf = compare_input['targetdf']
         joincolumns = compare_input['joincolumns']
@@ -376,6 +376,11 @@ class ConnectionS2T:
         tgt_df_excel = targetdf.pandas_api()
         tgt_df_excel.to_excel(tgt_column_path)
         log_info(f"Dataframe Saved as Excel for Source and Target in location - {column_data_path} ")
+        json_data = {"sourcequery": compare_input['sourcequery'],
+                     "targetquery": compare_input['targetquery']}
+        with open(gen_queries_path, "w", encoding="utf-8") as file:
+            json.dump(json_data, file, indent=4)
+        log_info(f"Queries Saved as JSON for Source and Target in location - {column_data_path} ")
 
 
 if __name__ == "__main__":
