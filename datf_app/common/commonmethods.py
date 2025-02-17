@@ -278,7 +278,7 @@ def query_validation_report(tables_df):
 
     # Add Run Summary and Run Date
     run_summary = "Report Run Summary"
-    run_date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    run_date = datetime.now().strftime("%d_%b_%Y_%H_%M_%S_%Z")
     function_name = "QueryValidationAndReport"
     function_value = "Validating the query generated from AI against DB and retrieving only the first few rows"
 
@@ -330,7 +330,7 @@ def query_validation_report(tables_df):
         html_content = None
     else:
         # Step 4: Save HTML
-        report_file = f"{bulkresults_path}/bulkresults-{run_date}.html"
+        report_file = f"{bulkresults_path}/bulkresults_{run_date}.html"
         with open(report_file, 'w') as f:
             f.write(html_content)
 
