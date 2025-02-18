@@ -89,9 +89,11 @@ def s2t_sql_generation():
                                     response = get_queries_from_ai(final_prompt)
                                 sql_query = response.strip()
                                 st.code(sql_query, language='sql')
-                                source_result = running_sql_query_on_df(source_df, temp_table, sql_query)
+
                                 st.write("Running Query and Output Results from Source:")
+                                source_result = running_sql_query_on_df(source_df, temp_table, sql_query)
                                 st.dataframe(source_result, hide_index=True, use_container_width=True)
+
                         except openai.APIConnectionError:
                             st.error("Unable to connect to GenAI API. Please check Network Settings!")
                         except Exception as error:
@@ -114,9 +116,11 @@ def s2t_sql_generation():
                                     tgt_response = get_queries_from_ai(final_tgt_prompt)
                                 tgt_sql_query = tgt_response.strip()
                                 st.code(tgt_sql_query, language='sql')
-                                target_result = running_sql_query_on_df(target_df, temp_tgt_table, tgt_sql_query)
+
                                 st.write("Running Query and Output Results from Target:")
+                                target_result = running_sql_query_on_df(target_df, temp_tgt_table, tgt_sql_query)
                                 st.dataframe(target_result, hide_index=True, use_container_width=True)
+
                         except openai.APIConnectionError:
                             st.error("Unable to connect to GenAI API. Please check Network Settings!")
                         except Exception as error:
@@ -134,9 +138,10 @@ def s2t_sql_generation():
                 with tab3:
                     try:
                         src_sql_query = query_data['sourcequery']
+                        get_src_tblname = src_sql_query.split()[-2]
                         st.code(src_sql_query, language='sql')
-                        src_query_result = running_sql_query_on_df(source_df, temp_table, src_sql_query)
                         st.write("Running Query and Output Results from Source:")
+                        src_query_result = running_sql_query_on_df(source_df, get_src_tblname, src_sql_query)
                         st.dataframe(src_query_result, hide_index=True, use_container_width=True)
                     except Exception as error:
                         st.error("EXECUTION ERRORED! Please check logs.")
@@ -145,9 +150,10 @@ def s2t_sql_generation():
                 with tab4:
                     try:
                         tgt_sql_query = query_data['targetquery']
+                        get_tgt_tblname = tgt_sql_query.split()[-2]
                         st.code(tgt_sql_query, language='sql')
-                        tgt_query_result = running_sql_query_on_df(target_df, temp_tgt_table, tgt_sql_query)
                         st.write("Running Query and Output Results from Target:")
+                        tgt_query_result = running_sql_query_on_df(target_df, get_tgt_tblname, tgt_sql_query)
                         st.dataframe(tgt_query_result, hide_index=True, use_container_width=True)
                     except Exception as error:
                         st.error("EXECUTION ERRORED! Please check logs.")

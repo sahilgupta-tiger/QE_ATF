@@ -376,8 +376,17 @@ class ConnectionS2T:
         tgt_df_excel = targetdf.pandas_api()
         tgt_df_excel.to_excel(tgt_column_path)
         log_info(f"Dataframe Saved as Excel for Source and Target in location - {column_data_path} ")
-        json_data = {"sourcequery": compare_input['sourcequery'],
-                     "targetquery": compare_input['targetquery']}
+        src_query = ""
+        tgt_query = ""
+        src_qry_list = compare_input['sourcequery']
+        tgt_qry_list = compare_input['targetquery']
+        for s in src_qry_list:
+            if s.startswith('spark.sql'):
+                src_query = s[11:-3].strip() #Extracting the query
+        for t in tgt_qry_list:
+            if t.startswith('spark.sql'):
+                tgt_query = t[11:-3].strip() #Extracting the query
+        json_data = {"sourcequery": src_query, "targetquery": tgt_query}
         with open(gen_queries_path, "w", encoding="utf-8") as file:
             json.dump(json_data, file, indent=4)
         log_info(f"Queries Saved as JSON for Source and Target in location - {column_data_path} ")
