@@ -1,19 +1,10 @@
-# Databricks notebook source
-# DBTITLE 1,Import Required Libraries
-from pyspark.sql.functions import * 
+from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.types import StructType,StructField,StringType,IntegerType,DoubleType,DateType
 from atf.common.atf_dc_read_datasources import read_data
 from testconfig import *
 
-# COMMAND ----------
 
-# DBTITLE 1,Load Common Functions notebook
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
-
-# DBTITLE 1,Class for Loading script automatically based on S2T
 class S2TAutoLoadScripts:
   
   def __init__(self, s2tobj, tcdict,spark):
@@ -114,14 +105,14 @@ class S2TAutoLoadScripts:
       srccolumndatatype = "sourcecolumndatatype"
       if autoscripttype == "source":
         dataFormat = self.s2tobj.sourceFileFormat
-        dataFile = self.s2tobj.sourceFile
+        dataFile = root_path + self.s2tobj.sourceFile
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="source")]["columnname"].tolist()
         connectionname = self.s2tobj.sourceConnectionName 
         connectiontype = self.s2tobj.sourceConnectionType
         delimiter=self.s2tobj.sourceFileDelimiter
       elif autoscripttype == "target":
         dataFormat = self.s2tobj.stageFileFormat
-        dataFile = self.s2tobj.stageFile     
+        dataFile = root_path + self.s2tobj.stageFile
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="stage")]["columnname"].tolist()
         connectionname = self.s2tobj.stageConnectionName 
         connectiontype = self.s2tobj.stageConnectionType
@@ -133,14 +124,14 @@ class S2TAutoLoadScripts:
       srccolumndatatype = "stagecolumndatatype"      
       if autoscripttype == "source":
         dataFormat = self.s2tobj.stageFileFormat
-        dataFile = self.s2tobj.stageFile
+        dataFile = root_path + self.s2tobj.stageFile
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="stage")]["columnname"].tolist()
         connectionname = self.s2tobj.stageConnectionName 
         connectiontype = self.s2tobj.stageConnectionType
         delimiter=self.s2tobj.sourceFileDelimiter
       elif autoscripttype == "target":
         dataFormat = self.s2tobj.targetFileFormat
-        dataFile = self.s2tobj.targetFile     
+        dataFile = root_path + self.s2tobj.targetFile
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="target")]["columnname"].tolist()
         connectionname =self.s2tobj.targetConnectionName  
         connectiontype = self.s2tobj.targetConnectionType
@@ -156,14 +147,14 @@ class S2TAutoLoadScripts:
       
       if autoscripttype == "source":
         dataFormat = self.s2tobj.sourceFileFormat
-        dataFile = self.s2tobj.sourceFile
+        dataFile = root_path + self.s2tobj.sourceFile
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="source")]["columnname"].tolist()
         connectionname = self.s2tobj.sourceConnectionName  
         connectiontype = self.s2tobj.sourceConnectionType
         delimiter=self.s2tobj.sourceFileDelimiter
       elif autoscripttype == "target":
         dataFormat = self.s2tobj.targetFileFormat
-        dataFile = self.s2tobj.targetFile
+        dataFile = root_path + self.s2tobj.targetFile
         joincols = self.s2tobj.schema_pddf[(self.s2tobj.schema_pddf['primarykey']=='Y') & (self.s2tobj.schema_pddf['tabletype']=="target")]["columnname"].tolist()
         connectionname = self.s2tobj.targetConnectionName  
         connectiontype = self.s2tobj.targetConnectionType
@@ -246,7 +237,7 @@ class S2TAutoLoadScripts:
     
     print(self.selectTableCommand)   
     autoscriptpath = self.tcdict['autoscriptpath']
-    autoScriptFile = f"{root_path}test/sql/" + autoscriptpath + '/' + self.tcdict["test_case_name"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
+    autoScriptFile = f"{root_path}/test/sql/" + autoscriptpath + '/' + self.tcdict["test_case_name"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
     autoScriptFile= autoScriptFile.replace('//','/')
 
     f=open(autoScriptFile,"w+")
@@ -256,11 +247,10 @@ class S2TAutoLoadScripts:
         f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{dataFile}')\r\n")
         readschemadf=self.spark.read.format(dataFormat).load(dataFile).schema
         readdatadf=self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
-      if dataFormat in ["parquet"]:
+      if dataFormat == "parquet":
         print(dataFile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{dataFile}')\r\n")
         readdatadf=self.spark.read.format(dataFormat).load(dataFile)
-        #readdatadf.printSchema()
       if dataFormat == "delta":
         deltaFile = dataFile.replace(root_path,"")
         if '/' in deltaFile:
@@ -270,14 +260,17 @@ class S2TAutoLoadScripts:
           f.write(f"readdatadf=spark.table('{deltaFile}')\r\n")
           readdatadf= self.spark.table(deltaFile)
       if dataFormat == "json":
+        print(dataFile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
         readdatadf=self.spark.read.format(dataFormat).schema(schemaStruct).load(dataFile)
       if dataFormat == "delimitedfile":
+        print(dataFile)
         f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('{dataFile}')\r\n")
         readdatadf=self.spark.read.format("csv").option('delimiter',delimiter).option('header','true').schema(schemaStruct).load(dataFile)
         #readdatadf.printSchema()
       #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
       #readdatadf=preproc_unnestfields(readdatadf)
+      readdatadf.printSchema()
       f.write(f"readdatadf.createOrReplaceTempView('dataview')\r\n")
       readdatadf.createOrReplaceTempView('dataview')
       f.write(f'spark.sql("{self.selectTableCommand}")\r\n')

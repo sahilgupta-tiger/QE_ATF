@@ -1,6 +1,4 @@
-# Databricks notebook source
-# DBTITLE 1,Import Required Libraries
-from pyspark.sql.functions import * 
+from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark import Row
 from pyspark.sql.types import StructType,StructField, StringType, IntegerType,DoubleType,DateType
@@ -9,17 +7,9 @@ from sys import *
 import time
 import pandas as pd
 from openpyxl import load_workbook
-from testconfig import root_path
+from testconfig import *
 
 
-# COMMAND ----------
-
-# DBTITLE 1,Load Common Functions notebook
-# MAGIC %run ./atf_common_functions
-
-# COMMAND ----------
-
-# DBTITLE 1,LoadS2T Class
 class LoadS2T:
   
   def __init__(self,configFilePath,spark):

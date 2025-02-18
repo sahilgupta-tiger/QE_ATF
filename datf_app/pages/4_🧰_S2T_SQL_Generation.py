@@ -10,6 +10,8 @@ if 'target_columns' not in st.session_state:
 
 source_df = pd.DataFrame()
 target_df = pd.DataFrame()
+temp_table = "source_table"
+temp_tgt_table = "target_table"
 
 def s2t_sql_generation():
 
@@ -50,7 +52,9 @@ def s2t_sql_generation():
 
         if selected_testcase is not None:
 
-            if st.button("Click to Connect Source & Target systems"):
+            button_press = st.button("Click to Connect Source & Target systems")
+            if button_press:
+                global source_df, target_df
                 with st.spinner('Processing, Please wait...'):
                     source_df, target_df = test_connectivity_from_testcase(
                         selected_protocol, selected_testcase)
@@ -65,7 +69,7 @@ def s2t_sql_generation():
                 else:
                     st.error("Unable to load columns from either Source or Target. Please check test configs and retry.")
 
-            if gen_type is not None and gen_type == "GenAI Assisted":
+            if button_press and (gen_type is not None and gen_type == "GenAI Assisted"):
                 st.header("Generate SQLs using GenAI LLM")
                 tab1, tab2 = st.tabs(["Source Test Query", "Target Test Query"])
 
@@ -80,7 +84,6 @@ def s2t_sql_generation():
                             source_column_selection = st.multiselect("Select Source Columns", src_column_list)
                             prompt = st.text_area(key="src_txt_area", label="Enter your prompt for SQL generation")
                             if st.form_submit_button("Generate Source SQL", on_click=update_source_columns):
-                                temp_table = "source_table"
                                 final_prompt = build_sql_generation_prompt(prompt, source_column_selection, temp_table)
                                 with st.spinner("Getting results from AI now..."):
                                     response = get_queries_from_ai(final_prompt)
@@ -106,7 +109,6 @@ def s2t_sql_generation():
                             target_column_selection = st.multiselect("Select Target Columns", tgt_column_list)
                             tgt_prompt = st.text_area(key="tgt_txt_area", label="Enter your prompt for SQL generation")
                             if st.form_submit_button("Generate Target SQL", on_click=update_target_columns):
-                                temp_tgt_table = "target_table"
                                 final_tgt_prompt = build_sql_generation_prompt(tgt_prompt, target_column_selection, temp_tgt_table)
                                 with st.spinner("Getting results from AI now..."):
                                     tgt_response = get_queries_from_ai(final_tgt_prompt)
@@ -121,7 +123,7 @@ def s2t_sql_generation():
                             st.error("EXECUTION ERRORED! Please check logs.")
                             print(error)
 
-            if gen_type is not None and gen_type == "Native Tool":
+            if button_press and (gen_type is not None and gen_type == "Native Tool"):
                 st.header("Generate SQLs using DATF Toolkit")
                 tab3, tab4 = st.tabs(["Source Test Query", "Target Test Query"])
 
@@ -130,10 +132,26 @@ def s2t_sql_generation():
                     query_data = json.load(file)
 
                 with tab3:
-                    st.code(query_data['sourcequery'], language='sql')
+                    try:
+                        src_sql_query = query_data['sourcequery']
+                        st.code(src_sql_query, language='sql')
+                        src_query_result = running_sql_query_on_df(source_df, temp_table, src_sql_query)
+                        st.write("Running Query and Output Results from Source:")
+                        st.dataframe(src_query_result, hide_index=True, use_container_width=True)
+                    except Exception as error:
+                        st.error("EXECUTION ERRORED! Please check logs.")
+                        print(error)
 
                 with tab4:
-                    st.code(query_data['targetquery'], language='sql')
+                    try:
+                        tgt_sql_query = query_data['targetquery']
+                        st.code(tgt_sql_query, language='sql')
+                        tgt_query_result = running_sql_query_on_df(target_df, temp_tgt_table, tgt_sql_query)
+                        st.write("Running Query and Output Results from Target:")
+                        st.dataframe(tgt_query_result, hide_index=True, use_container_width=True)
+                    except Exception as error:
+                        st.error("EXECUTION ERRORED! Please check logs.")
+                        print(error)
 
 
 if __name__ == "__main__":
