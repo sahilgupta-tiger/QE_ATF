@@ -10,3 +10,4 @@ streamlit
 langchain-openai
 sweetviz
 pandasql
+great_expectations
