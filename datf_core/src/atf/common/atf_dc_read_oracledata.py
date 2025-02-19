@@ -48,7 +48,7 @@ def read_oracledata(tc_datasource_config, spark):
                         .option("driver", "oracle.jdbc.driver.OracleDriver")
                         .option("url", connectionconfig['url'])
                         .option("user", connectionconfig['user'])
-                        .option("password", connectionconfig['password'])
+                        .option("password", decryptcredential(connectionconfig['password']))
                         .option("query", selectallcolqry)
                         .option("oracle.jdbc.timezoneAsRegion", "false")
                         .load())

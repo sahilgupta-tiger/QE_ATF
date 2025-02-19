@@ -48,7 +48,8 @@ spark_conf_JSON = """ {
     "spark.memory.storageFraction": "0.6",
     "spark.sql.debug.maxToStringFields": "300",
     "spark.sql.legacy.timeParserPolicy": "LEGACY",
-    "spark.sql.autoBroadcastJoinThreshold": "-1"
+    "spark.sql.autoBroadcastJoinThreshold": "-1",
+    "spark.sql.execution.arrow.pyspark.enabled": "true"
 } """
 
 

@@ -379,14 +379,28 @@ class ConnectionS2T:
         src_query = ""
         tgt_query = ""
         src_qry_list = compare_input['sourcequery']
+        print(src_qry_list)
         tgt_qry_list = compare_input['targetquery']
-        for s in src_qry_list:
-            if s.startswith('spark.sql'):
-                src_query = s[11:-3].strip() #Extracting the query
-        for t in tgt_qry_list:
-            if t.startswith('spark.sql'):
-                tgt_query = t[11:-3].strip() #Extracting the query
-        json_data = {"sourcequery": src_query, "targetquery": tgt_query}
+        print(tgt_qry_list)
+
+        if isinstance(src_qry_list, list):
+            for s in src_qry_list:
+                if s.startswith('spark.sql'):
+                    src_query = s[11:-3].strip() #Extracting the query
+        if isinstance(tgt_qry_list, list):
+            for t in tgt_qry_list:
+                if t.startswith('spark.sql'):
+                    tgt_query = t[11:-3].strip() #Extracting the query
+
+        if isinstance(src_qry_list, list) and isinstance(tgt_qry_list, list):
+            json_data = {"sourcequery": src_query, "targetquery": tgt_query}
+        elif isinstance(src_qry_list, str) and isinstance(tgt_qry_list, list):
+            json_data = {"sourcequery": src_qry_list, "targetquery": tgt_query}
+        elif isinstance(src_qry_list, list) and isinstance(tgt_qry_list, str):
+            json_data = {"sourcequery": src_query, "targetquery": tgt_qry_list}
+        else:
+            json_data = {"sourcequery": src_qry_list, "targetquery": tgt_qry_list}
+
         with open(gen_queries_path, "w", encoding="utf-8") as file:
             json.dump(json_data, file, indent=4)
         log_info(f"Queries Saved as JSON for Source and Target in location - {column_data_path} ")

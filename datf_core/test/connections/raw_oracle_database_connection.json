@@ -1,7 +1,7 @@
 {
     "connnectiontype":"jdbcdatabase",
     "connectname":"oracle_jdbcdatabase_connection",
-    "url":"jdbc:oracle:thin:@//host.docker.internal:1521/XE",
+    "url":"jdbc:oracle:thin:@172.17.0.2:1521/XE",
     "database":"OracleDemoTiger",
     "user":"system",
     "password":"gAAAAABnszjJk2Z3_1DkkBIj0w4Lq5GyO3D0P_VfrkjdALpsdJxRqnMRbmvQS5ArfuRDFij2RD2u-qkOsMVPMbSo9tK-OqeCIQ=="
