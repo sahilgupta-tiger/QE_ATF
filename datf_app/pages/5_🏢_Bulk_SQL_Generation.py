@@ -9,6 +9,13 @@ def bulk_generation():
     )
     st.title("Bulk SQL Generator using GenAI")
 
+    # Choose the generation type
+    gen_type = st.radio(
+        "Choose the generation type:", ["Native Tool", "GenAI Assisted"],
+        captions=["(Limited Features)", "(Advanced Features)"],
+        horizontal=True)
+    st.write(f"You selected: {gen_type}.")
+
     onlyfiles = read_sqlbulk_files()
     selected_bulkfile = st.selectbox(
         "Choose one from Bulk Files below...",
@@ -22,7 +29,7 @@ def bulk_generation():
     if selected_bulkfile is not None:
         if st.button("Run and Validate Generated SQL Queries"):
             with st.spinner('Processing, Please wait...(this may take a while)'):
-                html = generate_bulk_sql_queries(selected_bulkfile)
+                html = generate_bulk_sql_queries(selected_bulkfile, gen_type)
             st.divider()
             if html is not None:
                 st.html(html)  # Display HTML content

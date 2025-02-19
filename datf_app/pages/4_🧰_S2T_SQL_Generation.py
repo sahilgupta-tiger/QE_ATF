@@ -30,7 +30,6 @@ def s2t_sql_generation():
         st.write(f"You selected: {gen_type}.")
     else:
         st.write("Please select a generation type above.")
-    st.divider()
 
     onlyfiles = read_test_protocol()
     selected_protocol = st.selectbox(
@@ -138,7 +137,7 @@ def s2t_sql_generation():
                 with tab3:
                     try:
                         src_sql_query = query_data['sourcequery']
-                        get_src_tblname = src_sql_query.split()[-2]
+                        get_src_tblname = get_next_word(src_sql_query)
                         st.code(src_sql_query, language='sql')
                         st.write("Running Query and Output Results from Source:")
                         src_query_result = running_sql_query_on_df(source_df, get_src_tblname, src_sql_query)
@@ -150,7 +149,7 @@ def s2t_sql_generation():
                 with tab4:
                     try:
                         tgt_sql_query = query_data['targetquery']
-                        get_tgt_tblname = tgt_sql_query.split()[-2]
+                        get_tgt_tblname = get_next_word(tgt_sql_query)
                         st.code(tgt_sql_query, language='sql')
                         st.write("Running Query and Output Results from Target:")
                         tgt_query_result = running_sql_query_on_df(target_df, get_tgt_tblname, tgt_sql_query)

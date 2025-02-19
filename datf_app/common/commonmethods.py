@@ -169,7 +169,7 @@ def build_sql_generation_prompt(initial_prompt, list_of_columns, table_name):
 def running_sql_query_on_df(input_df, temp_tbl_name, generated_query):
     generated_query = generated_query.replace(f"FROM {temp_tbl_name}", "FROM input_df")
     generated_query = generated_query.replace(";", "")
-    generated_query += " LIMIT 5;"
+    generated_query += " LIMIT 3;"
     output_df = sqldf(generated_query, locals())
     return output_df
 
@@ -182,45 +182,53 @@ def read_sqlbulk_files():
     return onlyfiles
 
 # Function to read the bulk sql generator excel and generate queries
-def generate_bulk_sql_queries(selected_bulk_file):
+def generate_bulk_sql_queries(selected_bulk_file, generation_type):
 
     df_to_print = pd.DataFrame(columns=['prompt','sql_query','results'])
     read_sqlbulk_file = f"{sqlbulk_path}/{selected_bulk_file}"
     input_bulk_df = pd.read_excel(read_sqlbulk_file)
 
     for index, row in input_bulk_df.iterrows():
-        user_protocol = row['ProtocolFileName']
-        user_testcasename = row['TestCaseName']
-        user_dropdown = row['Source/Target']
-        user_prompt = row['QueryPrompts']
-        user_columns = row['ListofColumns']
+        user_protocol = row['ProtocolFileName'].strip()
+        user_testcasename = row['TestCaseName'].strip()
+        user_dropdown = row['Source/Target'].strip()
+        user_prompt = str(row['QueryPrompts']).strip()
+        user_columns = str(row['ListofColumns']).strip()
 
         list_user_columns = []
-        user_columns = user_columns.replace(" ","")
         if "," in user_columns:
+            user_columns = user_columns.replace(" ","")
             list_user_columns = user_columns.split(",")
         else:
             list_user_columns.append(user_columns)
 
-        user_protocol = user_protocol.strip()
-        user_testcasename = user_testcasename.strip()
-
+        # Connect to source and target to generate dataframes
         source_df, target_df = test_connectivity_from_testcase(user_protocol, user_testcasename)
-        temp_table_name = ''
-        loaded_df = None
+        with open(gen_queries_path, "r", encoding="utf-8") as file:
+            query_data = json.load(file)
+
         if user_dropdown == "source":
             loaded_df = source_df.copy()
             temp_table_name = "source_table"
-        elif user_dropdown == "target":
+            user_sql_query = query_data['sourcequery']
+        else:
             loaded_df = target_df.copy()
             temp_table_name = "target_table"
+            user_sql_query = query_data['targetquery']
 
-        final_user_prompt = build_sql_generation_prompt(user_prompt, list_user_columns, temp_table_name)
-        get_ai_response = get_queries_from_ai(final_user_prompt)
-        final_user_query = get_ai_response.strip()
-        final_user_df = running_sql_query_on_df(loaded_df, temp_table_name, final_user_query)
-        final_user_results = repr(final_user_df.to_dict())
-        final_user_prompt = final_user_prompt.replace("sqlite3 based ","")
+        if generation_type == "GenAI Assisted":
+            final_user_prompt = build_sql_generation_prompt(user_prompt, list_user_columns, temp_table_name)
+            get_ai_response = get_queries_from_ai(final_user_prompt)
+            final_user_query = get_ai_response.strip()
+            final_user_df = running_sql_query_on_df(loaded_df, temp_table_name, final_user_query)
+            final_user_results = repr(final_user_df.to_dict())
+            final_user_prompt = final_user_prompt.replace("sqlite3 based ","")
+        else:
+            final_user_prompt = "No prompt needed with Native Tool query generation."
+            final_user_query = user_sql_query
+            get_tblname = get_next_word(user_sql_query)
+            final_user_df = running_sql_query_on_df(loaded_df, get_tblname, final_user_query)
+            final_user_results = repr(final_user_df.to_dict())
 
         new_row = pd.DataFrame({"prompt": [final_user_prompt],
                                 "sql_query": [final_user_query],
@@ -280,7 +288,7 @@ def query_validation_report(tables_df):
     run_summary = "Report Run Summary"
     run_date = datetime.now().strftime("%d_%b_%Y_%H_%M_%S_%Z")
     function_name = "QueryValidationAndReport"
-    function_value = "Validating the query generated from AI against DB and retrieving only the first few rows"
+    function_value = "Validating the query generated against DB and retrieving only the first few rows"
 
     html_content += f"<h2>{run_summary}</h2>"
     html_content += f"<p><strong>Run Date:</strong> {run_date}</p>"
@@ -335,3 +343,12 @@ def query_validation_report(tables_df):
             f.write(html_content)
 
     return html_content
+
+# Function to extract the next word in a string
+def get_next_word(text, target="FROM"):
+    index = text.find(target)
+    if index != -1:
+        start = index + len(target)
+        next_word = text[start:].split(None, 1)[0]
+        return next_word
+    return None
