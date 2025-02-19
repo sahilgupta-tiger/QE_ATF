@@ -18,7 +18,7 @@ def s2t_sql_generation():
     st.set_page_config(
         page_title="S2T SQL Generator"
     )
-    st.title("Source to Target SQL Generator")
+    st.title("Source & Target SQL Generator")
 
     # Choose the generation type
     gen_type = st.radio(

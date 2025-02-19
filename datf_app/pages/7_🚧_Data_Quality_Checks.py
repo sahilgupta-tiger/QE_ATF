@@ -25,10 +25,9 @@ def data_quality_checks():
         )
         st.write("You selected: ", selected_testcase)
 
-
         if selected_testcase is not None:
 
-            if st.button("Start Profiling for Source & Target"):
+            if st.button("Connect to Source & Target"):
                 with st.spinner('Processing, Please wait...'):
                     source_df, target_df = test_connectivity_from_testcase(selected_protocol, selected_testcase)
 
@@ -36,7 +35,6 @@ def data_quality_checks():
                     st.success("Connection Success. Proceed below...")
                 else:
                     st.error("Unable to connect either Source or Target. Please check test Configs and retry.")
-
                 st.divider()
 
 

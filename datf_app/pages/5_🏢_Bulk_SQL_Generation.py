@@ -7,7 +7,7 @@ def bulk_generation():
     st.set_page_config(
         page_title="Bulk SQL Generator"
     )
-    st.title("Bulk SQL Generator using GenAI")
+    st.title("Bulk SQL Generator")
 
     # Choose the generation type
     gen_type = st.radio(
