@@ -1,0 +1,32 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Tiger ETL Tool Report</title>
+        <style>
+            /* Add CSS styles here */
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            /* Adjust the width and enable wrapping for the results column */
+            .results {
+            width: 30%;
+            word-wrap: break-word;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tiger SQL Generator Tool Report</h1>
+    <h2>Report Run Summary</h2><p><strong>Run Date:</strong> 25_Feb_2025_06_00_20_</p><p><strong>Function Name:</strong> QueryValidationAndReport</p><p><strong>Function Value:</strong> Validating the query generated against DB and retrieving only the first few rows</p><h2>Results</h2><table><tr><th>No.</th><th>Prompt</th><th>SQL Query</th><th>Results</th></tr><tr><td>1</td><td>No prompt needed with Native Tool query generation.</td><td style='word-wrap: break-word;'>SELECT BIRTHDATE,FIRST,GENDER,ID,LAST,PREFIX,STATE,SUFFIX FROM sys.orc_patients_db</td><td>  <ul>    <li>BIRTHDATE: ['1957-02-25 00:00:00.000000', '1993-02-25 00:00:00.000000', '2012-02-25 00:00:00.000000']</li>    <li>FIRST: ['Raye931', 'Drew592', 'Erin498']</li>    <li>GENDER: ['F', 'M', 'F']</li>    <li>ID: ['e4f1bd35-93ae-418b-b8cf-d39c3fbb069c', '5be0e71b-5810-4d2f-8a9d-bc7a4c200888', 'cc9b1521-809e-4426-81f0-1d7b307e2184']</li>    <li>LAST: ['Wunsch504', 'Lind531', 'Kautzer186']</li>    <li>PREFIX: ['Ms.', 'Mr.', None]</li>    <li>STATE: ['Massachusetts', 'Massachusetts', 'Massachusetts']</li>    <li>SUFFIX: [None, None, None]</li>  </ul></td></tr><tr><td>2</td><td>No prompt needed with Native Tool query generation.</td><td style='word-wrap: break-word;'>SELECT BIRTHDATE,FIRST,GENDER,ID,LAST,PREFIX,STATE,SUFFIX FROM sys.orc_notifications</td><td>  <ul>    <li>BIRTHDATE: ['2005-02-17 00:00:00.000000', '2002-02-17 00:00:00.000000', '1937-02-17 00:00:00.000000']</li>    <li>FIRST: ['Eldon28', 'Heide509', 'Shaunte610']</li>    <li>GENDER: ['M', 'F', 'F']</li>    <li>ID: ['de6ebe11-d869-447a-8fbc-08784ee1fe0f', '431971f5-a39f-44f8-9ef9-10502db973c9', 'e033651a-9391-4ca7-abe5-3823b60a12d9']</li>    <li>LAST: ['Beahan375', 'Walsh511', 'Franecki195']</li>    <li>PREFIX: [None, 'Ms.', 'Ms.']</li>    <li>STATE: ['Massachusetts', 'Massachusetts', 'Massachusetts']</li>    <li>SUFFIX: [None, None, None]</li>  </ul></td></tr></table>
+    </body>
+    </html>
+    

@@ -52,7 +52,9 @@ def s2t_sql_generation():
         if selected_testcase is not None:
 
             button_press = st.button("Click to Connect Source & Target systems")
-            if button_press:
+            if not button_press:
+                st.write("Before proceeding, please click button above.")
+            else:
                 global source_df, target_df
                 with st.spinner('Processing, Please wait...'):
                     source_df, target_df = test_connectivity_from_testcase(
@@ -68,8 +70,8 @@ def s2t_sql_generation():
                 else:
                     st.error("Unable to load columns from either Source or Target. Please check test configs and retry.")
 
-            if button_press and (gen_type is not None and gen_type == "GenAI Assisted"):
-                st.header("Generate SQLs using GenAI LLM")
+            if gen_type is not None and (gen_type == "GenAI Assisted"):
+                st.header("Generate SQLs using GenAI Tool")
                 tab1, tab2 = st.tabs(["Source Test Query", "Target Test Query"])
 
                 with tab1:
@@ -95,6 +97,8 @@ def s2t_sql_generation():
 
                         except openai.APIConnectionError:
                             st.error("Unable to connect to GenAI API. Please check Network Settings!")
+                        except QueryRunFailed as q:
+                            st.write(str(q))
                         except Exception as error:
                             st.error("EXECUTION ERRORED! Please check logs.")
                             print(error)
@@ -122,12 +126,14 @@ def s2t_sql_generation():
 
                         except openai.APIConnectionError:
                             st.error("Unable to connect to GenAI API. Please check Network Settings!")
+                        except QueryRunFailed as q:
+                            st.write(str(q))
                         except Exception as error:
                             st.error("EXECUTION ERRORED! Please check logs.")
                             print(error)
 
-            if button_press and (gen_type is not None and gen_type == "Native Tool"):
-                st.header("Generate SQLs using DATF Toolkit")
+            if gen_type is not None and (gen_type == "Native Tool"):
+                st.header("Generate SQLs using DATF Tool")
                 tab3, tab4 = st.tabs(["Source Test Query", "Target Test Query"])
 
                 # Read JSON file
@@ -136,24 +142,38 @@ def s2t_sql_generation():
 
                 with tab3:
                     try:
-                        src_sql_query = query_data['sourcequery']
+                        if len(src_column_list) != 0 and len(tgt_column_list) != 0:
+                            src_sql_query = query_data['sourcequery']
+                        else:
+                            src_sql_query = "A None"
                         get_src_tblname = get_next_word(src_sql_query)
                         st.code(src_sql_query, language='sql')
-                        st.write("Running Query and Output Results from Source:")
-                        src_query_result = running_sql_query_on_df(source_df, get_src_tblname, src_sql_query)
-                        st.dataframe(src_query_result, hide_index=True, use_container_width=True)
+
+                        # st.write("Running Query and Output Results from Source:")
+                        # src_query_result = running_sql_query_on_df(source_df, get_src_tblname, src_sql_query)
+                        # st.dataframe(src_query_result, hide_index=True, use_container_width=True)
+
+                    except QueryRunFailed as q:
+                        st.write(str(q))
                     except Exception as error:
                         st.error("EXECUTION ERRORED! Please check logs.")
                         print(error)
 
                 with tab4:
                     try:
-                        tgt_sql_query = query_data['targetquery']
+                        if len(src_column_list) != 0 and len(tgt_column_list) != 0:
+                            tgt_sql_query = query_data['targetquery']
+                        else:
+                            tgt_sql_query = "A None"
                         get_tgt_tblname = get_next_word(tgt_sql_query)
                         st.code(tgt_sql_query, language='sql')
-                        st.write("Running Query and Output Results from Target:")
-                        tgt_query_result = running_sql_query_on_df(target_df, get_tgt_tblname, tgt_sql_query)
-                        st.dataframe(tgt_query_result, hide_index=True, use_container_width=True)
+
+                        # st.write("Running Query and Output Results from Target:")
+                        # tgt_query_result = running_sql_query_on_df(target_df, get_tgt_tblname, tgt_sql_query)
+                        # st.dataframe(tgt_query_result, hide_index=True, use_container_width=True)
+
+                    except QueryRunFailed as q:
+                        st.write(str(q))
                     except Exception as error:
                         st.error("EXECUTION ERRORED! Please check logs.")
                         print(error)

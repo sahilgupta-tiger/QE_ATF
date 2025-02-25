@@ -1,0 +1,35 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Tiger ETL Tool Report</title>
+        <style>
+            /* Add CSS styles here */
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            /* Adjust the width and enable wrapping for the results column */
+            .results {
+            width: 30%;
+            word-wrap: break-word;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tiger SQL Generator Tool Report</h1>
+    <h2>Report Run Summary</h2><p><strong>Run Date:</strong> 25_Feb_2025_04_42_19_</p><p><strong>Function Name:</strong> QueryValidationAndReport</p><p><strong>Function Value:</strong> Validating the query generated against DB and retrieving only the first few rows</p><h2>Results</h2><table><tr><th>No.</th><th>Prompt</th><th>SQL Query</th><th>Results</th></tr><tr><td>1</td><td>Generate a SQL query using table name 'source_table' and requirement as: this table consist of medical diagnostic testing data, can you find which states had higher new tests conducted. And use these Columns names as reference: state, overall_outcome, new_results_reported, total_results_reported. And Strictly only provide the SQL query as the output response.</td><td>SELECT state, SUM(new_results_reported) as Total_New_Tests
+FROM source_table
+GROUP BY state
+ORDER BY Total_New_Tests DESC;</td><td>  <ul>    <li>STATE: ['CO', 'AR', 'AK']</li>    <li>Total_New_Tests: [1489002, 1183538, 688268]</li>  </ul></td></tr><tr><td>2</td><td>Generate a SQL query using table name 'target_table' and requirement as: this table consists of patient data admittied in clinics, can you find how many patients over age of 25 have their healthcar expenses as zero. And use these Columns names as reference: id, BIRTHDATE, HEALTHCARE_EXPENSES, HEALTHCARE_COVERAGE. And Strictly only provide the SQL query as the output response.</td><td>SELECT COUNT(*) FROM target_table WHERE strftime('%Y', 'now') - strftime('%Y', BIRTHDATE) > 25 AND HEALTHCARE_EXPENSES = 0;</td><td>  <ul>    <li>COUNT(*): [0]</li>  </ul></td></tr></table>
+    </body>
+    </html>
+    

@@ -20,7 +20,10 @@ os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
 openai_api_version = openai_json['apiversion']
 azure_deployment = openai_json['deployment']
 
+class QueryRunFailed(Exception):
+    pass
 
+# Function to  call Azure OpenAi API to get a response
 def get_queries_from_ai(prompt):
 
     model = AzureChatOpenAI(
@@ -161,16 +164,22 @@ def build_sql_generation_prompt(initial_prompt, list_of_columns, table_name):
     if len(list_of_columns) > 1:
         final_prompt += f". And use these Columns names as reference: {', '.join(list_of_columns)}"
     elif len(list_of_columns) == 1:
-        final_prompt += f" And use this Column name as reference: {list_of_columns[0]}"
+        final_prompt += f". And use this Column name as reference: {list_of_columns[0]}"
     final_prompt += ". And Strictly only provide the SQL query as the output response."
     return final_prompt
 
 # Function to run the generated sql query on dataframe
 def running_sql_query_on_df(input_df, temp_tbl_name, generated_query):
-    generated_query = generated_query.replace(f"FROM {temp_tbl_name}", "FROM input_df")
-    generated_query = generated_query.replace(";", "")
-    generated_query += " LIMIT 3;"
-    output_df = sqldf(generated_query, locals())
+    try:
+        generated_query = generated_query.replace(f"FROM {temp_tbl_name}", "FROM input_df")
+        generated_query = generated_query.replace(";", "")
+        generated_query = generated_query.replace("\n", " ")
+        generated_query += " LIMIT 3;"
+        print("Query: " + generated_query)
+        output_df = sqldf(generated_query, locals())
+    except Exception as e:
+        print(str(e))
+        raise QueryRunFailed("No results available for generated query.")
     return output_df
 
 # Function to read SQL Bulk files from the framework
@@ -215,6 +224,7 @@ def generate_bulk_sql_queries(selected_bulk_file, generation_type):
             loaded_df = target_df.copy()
             temp_table_name = "target_table"
             user_sql_query = query_data['targetquery']
+
 
         if generation_type == "GenAI Assisted":
             final_user_prompt = build_sql_generation_prompt(user_prompt, list_user_columns, temp_table_name)
@@ -310,7 +320,7 @@ def query_validation_report(tables_df):
             html_content += "<tr>"
             html_content += f"<td>{prompt_counter}</td>"
             html_content += f"<td>{r['prompt']}</td>"
-            html_content += f"<td>{r['sql_query']}</td>"
+            html_content += f"<td style='word-wrap: break-word;'>{r['sql_query']}</td>"
             if r['results'] == "":
                 html_content += "<td>No Results</td>"
             else:
