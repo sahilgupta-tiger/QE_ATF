@@ -1,9 +1,9 @@
 {
     "connnectiontype":"snowsqldatabase",
     "connectname":"pyspark_snowflake_connection",
-    "url":"oxsereo-lib18377.snowflakecomputing.com",
+    "url":"tsnimwe-hob88604.snowflakecomputing.com",
     "user":"tigersgupta17",
-    "password":"gAAAAABmzBudsxC-U55R6WXGmSXqZuF6sxMGjC6XqViSrN7Cd8Q6UJt3E85ZpVNwa3VkwRNgLGlozx6T510u9SiyHRriPpnWiA==",
+    "password":"gAAAAABnvrCAgo2sQGEN_Fr657KcPbHBfQZjNskhHxf7nPd9VjlWOELOg4NWeRM6Q0VTIWe0TQVYVd_TD30KQ4NJdOD5F2-Yaw==",
     "database":"TIGERDEMO",
     "schema":"TASFSCHEMA",
     "warehouse":"COMPUTE_WH",

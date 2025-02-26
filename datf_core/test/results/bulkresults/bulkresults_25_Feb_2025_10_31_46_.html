@@ -1,0 +1,37 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Tiger ETL Tool Report</title>
+        <style>
+            /* Add CSS styles here */
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            /* Adjust the width and enable wrapping for the results column */
+            .results {
+            width: 30%;
+            word-wrap: break-word;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tiger SQL Generator Tool Report</h1>
+    <h2>Report Run Summary</h2><p><strong>Run Date:</strong> 25_Feb_2025_10_31_46_</p><p><strong>Function Name:</strong> QueryValidationAndReport</p><p><strong>Function Value:</strong> Validating the query generated against DB and retrieving only the first few rows</p><h2>Results</h2><table><tr><th>No.</th><th>Prompt</th><th>SQL Query</th><th>Results</th></tr><tr><td>1</td><td>Generate a SQL query using table name 'source_table' and requirement as: this table consist of medical diagnostic testing data, can you group by the columns and let me know which are the unique states participating. And use these Columns names as reference: state_name, state_fips, state. And Strictly only provide the SQL query as the output response.</td><td style='word-wrap: break-word;'>SELECT DISTINCT state_name, state_fips, state FROM source_table GROUP BY state_name, state_fips, state;</td><td>  <ul>    <li>STATE_NAME: ['Alaska', 'Arkansas', 'Colorado']</li>    <li>STATE_FIPS: [2, 5, 8]</li>    <li>STATE: ['AK', 'AR', 'CO']</li>  </ul></td></tr><tr><td>2</td><td>Generate a SQL query using table name 'target_table' and requirement as: this table consists of patient data admittied in clinics, using cte, can you check which BIRTHPLACE are matching with CITY in current address. And use these Columns names as reference: BIRTHPLACE, CITY. And Strictly only provide the SQL query as the output response.</td><td style='word-wrap: break-word;'>WITH cte AS (
+  SELECT BIRTHPLACE, CITY
+  FROM target_table
+  WHERE BIRTHPLACE = CITY
+)
+SELECT * FROM cte;</td><td>  <ul>    <li>BIRTHPLACE: []</li>    <li>CITY: []</li>  </ul></td></tr></table>
+    </body>
+    </html>
+    
