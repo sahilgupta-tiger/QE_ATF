@@ -20,6 +20,9 @@ os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
 openai_api_version = openai_json['apiversion']
 azure_deployment = openai_json['deployment']
 
+def create_json_file(json_data,file_path):
+    with open(file_path, 'w') as json_file:
+        json.dump(json_data, json_file, indent=0)
 
 def get_queries_from_ai(prompt):
 

@@ -1,0 +1,18 @@
+[
+{
+"join_columns": [
+"id"
+],
+"file_path": "parquet.`datf_core/test/data/source/patients_source_parquet`",
+"connectionname": "",
+"connectiontype": "aws-s3"
+},
+{
+"join_columns": [
+"id"
+],
+"file_path": "parquet.`datf_core/test/data/target/patients_target_parquet_mismatch`",
+"connectionname": "",
+"connectiontype": "aws-s3"
+}
+]

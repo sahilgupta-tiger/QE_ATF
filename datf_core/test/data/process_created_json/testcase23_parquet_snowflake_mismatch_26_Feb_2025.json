@@ -1,0 +1,30 @@
+[
+{
+"aliasname": "actualpatients",
+"connectiontype": "aws-s3",
+"path": "test/data/source/patients_source_parquet",
+"format": "parquet",
+"connectionname": "RawS3Parquet",
+"excludecolumns": "BIRTHDATE,DEATHDATE",
+"filter": "",
+"testquerygenerationmode": "Auto",
+"delimiter": "",
+"querypath": "/",
+"comparetype": "likeobjectcompare",
+"filename": "patients_source_parquet"
+},
+{
+"aliasname": "expectedpatients",
+"connectiontype": "snowflake",
+"path": "/SAMPLE_SRC_PATIENTS",
+"format": "table",
+"connectionname": "raw_snowflake_sql_connection",
+"excludecolumns": "BIRTHDATE,DEATHDATE",
+"filter": "",
+"testquerygenerationmode": "Auto",
+"delimiter": "",
+"querypath": "/",
+"comparetype": "likeobjectcompare",
+"filename": "SAMPLE_SRC_PATIENTS"
+}
+]

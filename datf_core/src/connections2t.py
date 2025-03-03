@@ -9,7 +9,34 @@ from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info
 from atf.common.atf_dc_read_datasources import read_data
+
 from testconfig import *
+
+def create_json_file(json_data,file_path):
+    with open(file_path, 'w') as json_file:
+        json.dump(json_data, json_file, indent=0)
+
+
+def create_json_if_not_exists(json_data,directory, filename_prefix,createdate):
+    # Get today's date in 'YYYY-MM-DD' format
+
+    # List all files in the given directory
+    files_in_directory = os.listdir(directory)
+    print(files_in_directory)
+
+    # Check if any file matches the pattern <filename_prefix>_YYYY-MM-DD.json
+    matching_files = [file for file in files_in_directory if file.startswith(filename_prefix) and file.endswith('.json')]
+
+    # Look for files that have today's date in the filename
+    today_filename = f"{filename_prefix}_{createdate}.json"
+    if today_filename not in matching_files:
+        # File doesn't exist, create it
+        file_path = os.path.join(directory, today_filename)
+        with open(file_path, 'w') as json_file:
+            json.dump(json_data, json_file,indent=0)
+        print(f"File {today_filename} created.")
+    else:
+        print(f"File {today_filename} already exists.")
 
 
 def createsparksession():
@@ -53,6 +80,7 @@ class ConnectionS2T:
                 protocol_file_path)
             log_info("Protocol read completed :- ")
             log_info(dict_protocol)
+
 
             results_path = str(root_path+dict_protocol['protocol_results_path'])
             #Creating directory for results folder
@@ -230,7 +258,7 @@ class ConnectionS2T:
     def execute_testcase(self, test_case_name, tc_config, auto_script_path, testcasetype):
         print(tc_config)
         s2tmappingsheet = tc_config['s2tmappingsheet']
-        
+        test_config = []
         source_file_details_dict = None
         if (tc_config['samplelimit'] is None):
             limit = 5
@@ -274,6 +302,9 @@ class ConnectionS2T:
                            'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],
                            'schemastruct': s2tobj.getSchemaStruct("target"),'comparetype':tc_config['comparetype'],'filename':tc_config['targetfilename']}    
             target_df, target_query = read_data(tc_target_config,self.spark)
+            test_config.append(tc_source_config)
+            test_config.append(tc_target_config)
+            log_info(f"test config created by venkatesh is {test_config}")
 
         elif (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Auto'):
 
@@ -290,6 +321,7 @@ class ConnectionS2T:
             join_cols_source = source_file_details_dict["join_columns"]
             source_query = open(scriptpath).read().split('\n')
 
+
             log_info(f"Reading the Target Data")
             tc_target_config = {'connectionname': tc_config['targetconnectionname'], 'connectiontype': tc_config['targetconnectiontype'],
                            'path': tc_config['targetfilepath'], 'format': tc_config['targetfileformat'], 'name': tc_config['targetfilename'],
@@ -302,6 +334,9 @@ class ConnectionS2T:
             target_conn_name = target_file_details_dict["connectionname"]
             join_cols_target = target_file_details_dict["join_columns"]
             target_query = open(scriptpath).read().split('\n')
+            test_config.append(source_file_details_dict)
+            test_config.append(target_file_details_dict)
+            log_info(f"test config created by venkatesh is {test_config}")
 
         elif tc_config['comparetype'] == 'likeobjectcompare':
             log_info("Reading the Source Data")
@@ -323,7 +358,17 @@ class ConnectionS2T:
                            'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}    
             target_df, target_query = read_data(tc_target_config,self.spark)
-            
+            test_config.append(tc_source_config)
+            test_config.append(tc_target_config)
+        timenow = datetime.now(utctimezone)
+        test_confi_create_date = str(timenow.astimezone(utctimezone).strftime("%d_%b_%Y"))
+        log_info(f"test config created by DATF is {test_config}")
+        file_name = f"{test_case_name}_{test_confi_create_date}.json"
+        file_path = os.path.join(dq_testconfig_path, file_name)
+        #src_rows_data = [{k: (None if v is None else v) for k, v in row.items()} for row in src_rows_data]
+
+        create_json_if_not_exists(test_config,dq_testconfig_path,test_case_name,test_confi_create_date)
+
 
         if (source_file_details_dict is not None):
             file_details_dict = {"sourcefile": source_file_details_dict["file_path"], "targetfile": target_file_details_dict["file_path"], "sourceconnectionname": source_conn_name,

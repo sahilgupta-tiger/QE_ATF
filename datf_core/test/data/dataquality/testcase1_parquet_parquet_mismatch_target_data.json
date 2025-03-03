@@ -1,0 +1,38 @@
+[
+{
+"DQ Check": "Length",
+"Column": "ADDRESS",
+"Check Type": "Equal",
+"Value": "30"
+},
+{
+"DQ Check": "ColumnOrder",
+"Column": "Table",
+"Check Type": "Not Required",
+"Value": "['id', 'BIRTHDATE', 'DEATHDATE', 'SSN', 'DRIVERS', 'PASSPORT', 'PREFIX', 'FIRST', 'LAST', 'SUFFIX', 'MAIDEN', 'MARITAL', 'RACE', 'ETHNICITY', 'GENDER', 'BIRTHPLACE', 'ADDRESS', 'CITY', 'STATE', 'COUNTY', 'ZIP', 'LAT', 'LON', 'HEALTHCARE_EXPENSES', 'DName', 'HEALTHCARE_COVERAGE']"
+},
+{
+"DQ Check": "Null",
+"Column": "DRIVERS",
+"Check Type": "Not Required",
+"Value": ""
+},
+{
+"DQ Check": "Sum",
+"Column": "HEALTHCARE_COVERAGE",
+"Check Type": "Between",
+"Value": "90003-100393"
+},
+{
+"DQ Check": "ColumnCount",
+"Column": "Table",
+"Check Type": "Not Required",
+"Value": "50"
+},
+{
+"DQ Check": "Regexplist",
+"Column": "BIRTHDATE",
+"Check Type": "Not Required",
+"Value": "['^\\d{4}-\\d{2}-\\d{2}$','^\\d{4}/\\d{2}/\\d{2}$']"
+}
+]

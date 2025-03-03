@@ -1,7 +1,7 @@
 from fpdf import FPDF
 class generatePDF:
   
-  def __init__(self):
+  def __init__(self, work_path=''):
     
     self.pdf = FPDF(format='A4', unit='mm')
     self.pdf.add_page()
@@ -30,8 +30,15 @@ class generatePDF:
       self.pdf.ln(6)
       self.pdf.set_font('Times','B',12.0) 
       self.pdf.cell(self.epw, 0.0, text)
-      self.pdf.set_font('Times','',12.0) 
-      
+      self.pdf.set_font('Times','',12.0)
+
+    elif texttype == 'section sub heading':
+        self.pdf.ln(6)
+        self.pdf.set_font('Times', 'B', 11.0)
+        self.pdf.cell(self.epw, 0.0, text)
+        self.pdf.set_font('Times', '', 11.0)
+
+
     elif texttype == 'normal text':
       self.pdf.ln(10)
       self.pdf.set_font('Times','',10.0)
@@ -89,6 +96,9 @@ class generatePDF:
         #col_width_list = [10,30,30,30,40,40,10]
         col_width_list = [10,80,45,45]
         mth = 1.2*th
+      elif (table_type == 'dqsummary'):
+        col_width_list = [10, 38, 21, 21, 19, 25, 18, 27, 18]
+        mth = 1.2 * th
       elif(table_type == 'mismatch_summary'):
         col_width_list =[10,30,35,20,20,25,20,25,25]
         mth = 1.2*th
@@ -102,11 +112,16 @@ class generatePDF:
       table_header = table_header[::-1]
       str_width =[self.pdf.get_string_width(str(i)) for i in table_header]
       factor_list = [i/j for (i,j) in zip(str_width,col_width_reduced)]
+      print(col_width_reduced)
+      print(table_header)
       factor_list.sort()
       factor = factor_list[-1]
       factor = int(factor)+1 if(factor>=int(factor)) else int(factor)
-      cth = mth * factor   
-      table_data = df.toPandas().values.tolist()
+      cth = mth * factor
+      if (table_type == 'dqsummary'):
+          table_data = [list(row) for row in df.collect()]
+      else:
+          table_data = df.toPandas().values.tolist()
 
       for i,hd in enumerate(table_header):
         col_width = col_width_list[i]
@@ -129,7 +144,7 @@ class generatePDF:
 
       self.pdf.set_font('Times','',10.0) 
       th = self.pdf.font_size
-      
+
       for i,row in enumerate(table_data):
         str_width =[self.pdf.get_string_width(str(i)) for i in row]
         factor_list = [i/j for (i,j) in zip(str_width,col_width_reduced[1:])]

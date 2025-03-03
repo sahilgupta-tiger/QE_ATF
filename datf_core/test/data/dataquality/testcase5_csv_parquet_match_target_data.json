@@ -1,0 +1,26 @@
+[
+{
+"DQ Check": "Length",
+"Column": "ADDRESS",
+"Check Type": "Equal",
+"Value": "76"
+},
+{
+"DQ Check": "ColumnCount",
+"Column": "Table",
+"Check Type": "Not Required",
+"Value": "35"
+},
+{
+"DQ Check": "ColumnOrder",
+"Column": "Table",
+"Check Type": "Not Required",
+"Value": "['id', 'BIRTHDATE', 'DEATHDATE', 'SSN', 'DRIVERS', 'PASSPORT', 'PREFIX', 'FIRST', 'LAST', 'SUFFIX', 'MAIDEN', 'MARITAL', 'RACE', 'ETHNICITY', 'GENDER', 'BIRTHPLACE', 'ADDRESS', 'CITY', 'STATE', 'COUNTY', 'ZIP', 'LAT', 'LON', 'HEALTHCARE_EXPENSES', 'DName', 'HEALTHCARE_COVERAGE']"
+},
+{
+"DQ Check": "Regexplist",
+"Column": "ADDRESS",
+"Check Type": "Not Required",
+"Value": "['^\\d{4}-\\d{2}-\\d{2}$','^\\d{4}/\\d{2}/\\d{2}$']"
+}
+]
