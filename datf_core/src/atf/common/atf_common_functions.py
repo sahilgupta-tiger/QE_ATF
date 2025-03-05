@@ -152,3 +152,16 @@ def get_dbutils(spark):
     dbutils = IPython.get_ipython().user_ns["dbutils"]
   return dbutils
 
+
+def read_json_file(file_path):
+  log_info(f"Reading JSON file from {file_path}")
+  with open(file_path, 'r') as file:
+    data = json.load(file)
+  return data
+
+
+# Function to create a json file in desired path
+def create_json_file(json_data, file_path):
+  with open(file_path, 'w') as json_file:
+    json.dump(json_data, json_file, indent=4)
+

@@ -1,4 +1,5 @@
 from fpdf import FPDF
+
 class generatePDF:
   
   def __init__(self):

@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
-from atf.common.atf_common_functions import read_protocol_file, log_error, log_info
+from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, create_json_file
 from atf.common.atf_dc_read_datasources import read_data
 from testconfig import *
 
@@ -323,7 +323,12 @@ class ConnectionS2T:
                            'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}    
             target_df, target_query = read_data(tc_target_config,self.spark)
-            
+
+        testcase_config_list.append(tc_source_config)
+        testcase_config_list.append(tc_target_config)
+        log_info(f"Test case config created by DATF is: {testcase_config_list}")
+        create_json_file(testcase_config_list, dq_testconfig_path)
+        log_info(f"Test case config saved at location: {dq_testconfig_path}")
 
         if (source_file_details_dict is not None):
             file_details_dict = {"sourcefile": source_file_details_dict["file_path"], "targetfile": target_file_details_dict["file_path"], "sourceconnectionname": source_conn_name,
@@ -401,14 +406,13 @@ class ConnectionS2T:
         else:
             json_data = {"sourcequery": src_qry_list, "targetquery": tgt_qry_list}
 
-        with open(gen_queries_path, "w", encoding="utf-8") as file:
-            json.dump(json_data, file, indent=4)
-        log_info(f"Queries Saved as JSON for Source and Target in location - {column_data_path} ")
+        create_json_file(json_data, gen_queries_path)
+        log_info(f"Queries Saved as JSON for Source and Target at: {gen_queries_path} ")
 
 
 if __name__ == "__main__":
     os.environ["PYARROW_IGNORE_TIMEZONE"] = "1"
-
+    testcase_config_list = []
     spark = createsparksession()
 
     protocol_file_path = sys.argv[1]

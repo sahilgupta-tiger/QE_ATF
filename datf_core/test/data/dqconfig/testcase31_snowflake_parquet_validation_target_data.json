@@ -1,0 +1,8 @@
+[
+    {
+        "DQ Check": "NotBeNull",
+        "Column": "id",
+        "Check Type": "Not Required",
+        "Value": ""
+    }
+]

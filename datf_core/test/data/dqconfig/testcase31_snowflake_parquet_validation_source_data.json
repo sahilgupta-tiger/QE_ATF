@@ -1,0 +1,8 @@
+[
+    {
+        "DQ Check": "Length",
+        "Column": "STATE",
+        "Check Type": "Between",
+        "Value": "2-10"
+    }
+]

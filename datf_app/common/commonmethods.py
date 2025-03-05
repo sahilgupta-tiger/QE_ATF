@@ -362,3 +362,8 @@ def get_next_word(text, target="FROM"):
         next_word = text[start:].split(None, 1)[0]
         return next_word
     return None
+
+# Function to create a json file in desired path
+def create_json_file(json_data, file_path):
+    with open(file_path, 'w+') as json_file:
+        json.dump(json_data, json_file, indent=4)
