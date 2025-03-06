@@ -1,7 +1,7 @@
 [
     {
         "DQ Check": "Length",
-        "Column": "STATE",
+        "Column": "DATE",
         "Check Type": "Between",
         "Value": "2-10"
     }
