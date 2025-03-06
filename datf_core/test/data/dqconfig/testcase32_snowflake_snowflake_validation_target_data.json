@@ -1,0 +1,14 @@
+[
+    {
+        "DQ Check": "Length",
+        "Column": "AVAILABILITY_365",
+        "Check Type": "Between",
+        "Value": "1-3"
+    },
+    {
+        "DQ Check": "NotBeNull",
+        "Column": "NAME",
+        "Check Type": "Not Required",
+        "Value": ""
+    }
+]

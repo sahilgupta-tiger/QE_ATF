@@ -10,6 +10,7 @@ from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
 import sweetviz as sv
 from datetime import datetime
+import openpyxl; openpyxl.reader.excel.warnings.simplefilter(action='ignore')
 
 
 conn_exe = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db", check_same_thread=False)

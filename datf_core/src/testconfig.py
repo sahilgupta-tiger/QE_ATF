@@ -6,6 +6,10 @@ testconfig.py
 import pytz
 import os
 from cryptography.fernet import Fernet
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=DeprecationWarning)
+
 
 protocol_engine = "docker" # options: default, databricks, docker
 
@@ -35,9 +39,9 @@ column_data_path = f"{root_path}test/data/columndata"
 src_column_path = f"{column_data_path}/source_columns.xlsx"
 tgt_column_path = f"{column_data_path}/target_columns.xlsx"
 gen_queries_path = f"{column_data_path}/generated_queries.json"
+dq_testconfig_path = f"{column_data_path}/current_testconfig.json"
 dq_data_path = f"{root_path}/test/data/dqconfig"
 dq_result_path = f"{root_path}/test/results/dataquality"
-dq_testconfig_path = f"{column_data_path}/current_testconfig.json"
 
 
 spark_conf_JSON = """ {

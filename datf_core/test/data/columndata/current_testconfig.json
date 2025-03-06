@@ -1,34 +1,30 @@
 [
     {
-        "connectionname": "",
-        "connectiontype": "",
-        "path": "",
-        "format": "",
-        "name": "",
+        "aliasname": "rtpcr_source",
+        "connectiontype": "snowflake",
+        "path": "/rtpcr_diagnostic_lab_testing",
+        "format": "table",
+        "connectionname": "raw_snowflake_sql_connection",
         "excludecolumns": "",
         "filter": "",
         "testquerygenerationmode": "Auto",
         "delimiter": "",
-        "test_case_name": "testcase1_parquet_parquet_mismatch",
-        "autoscripttype": "source",
-        "autoscriptpath": "",
-        "comparetype": "s2tcompare",
-        "filename": ""
+        "querypath": "/",
+        "comparetype": "likeobjectcompare",
+        "filename": "rtpcr_diagnostic_lab_testing"
     },
     {
-        "connectionname": "",
-        "connectiontype": "",
-        "path": "",
-        "format": "",
-        "name": "",
+        "aliasname": "nyc_airbnb_target",
+        "connectiontype": "snowflake",
+        "path": "/NYC_AIRBNB_DATA",
+        "format": "table",
+        "connectionname": "raw_snowflake_sql_connection",
         "excludecolumns": "",
         "filter": "",
         "testquerygenerationmode": "Auto",
         "delimiter": "",
-        "test_case_name": "testcase1_parquet_parquet_mismatch",
-        "autoscripttype": "target",
-        "autoscriptpath": "",
-        "comparetype": "s2tcompare",
-        "filename": ""
+        "querypath": "/",
+        "comparetype": "likeobjectcompare",
+        "filename": "NYC_AIRBNB_DATA"
     }
 ]

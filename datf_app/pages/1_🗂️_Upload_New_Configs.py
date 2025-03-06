@@ -19,6 +19,7 @@ def upload_new_test_page():
         elif upl_tc == "issue2":
             st.error(f"Filename must start with '{conv_test}'. Please rename and reupload.")
         else:
+            create_execution_db()
             st.success(upl_tc)
 
     manualsql_file = st.file_uploader("Manual SQL Query File",

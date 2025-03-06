@@ -3,6 +3,7 @@ import streamlit as st
 import openai
 from datf_app.common.commonmethods import *
 
+
 @st.cache_data
 def get_df_data(protocol, testcase):
     return test_connectivity_from_testcase(protocol, testcase)
@@ -89,7 +90,7 @@ def s2t_sql_generation():
                                     sql_query = response.strip()
                                     st.code(sql_query, language='sql')
 
-                                    st.write("Running Query and Output Results from Source:")
+                                    st.write("Executed Query Results from Source:")
                                     source_result = running_sql_query_on_df(source_df, temp_table, sql_query)
                                     st.dataframe(source_result, hide_index=True, use_container_width=True)
 
@@ -118,7 +119,7 @@ def s2t_sql_generation():
                                     tgt_sql_query = tgt_response.strip()
                                     st.code(tgt_sql_query, language='sql')
 
-                                    st.write("Running Query and Output Results from Target:")
+                                    st.write("Executed Query Results from Target:")
                                     target_result = running_sql_query_on_df(target_df, temp_tgt_table, tgt_sql_query)
                                     st.dataframe(target_result, hide_index=True, use_container_width=True)
 
@@ -147,9 +148,9 @@ def s2t_sql_generation():
                             get_src_tblname = get_next_word(src_sql_query)
                             st.code(src_sql_query, language='sql')
 
-                            # st.write("Running Query and Output Results from Source:")
-                            # src_query_result = running_sql_query_on_df(source_df, get_src_tblname, src_sql_query)
-                            # st.dataframe(src_query_result, hide_index=True, use_container_width=True)
+                            st.write("Executed Query Results from Source:")
+                            src_query_result = running_sql_query_on_df(source_df, get_src_tblname, src_sql_query)
+                            st.dataframe(src_query_result, hide_index=True, use_container_width=True)
 
                         except QueryRunFailed as q:
                             st.write(str(q))
@@ -166,9 +167,9 @@ def s2t_sql_generation():
                             get_tgt_tblname = get_next_word(tgt_sql_query)
                             st.code(tgt_sql_query, language='sql')
 
-                            # st.write("Running Query and Output Results from Target:")
-                            # tgt_query_result = running_sql_query_on_df(target_df, get_tgt_tblname, tgt_sql_query)
-                            # st.dataframe(tgt_query_result, hide_index=True, use_container_width=True)
+                            st.write("Executed Query Results from Target:")
+                            tgt_query_result = running_sql_query_on_df(target_df, get_tgt_tblname, tgt_sql_query)
+                            st.dataframe(tgt_query_result, hide_index=True, use_container_width=True)
 
                         except QueryRunFailed as q:
                             st.write(str(q))
