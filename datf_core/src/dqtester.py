@@ -60,13 +60,24 @@ def startdqtest(df, testsuite, json_file_path, stype, createdate):
         pdfobj = generatePDF()
         pdfobj_summary = generatePDF()
         current_result_folder = f"run_dq_{created_time}"
-        resultfolder =  os.path.join(dq_result_path, testsuite, current_result_folder)
-
+        if not os.path.exists(dq_result_path):
+            os.mkdir(dq_result_path)
+            log_info(f"{dq_result_path} is created")
+        else:
+            log_info(f"{dq_result_path} is already exist")
+        partialresultfolder =  os.path.join(dq_result_path, testsuite)
+        if not os.path.exists(partialresultfolder):
+            os.mkdir(partialresultfolder)
+            log_info(f"{partialresultfolder} is created")
+        else:
+            log_info(f"{partialresultfolder} is already exist")
+        resultfolder = os.path.join(partialresultfolder, current_result_folder)
         if not os.path.exists(resultfolder):
             os.mkdir(resultfolder)
             log_info(f"{resultfolder} is created")
         else:
             log_info(f"{resultfolder} is already exist")
+
 
         detailresultpath = resultfolder + "/dq_analysis_"+stype+"_detail_report_"+created_time+".pdf"
         summaryresultpath = resultfolder + "/dq_analysis_"+stype+"_summary_report_"+created_time+".pdf"

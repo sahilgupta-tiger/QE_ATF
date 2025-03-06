@@ -1,30 +1,34 @@
 [
     {
-        "aliasname": "rtpcr_source",
-        "connectiontype": "snowflake",
-        "path": "/rtpcr_diagnostic_lab_testing",
-        "format": "table",
-        "connectionname": "raw_snowflake_sql_connection",
+        "connectionname": "",
+        "connectiontype": "",
+        "path": "",
+        "format": "",
+        "name": "",
         "excludecolumns": "",
         "filter": "",
         "testquerygenerationmode": "Auto",
         "delimiter": "",
-        "querypath": "/",
-        "comparetype": "likeobjectcompare",
-        "filename": "rtpcr_diagnostic_lab_testing"
+        "test_case_name": "testcase1_parquet_parquet_mismatch",
+        "autoscripttype": "source",
+        "autoscriptpath": "",
+        "comparetype": "s2tcompare",
+        "filename": ""
     },
     {
-        "aliasname": "rtpcr_target",
-        "connectiontype": "aws-s3",
-        "path": "test/data/target/patients_target_parquet_mismatch",
-        "format": "parquet",
         "connectionname": "",
+        "connectiontype": "",
+        "path": "",
+        "format": "",
+        "name": "",
         "excludecolumns": "",
         "filter": "",
         "testquerygenerationmode": "Auto",
         "delimiter": "",
-        "querypath": "/",
-        "comparetype": "likeobjectcompare",
-        "filename": "patients_target_parquet_mismatch"
+        "test_case_name": "testcase1_parquet_parquet_mismatch",
+        "autoscripttype": "target",
+        "autoscriptpath": "",
+        "comparetype": "s2tcompare",
+        "filename": ""
     }
 ]

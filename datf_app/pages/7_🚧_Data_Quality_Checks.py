@@ -641,8 +641,8 @@ def data_quality_checks():
                                 div1, div2 = st.tabs(["Detail Report", "Summary Report"])
                                 with div1:
                                     if 'target_details_pdf_report' not in st.session_state:
-                                        st.session_state.source_details_pdf_report = detailreport
-                                    display_pdf(st.session_state.source_details_pdf_report)
+                                        st.session_state.target_details_pdf_report = detailreport
+                                    display_pdf(st.session_state.target_details_pdf_report)
                                 with div2:
                                     if 'target_summary_pdf_report' not in st.session_state:
                                         st.session_state.target_summary_pdf_report = summaryreport

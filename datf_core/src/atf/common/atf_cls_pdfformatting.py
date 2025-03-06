@@ -2,7 +2,7 @@ from fpdf import FPDF
 
 class generatePDF:
   
-  def __init__(self):
+  def __init__(self,work_path=''):
     
     self.pdf = FPDF(format='A4', unit='mm')
     self.pdf.add_page()
@@ -39,7 +39,13 @@ class generatePDF:
       if text == 'Failed':
         self.pdf.set_text_color(255,0,0)
       self.pdf.cell(self.epw, 0.0, text)
-      
+
+    elif texttype == 'section sub heading':
+        self.pdf.ln(6)
+        self.pdf.set_font('Times', 'B', 11.0)
+        self.pdf.cell(self.epw, 0.0, text)
+        self.pdf.set_font('Times', '', 11.0)
+
       
       
   def display_sql_query(self, query):
@@ -90,6 +96,9 @@ class generatePDF:
         #col_width_list = [10,30,30,30,40,40,10]
         col_width_list = [10,80,45,45]
         mth = 1.2*th
+      elif (table_type == 'dqsummary'):
+        col_width_list = [10, 38, 21, 21, 19, 25, 18, 27, 18]
+        mth = 1.2 * th
       elif(table_type == 'mismatch_summary'):
         col_width_list =[10,30,35,20,20,25,20,25,25]
         mth = 1.2*th
@@ -106,8 +115,11 @@ class generatePDF:
       factor_list.sort()
       factor = factor_list[-1]
       factor = int(factor)+1 if(factor>=int(factor)) else int(factor)
-      cth = mth * factor   
-      table_data = df.toPandas().values.tolist()
+      cth = mth * factor
+      if (table_type == 'dqsummary'):
+          table_data = [list(row) for row in df.collect()]
+      else:
+          table_data = df.toPandas().values.tolist()
 
       for i,hd in enumerate(table_header):
         col_width = col_width_list[i]
