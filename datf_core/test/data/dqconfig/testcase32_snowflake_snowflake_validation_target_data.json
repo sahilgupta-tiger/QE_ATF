@@ -1,14 +1,20 @@
 [
     {
-        "DQ Check": "Length",
-        "Column": "AVAILABILITY_365",
-        "Check Type": "Between",
-        "Value": "1-3"
+        "DQ Check": "Unique",
+        "Column": "LATITUDE",
+        "Check Type": "Not Required",
+        "Value": ""
     },
     {
         "DQ Check": "NotBeNull",
-        "Column": "NAME",
+        "Column": "ID",
         "Check Type": "Not Required",
         "Value": ""
+    },
+    {
+        "DQ Check": "ColumnCount",
+        "Column": "Table",
+        "Check Type": "Not Required",
+        "Value": "20"
     }
 ]

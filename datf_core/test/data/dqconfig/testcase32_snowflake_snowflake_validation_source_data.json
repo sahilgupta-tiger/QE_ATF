@@ -1,0 +1,14 @@
+[
+    {
+        "DQ Check": "Length",
+        "Column": "STATE",
+        "Check Type": "Between",
+        "Value": "2-10"
+    },
+    {
+        "DQ Check": "Unique",
+        "Column": "STATE_NAME",
+        "Check Type": "Not Required",
+        "Value": ""
+    }
+]

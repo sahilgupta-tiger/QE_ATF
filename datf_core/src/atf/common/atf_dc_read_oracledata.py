@@ -1,7 +1,7 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info, readconnectionconfig
-from testconfig import decryptcredential
+from testconfig import *
 import os
 
 
@@ -15,7 +15,7 @@ def read_oracledata(tc_datasource_config, spark):
     resourcename = tc_datasource_config['filename']
 
     if tc_datasource_config['testquerygenerationmode'] == 'Manual':
-        querypath = tc_datasource_config['querypath']
+        querypath = root_path + tc_datasource_config['querypath']
         f = open(querypath, "r+")
         selectmanualqry = f.read().splitlines()
         selectmanualqry = ' '.join(selectmanualqry)
