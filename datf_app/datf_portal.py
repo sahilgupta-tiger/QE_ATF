@@ -19,11 +19,11 @@ def load_home_page():
     st.markdown(f"""
         <table style="margin-left: auto; margin-right: auto; border-collapse: collapse; border: none;">
             <tr><th> Salient - Features </th></tr>
-            <tr><td><b>Comprehensive Automated Data Validation Platform:</b><span style="font-size: {font_pixel}px;">  A unified solution that automates the entire data validation process, ensuring accuracy, consistency, and reliability across all datasets. This eliminates manual errors, enhances data quality, and streamlines operations for large-scale data management.</span></td></tr>
-            <tr><td><b>End-to-End Test Execution for Source-to-Target Mappings:</b><span style="font-size: {font_pixel}px;">  Enables seamless execution of test scripts to validate data transformations between source and target systems. This ensures accurate data migration and integration while maintaining consistency across environments.</span></td></tr>
-            <tr><td><b>AI-Powered SQL Generation Tool:</b><span style="font-size: {font_pixel}px;">  Leverages Generative AI or native tools to create optimized SQL scripts for complex queries, reducing manual effort and improving efficiency in database operations.</span></td></tr>
-            <tr><td><b>Advanced Data Profiling Capabilities:</b><span style="font-size: {font_pixel}px;">  Provides in-depth insights into source or target datasets by analyzing patterns, anomalies, and key metrics. This supports better decision-making and ensures data readiness for downstream processes.</span></td></tr>
-            <tr><td><b>Robust Data Quality Checks for Source and Target Systems:</b><span style="font-size: {font_pixel}px;">  Automates the application of predefined rules and validations to ensure datasets meet quality standards, preventing errors and enhancing trust in data-driven decisions.</span></td></tr>
+            <tr><td><b>Comprehensive Automated Data Validation Platform:</b><span style="font-size: {font_pixel}px;">  A unified solution that automates the entire data validation process, ensuring accuracy, consistency, and reliability across all datasets.</span></td></tr>
+            <tr><td><b>End-to-End Test Execution for Source-to-Target Mappings:</b><span style="font-size: {font_pixel}px;">  Enables seamless execution of test scripts to validate data transformations between source and target systems.</span></td></tr>
+            <tr><td><b>AI-Powered SQL Generation Tool:</b><span style="font-size: {font_pixel}px;">  Leverages Generative AI or native tools to create optimized SQL scripts for complex queries, reducing manual effort and improving efficiency.</span></td></tr>
+            <tr><td><b>Advanced Data Profiling Capabilities:</b><span style="font-size: {font_pixel}px;">  Provides in-depth insights into source or target datasets by analyzing patterns, anomalies, and key metrics.</span></td></tr>
+            <tr><td><b>Robust Data Quality Checks for Source and Target Systems:</b><span style="font-size: {font_pixel}px;">  Automates the validation based on DQ rules that ensure datasets meet quality standards, preventing errors and enhancing trust in data-driven decisions.</span></td></tr>
         </table>
     """, unsafe_allow_html=True)
 
