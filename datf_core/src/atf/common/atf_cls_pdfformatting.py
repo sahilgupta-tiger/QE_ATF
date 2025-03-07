@@ -54,7 +54,7 @@ class generatePDF:
     th = self.pdf.font_size
     self.pdf.multi_cell(185, 1.2*th, str(query), border=0, align= 'L')
     
-  def create_table_summary(self,dictlist, column_size = ''):
+  def create_table_summary(self, dictlist, column_size = ''):
     self.pdf.ln(5)
     self.pdf.set_font('Times','',10.0) 
     th = self.pdf.font_size
@@ -69,7 +69,7 @@ class generatePDF:
       if (value == 'Failed' or (key == 'Reason' and value.find('mismatch') != -1)):
         self.pdf.set_text_color(255,0,0)
         
-      data = ':' + str(value)
+      data = ': ' + str(value)
       self.pdf.multi_cell(col_width_val, 1.2*th, str(data), border = 0, align= 'L')
       self.pdf.set_text_color(0,0,0) 
   

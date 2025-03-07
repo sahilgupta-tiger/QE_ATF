@@ -433,16 +433,12 @@ def ge_test_execution(pdfobj, pdfobj_summary, testsuite, batch, rows, spark,crea
         StructField('Reason', StringType(), True),
         StructField('ExecutionTime', StringType(), True)
     ])
+
     if (len(df_testsuite_summary) != 0):
         df_testsuite_summary = spark.createDataFrame(data=df_testsuite_summary)
     else:
         df_testsuite_summary = None
 
-    #df_testsuite_summary = spark.createDataFrame(data=df_testsuite_summary, schema=schema)
-
-
-    #df_testsuite_summary.show()
-    print(type(df_testsuite_summary))
     pdfobj_summary = generate_protocol_summary_report(df_testsuite_summary, testsuite, protocol_run_params,
                                                       pdfobj_summary, spark,src_info,tgt_info)
     return pdfobj, pdfobj_summary
