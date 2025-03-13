@@ -422,7 +422,7 @@ def data_quality_checks():
                     if st.button("🔍 Analyze & Generate Report - Source & Target",
                                  disabled=not all_fields_filled, key="submit"):
                         with st.spinner(
-                                'DQ Execution In-Progress. Please wait...(this may take a while)'):
+                                'DQ Execution In-Progress. Please wait...'):
 
                             srcfile_name = f"{selected_testcase}_source_data.json"
                             srcfile_path = os.path.join(dq_data_path, srcfile_name)
@@ -539,7 +539,7 @@ def data_quality_checks():
                         st.button("🔍 Analyze & Generate Report", disabled=True, key = "source_submit")
                     else:
                         if st.button("🔍 Analyze & Generate Report", disabled=not src_all_fields_filled,key = "source_submit"):
-                            with st.spinner('DQ Execution at Source In-Progress. Please wait...(this may take a while)'):
+                            with st.spinner('DQ Execution at Source In-Progress. Please wait...'):
                                 file_name = f"{selected_testcase}_source_data.json"
                                 file_path = os.path.join(dq_data_path, file_name)
                                 src_rows_data = [{k: (None if v is None else v) for k, v in row.items()} for row in src_rows_data]
@@ -628,8 +628,7 @@ def data_quality_checks():
                         st.button("🔍 Analyze & Generate Report", disabled=True,key = "target_submit")
                     else:
                         if st.button("🔍 Analyze & Generate Report", disabled=not tgt_all_fields_filled,key = "target_submit"):
-                            with st.spinner('DQ Execution at Target In-Progress. Please wait...(this may take a while)'):
-                                # folder_path = r"F:\GitHub_Workspaces\DATF\QE_ATF\datf_core\test\data\dataquality"
+                            with st.spinner('DQ Execution at Target In-Progress. Please wait...'):
                                 file_name = f"{selected_testcase}_target_data.json"
                                 file_path = os.path.join(dq_data_path, file_name)
                                 tgt_rows_data = [{k: (None if v is None else v) for k, v in row.items()} for row in

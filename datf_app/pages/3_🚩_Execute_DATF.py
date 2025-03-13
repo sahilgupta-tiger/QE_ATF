@@ -15,14 +15,13 @@ def load_homepage():
     # Choose the testing type
     test_type = st.radio(
         "Choose the testing type for execution:",
-        ["Count", "Null", "Duplicate", "Fingerprint", "Signature", "Content", "Schema"],
+        ["Count", "Null", "Duplicate", "Fingerprint", "Content", "Schema"],
         captions=["Row counts from src & tgt.",
                   "Check for Nulls in each columns.",
                   "Duplicate checks via P-key.",
-                  "*Quick Validations for Migration.",
-                  "*SHA Checksum for rows & cols.",
+                  "**Quick Validations for Migration.",
                   "Complete Reconciliation checks.",
-                  "*Check Schemas on S2T Mapping."],
+                  "**Check Schemas on S2T Mapping."],
         horizontal=True)
 
     if test_type is not None:

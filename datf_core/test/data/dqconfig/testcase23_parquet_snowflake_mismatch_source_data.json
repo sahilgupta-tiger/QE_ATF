@@ -1,0 +1,20 @@
+[
+    {
+        "DQ Check": "NotBeNull",
+        "Column": "id",
+        "Check Type": "Not Required",
+        "Value": ""
+    },
+    {
+        "DQ Check": "DistinctSet",
+        "Column": "GENDER",
+        "Check Type": "Not Required",
+        "Value": "['M','F']"
+    },
+    {
+        "DQ Check": "Length",
+        "Column": "ZIP",
+        "Check Type": "Between",
+        "Value": "5-6"
+    }
+]

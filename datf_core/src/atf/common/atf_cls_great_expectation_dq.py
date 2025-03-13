@@ -224,6 +224,7 @@ def ge_test_execution(pdfobj, pdfobj_summary, testsuite, batch, rows, spark,crea
             df_testsuite_summary.loc[i] = [tcname, column, Dqtype, Result, Reason, testcase_exectime]
         if check == "DistinctSet":
             testcase_starttime = datetime.now(utctimezone)
+            value.sort()
             expectation = gx.expectations.ExpectColumnDistinctValuesToEqualSet(column=column, value_set=value)
             validation_results = batch.validate(expectation)
 
