@@ -4,6 +4,9 @@ import os
 from datetime import datetime
 from re import search
 from testconfig import *
+from pyspark.sql import functions as F
+from pyspark.sql.functions import md5,slice, concat_ws, trim,lit, collect_list, map_from_arrays
+from functools import reduce
 
 
 def log_info(msg):
@@ -165,3 +168,85 @@ def create_json_file(json_data, file_path):
   with open(file_path, 'w') as json_file:
     json.dump(json_data, json_file, indent=4)
 
+def apply_md5_hash(df):
+  df_hashed = df.withColumn("hashval", md5(concat_ws("|", *df.columns)))
+  df_final_hashed = df_hashed.select("hashval")
+
+  return df_final_hashed
+
+def verify_nulls(df):
+  columns_with_nulls = [(c, df.select(c).filter(F.col(c).isNull()).count()) for c in df.columns if df.select(c).filter(F.col(c).isNull()).count() > 0]
+  print("Columns with null values:", columns_with_nulls)
+  return columns_with_nulls
+
+def verify_duplicates(df):
+  duplicate_columns = []
+  for column in df.columns:
+    count_distinct = df.select(column).distinct().count()
+    count_total = df.select(column).count()
+    if count_distinct < count_total:
+      duplicate_columns.append(column)
+  return duplicate_columns
+'''def list_duplicate_values(df):
+  final_df = None
+  for col_name in df.columns:
+    duplicate_values = df.groupBy(col_name).count().filter("count > 1") \
+      .withColumn("Column Name", lit(col_name)) \
+      .groupBy("Column Name") \
+      .agg(concat_ws("|", slice(collect_list(F.col(col_name).cast("string")),1,50)).alias("Duplicate Values"))
+
+    final_df = duplicate_values if final_df is None else final_df.union(duplicate_values)
+  final_df.show()
+  return final_df'''
+
+
+def list_duplicate_values(df):
+
+  duplicate_dfs = []
+
+  for col_name in df.columns:
+    duplicate_values = (
+      df.groupBy(col_name).count()
+      .filter("count > 1")  # Only keep duplicate values
+      .select(
+        lit(col_name).alias("Column Name"),
+        concat_ws("|", slice(collect_list(F.col(col_name).cast("string")), 1, 50)).alias("Duplicate Values")
+      )
+    )
+    duplicate_dfs.append(duplicate_values)
+
+
+  if duplicate_dfs:
+    final_df = reduce(lambda df1, df2: df1.union(df2), duplicate_dfs)
+    final_df.cache()  # Cache the result for faster reuse
+    return final_df
+  else:
+    return None
+
+
+def verify_dup_pk(df, joincolumns, limit):
+  print(f"Join columns - {joincolumns}")
+  print(f"type of {type(joincolumns)}")
+  duplicate_values = df.groupBy(joincolumns).count().filter("count > 1")
+  if duplicate_values.count() > 0:
+    duplicate_values = duplicate_values.limit(limit)
+  else:
+    duplicate_values = None
+
+  return duplicate_values
+
+#def verify_dup_pk_null(df,joincolumns):
+
+
+
+def check_empty_values(df):
+  columns_with_empty = [(c, df.select(c).filter(trim(F.col(c)) == "").count()) for c in df.columns if df.select(c).filter(trim(F.col(c)) == "").count() > 0]
+  print("Columns with empty values:", columns_with_empty)
+  return columns_with_empty
+
+def check_entire_row_is_null(df):
+  # Create a condition to check if all columns in a row are null
+  condition = reduce(lambda acc, col_name: acc & F.col(col_name).isNull(), df.columns[1:], F.col(df.columns[0]).isNull())
+  # Filter the DataFrame based on the condition
+  null_rows_df = df.filter(condition)
+  return null_rows_df

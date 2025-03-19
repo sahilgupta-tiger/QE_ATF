@@ -1,68 +1,8 @@
 [
     {
-        "DQ Check": "Length",
-        "Column": "DRIVERS",
-        "Check Type": "Equal",
-        "Value": "34"
-    },
-    {
-        "DQ Check": "Length",
-        "Column": "COUNTY",
-        "Check Type": "Between",
-        "Value": "10-49"
-    },
-    {
         "DQ Check": "Null",
         "Column": "ADDRESS",
         "Check Type": "Not Required",
         "Value": ""
-    },
-    {
-        "DQ Check": "NotBeNull",
-        "Column": "COUNTY",
-        "Check Type": "Not Required",
-        "Value": ""
-    },
-    {
-        "DQ Check": "Unique",
-        "Column": "id",
-        "Check Type": "Not Required",
-        "Value": ""
-    },
-    {
-        "DQ Check": "DistinctSet",
-        "Column": "GENDER",
-        "Check Type": "Not Required",
-        "Value": "['M','F']"
-    },
-    {
-        "DQ Check": "ColumnCount",
-        "Column": "Table",
-        "Check Type": "Not Required",
-        "Value": "24"
-    },
-    {
-        "DQ Check": "ColumnOrder",
-        "Column": "Table",
-        "Check Type": "Not Required",
-        "Value": "['id', 'BIRTHDATE', 'DEATHDATE', 'SSN', 'DRIVERS', 'PASSPORT', 'PREFIX', 'FIRST', 'LAST', 'SUFFIX', 'MAIDEN', 'MARITAL', 'RACE', 'ETHNICITY', 'GENDER', 'BIRTHPLACE', 'ADDRESS', 'CITY', 'STATE', 'COUNTY', 'ZIP', 'LAT', 'LON', 'HEALTHCARE_EXPENSES', 'DName', 'HEALTHCARE_COVERAGE']"
-    },
-    {
-        "DQ Check": "Sum",
-        "Column": "HEALTHCARE_COVERAGE",
-        "Check Type": "Between",
-        "Value": "9902020-10000020"
-    },
-    {
-        "DQ Check": "Regexplist",
-        "Column": "BIRTHDATE",
-        "Check Type": "Not Required",
-        "Value": "['^\\d{4}-\\d{2}-\\d{2}$','^\\d{4}/\\d{2}/\\d{2}$']"
-    },
-    {
-        "DQ Check": "Regexp",
-        "Column": "DEATHDATE",
-        "Check Type": "Not Required",
-        "Value": "'^\\d{4}/\\d{2}/\\d{2}$'"
     }
 ]

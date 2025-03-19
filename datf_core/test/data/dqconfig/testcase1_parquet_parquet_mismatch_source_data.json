@@ -1,67 +1,19 @@
 [
     {
         "DQ Check": "Length",
-        "Column": "COUNTY",
-        "Check Type": "Equal",
-        "Value": "10"
-    },
-    {
-        "DQ Check": "Length",
-        "Column": "CITY",
+        "Column": "ADDRESS",
         "Check Type": "Between",
-        "Value": "10-23"
-    },
-    {
-        "DQ Check": "Null",
-        "Column": "DRIVERS",
-        "Check Type": "Not Required",
-        "Value": ""
-    },
-    {
-        "DQ Check": "NotBeNull",
-        "Column": "ETHNICITY",
-        "Check Type": "Not Required",
-        "Value": ""
-    },
-    {
-        "DQ Check": "Unique",
-        "Column": "id",
-        "Check Type": "Not Required",
-        "Value": ""
+        "Value": "10-30"
     },
     {
         "DQ Check": "DistinctSet",
         "Column": "GENDER",
         "Check Type": "Not Required",
-        "Value": "['M','F']"
-    },
-    {
-        "DQ Check": "ColumnCount",
-        "Column": "Table",
-        "Check Type": "Not Required",
-        "Value": "56"
-    },
-    {
-        "DQ Check": "Sum",
-        "Column": "HEALTHCARE_COVERAGE",
-        "Check Type": "Between",
-        "Value": "9000-10002"
-    },
-    {
-        "DQ Check": "ColumnOrder",
-        "Column": "Table",
-        "Check Type": "Not Required",
-        "Value": "['id', 'BIRTHDATE', 'DEATHDATE', 'SSN', 'DRIVERS', 'PASSPORT', 'PREFIX', 'FIRST', 'LAST', 'SUFFIX', 'MAIDEN', 'MARITAL', 'RACE', 'ETHNICITY', 'GENDER', 'BIRTHPLACE', 'ADDRESS', 'CITY', 'STATE', 'COUNTY', 'ZIP', 'LAT', 'LON', 'HEALTHCARE_EXPENSES', 'DName', 'HEALTHCARE_COVERAGE']"
-    },
-    {
-        "DQ Check": "Regexp",
-        "Column": "BIRTHDATE",
-        "Check Type": "Not Required",
-        "Value": "'^\\d{4}-\\d{2}-\\d{2}$'"
+        "Value": "[\"F\",\"M\"]"
     },
     {
         "DQ Check": "Regexplist",
-        "Column": "DEATHDATE",
+        "Column": "BIRTHDATE",
         "Check Type": "Not Required",
         "Value": "['^\\d{4}-\\d{2}-\\d{2}$','^\\d{4}/\\d{2}/\\d{2}$']"
     }

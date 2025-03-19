@@ -1,5 +1,5 @@
 @echo off
-set datfpath=D:/My_Workspaces/GitHub/DATF_Other/Pyspark/QE_ATF
+set datfpath=F:/GitHub_Workspaces/dev_datf/QE_ATF
 set container=datf_with_app
 
 docker ps -a --filter "name=%container%" --format "{{.Names}}" > temp_exists.txt

@@ -243,7 +243,7 @@ def ge_test_execution(pdfobj, pdfobj_summary, testsuite, batch, rows, spark,crea
             else:
                 Result = "Failed"
                 ftccount = ftccount + 1
-                Reason = "Actual distinct values are not macthing with Expected distinct values in the column"
+                Reason = "Actual distinct values are not matching with Expected distinct values in the column"
             testcase_endtime = datetime.now(utctimezone)
             testcase_exectime = testcase_endtime - testcase_starttime
             testcase_exectime = str(testcase_exectime).split('.')[0]
