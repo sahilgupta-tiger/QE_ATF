@@ -19,7 +19,7 @@ def load_homepage():
         captions=["Row counts from src & tgt.",
                   "Check for Nulls in each columns.",
                   "Duplicate checks via P-key.",
-                  "**Quick Validations for Migration.",
+                  "Quick Validations for Migration.",
                   "Complete Reconciliation checks.",
                   "**Check Schemas on S2T Mapping."],
         horizontal=True)

@@ -240,6 +240,9 @@ class S2TAutoLoadScripts:
     autoScriptFile = f"{root_path}/test/sql/" + autoscriptpath + '/' + self.tcdict["test_case_name"] + "_" + loadLayer + "_" + self.tcdict["autoscripttype"] +".sql"
     autoScriptFile= autoScriptFile.replace('//','/')
 
+    print(f"Auto SQL Gen: dataformat = {dataFormat}")
+    print(f"Auto SQL Gen: datafile = {dataFile}")
+
     f=open(autoScriptFile,"w+")
     if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
       if dataFormat == "avro":

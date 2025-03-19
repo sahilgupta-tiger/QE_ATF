@@ -1,6 +1,6 @@
 # Databricks notebook source
 dbutils.widgets.text('test_protocol_name', 'contenttestprotocol')
-dbutils.widgets.dropdown("test_type", "count", ['count', 'duplicate', 'content'])
+dbutils.widgets.dropdown("test_type", "count", ['count', 'null', ''duplicate', 'fingerprint', 'content', 'schema'])
 dbutils.widgets.text('test_names', 'all')
 dbutils.widgets.text('work_path', '/Workspace/Shared/QE_ATF/datf_core/')
 

@@ -14,17 +14,17 @@
         "filename": "rtpcr_diagnostic_lab_testing"
     },
     {
-        "aliasname": "nyc_airbnb_target",
-        "connectiontype": "snowflake",
-        "path": "/NYC_AIRBNB_DATA",
-        "format": "table",
-        "connectionname": "raw_snowflake_sql_connection",
+        "aliasname": "rtpcr_target",
+        "connectiontype": "aws-s3",
+        "path": "test/data/target/patients_target_parquet_mismatch",
+        "format": "parquet",
+        "connectionname": "",
         "excludecolumns": "",
         "filter": "",
         "testquerygenerationmode": "Auto",
         "delimiter": "",
         "querypath": "/",
         "comparetype": "likeobjectcompare",
-        "filename": "NYC_AIRBNB_DATA"
+        "filename": "patients_target_parquet_mismatch"
     }
 ]
