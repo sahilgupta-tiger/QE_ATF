@@ -12,8 +12,7 @@ from atf.common.atf_cls_loads2t import LoadS2T
 from atf.common.atf_cls_pdfformatting import generatePDF
 from atf.common.atf_cls_results_chart import generate_results_charts
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
-from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, \
-    get_connection_config, get_mount_src_path
+from atf.common.atf_common_functions import *
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
 from testconfig import *
@@ -711,103 +710,306 @@ class S2TTester:
             sample_target_only = tgt_null_counts_df
 
             rows_both_all = rows_mismatch  = rows_only_source =rows_only_target = df_match_summary = dict_no_of_rows = dict_match_details = None
+            duppkdict_results = rownulldict_results = rowdupdict_results=empdict_results = rowdict_results = coldict_results = nulldict_results = hashdict_results = dupdict_results = None
 
         elif (testcasetype == "fingerprint"):
             special_srcdf = sourcedf
             special_tgtdf = targetdf
-
+            duppkstatus = rownullcountstatus = rowdupcountstatus = rowcountstatus = colcountstatus = nullcountstatus = dupcountstatus = hashcountstatus = empcountstatus = ''
+            duppkmsg = rownullcountmsg = rowdupcountmsg = rowcountmsg = colcountmsg = nullcountmsg = dupcountmsg = hashcountmsg = empcountmsg = ''
+            fingerprint_flag = True
+            total_kpi = 8
+            reason = ''
+            failed_kpi = 0
             print("Comparing Fingerprints of Source and Target now...")
-            fingerprintcomp_obj = datacompy.LegacySparkCompare(self.spark, special_srcdf, special_tgtdf,
-                                                    column_mapping=colmapping, join_columns=joincolumns)
-            fingerprintcomp_obj.report()
+            #KPI - 1 - Row Count
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Starts {timenow}")
 
-            rows_both_all = fingerprintcomp_obj.rows_both_all
-            rows_mismatch = fingerprintcomp_obj.rows_both_mismatch
-            rows_only_source = fingerprintcomp_obj.rows_only_base
-            rows_only_target = fingerprintcomp_obj.rows_only_compare
-            rowcount_common = fingerprintcomp_obj.common_row_count
-            rowcount_only_source = rows_only_source.count()
-            rowcount_only_target = rows_only_target.count()
-            rowcount_mismatch = rows_mismatch.count()
-            rowcount_match = rowcount_common - rowcount_mismatch
-            if (rowcount_mismatch == 0 or rowcount_only_target == 0 or rowcount_only_source == 0):
+            sourcerowcount = special_srcdf.count()
+            targetrowcount = special_tgtdf.count()
+            print(f"source row count is {sourcerowcount}")
+            print(f"target row count is {targetrowcount}")
+            if sourcerowcount != targetrowcount:
+                rowcountstatus = 'Failed'
+                fingerprint_flag = False
+                failed_kpi += 1
+                rowcountmsg = "Source and Target row count is not matching"
+                reason = reason + f"source row count: {sourcerowcount}. target row count: {targetrowcount}"
+            else:
+                rowcountstatus = 'Passed'
+                rowcountmsg = "Source and Target row count is matching"
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+            # KPI - 2 - Column Count
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Column Count Starts {timenow}")
+            sourcecols = special_srcdf.columns
+            sourcecolcount = len(sourcecols)
+            print(f"source col count is {sourcecolcount}")
+            targetcols = special_tgtdf.columns
+            targetcolcount = len(targetcols)
+            print(f"target col count is {targetcolcount}")
+            if targetcolcount != sourcecolcount:
+                fingerprint_flag = False
+                colcountstatus = 'Failed'
+                colcountmsg = "Source column count and target column count is not matching"
+                failed_kpi += 1
+                reason = reason + f"source column count: {sourcecolcount}. target column count: {targetcolcount}. "
+            else:
+                colcountstatus = 'Passed'
+                colcountmsg = "Source column count and target column count is matching"
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+
+            # KPI - 3 - Column Level Null Count
+            timenow = datetime.now(utctimezone)
+            print(f"KPI C L Null count Starts {timenow}")
+            sourcenullcolumnlist = verify_nulls(special_srcdf)
+            targetnullcolumnlist = verify_nulls(special_tgtdf)
+
+            if len(sourcenullcolumnlist) >  0 or len(targetnullcolumnlist) > 0:
+                nullcountstatus = 'Failed'
+                nullcountmsg = 'Source or/and Target has nulls in some columns'
+                fingerprint_flag = False
+                failed_kpi += 1
+                if len(sourcenullcolumnlist) >  0 and len(targetnullcolumnlist) == 0:
+                    reason = reason + "Few column have nulls in src. "
+                elif len(targetnullcolumnlist) >  0 and len(sourcenullcolumnlist) == 0:
+                    reason = reason + "Few column have nulls in tgt. "
+                elif len(sourcenullcolumnlist) >  0 and len(targetnullcolumnlist) >  0:
+                    reason = reason + "Few columns has nulls in src & tgt. "
+
+            else:
+                nullcountstatus = 'Passed'
+                nullcountmsg = 'Source or/and Target has no nulls in any columns'
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+
+            #KPI - 4 - Row Level Null Check
+            timenow = datetime.now(utctimezone)
+            print(f"KPI R L null count Starts {timenow}")
+            sourceentirerownulldf = check_entire_row_is_null(special_srcdf)
+            targetentirerownulldf = check_entire_row_is_null(special_tgtdf)
+            sourceentirerownullcount = sourceentirerownulldf.count()
+            targetentirerownullcount = targetentirerownulldf.count()
+            if sourceentirerownullcount != 0 or targetentirerownullcount != 0:
+                fingerprint_flag = False
+                failed_kpi += 1
+                rownullcountstatus = 'Failed'
+                rownullcountmsg = 'One or more rows are null'
+            else:
+                rownullcountstatus = 'Passed'
+                rownullcountmsg = 'No rows are null'
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+            # KPI - 5 - Column Level Empty Check
+            timenow = datetime.now(utctimezone)
+            print(f"KPI C L EMpty Starts {timenow}")
+            sourceempcolumnlist = check_empty_values(special_srcdf)
+            targetempcolumnlist = check_empty_values(special_tgtdf)
+
+            if len(sourceempcolumnlist) > 0 or len(targetempcolumnlist) > 0:
+                empcountstatus = 'Failed'
+                empcountmsg = 'Source or/and Target has empty values in some columns'
+                fingerprint_flag = False
+                failed_kpi += 1
+                if len(sourceempcolumnlist) > 0 and len(targetempcolumnlist) == 0:
+                    reason = reason + "columns has empty in source. "
+                elif len(targetempcolumnlist) > 0 and len(sourceempcolumnlist) == 0:
+                    reason = reason + "columns has empty in target. "
+                elif  len(sourceempcolumnlist) > 0 and  len(targetempcolumnlist) > 0:
+                    reason = reason + "columns has empty in src & tgt. "
+            else:
+                empcountstatus = 'Passed'
+                empcountmsg = 'Source or/and Target has no empty values in any columns'
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+            '''#KPI - 6 - Column Level Duplicate Check
+            timenow = datetime.now(utctimezone)
+            print(f"KPI C L Dup check Starts {timenow}")
+            sourcedupcolumnlist = verify_duplicates(special_srcdf)
+            targetdupcolumnlist = verify_duplicates(special_tgtdf)
+            sourcedupdf = list_duplicate_values(special_srcdf)
+            targetdupdf = list_duplicate_values(special_tgtdf)
+            dup_diff_df = sourcedupdf.exceptAll(targetdupdf).union(targetdupdf.exceptAll(sourcedupdf))
+
+            if dup_diff_df.count() == 0:
+                duplicate_source_target = "Matched"
+            else:
+                duplicate_source_target = "Not Matched"
+            if len(sourcedupcolumnlist) > 0 or len(targetdupcolumnlist) > 0:
+                dupcountstatus = 'Failed'
+                dupcountmsg = 'Source or/and Target has duplicate values in some columns'
+                fingerprint_flag = False
+                failed_kpi += 1
+                if len(sourcedupcolumnlist) > 0 and len(targetdupcolumnlist) == 0:
+                    reason = reason + "columns has duplicates in source. "
+                elif len(targetdupcolumnlist) > 0 and len(sourcedupcolumnlist) == 0:
+                    reason = reason + "columns has duplicates in target. "
+                elif  len(sourcedupcolumnlist) > 0 and  len(targetdupcolumnlist) > 0:
+                    reason = reason + "columns has duplicates in src & tgt. "
+            else:
+                dupcountstatus = 'Passed'
+                dupcountmsg = 'Source or/and Target has no duplicate values in any columns'
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+'''
+            #KPI - 9 - CheckSum Data CHeck
+            timenow = datetime.now(utctimezone)
+            print(f"KPI CHeck Sum Starts {timenow}")
+            sourcedf_hashed = apply_md5_hash(special_srcdf)
+            targetdf_hashed = apply_md5_hash(special_tgtdf)
+            sourcedf_hashed_count = sourcedf_hashed.count()
+            targetdf_hashed_count = targetdf_hashed.count()
+            source_df_diff = sourcedf_hashed.subtract(targetdf_hashed)
+            source_df_diff = source_df_diff.limit(limit)
+            sourcebutnottarget_count = source_df_diff.count()
+            if sourcebutnottarget_count == 0:
+                source_df_diff = None
+            target_df_diff = targetdf_hashed.subtract(sourcedf_hashed)
+            target_df_diff = target_df_diff.limit(limit)
+            targetbutnotsource_count = target_df_diff.count()
+            if targetbutnotsource_count == 0:
+                target_df_diff = None
+
+            if targetbutnotsource_count !=0 or sourcebutnottarget_count !=0:
+                fingerprint_flag = False
+                failed_kpi +=1
+                hashcountstatus = 'Failed'
+                hashcountmsg = 'Data is not matching between source and target'
+                #reason = reason + f"No of records in target not in source: {targetbutnotsource_count} No of records in source not in target: {sourcebutnottarget_count}. "
+            else:
+                hashcountstatus = 'Passed'
+                hashcountmsg = 'Data is matching between source and target'
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+
+            #KPI - 7 - Row Level Duplicate Check
+            timenow = datetime.now(utctimezone)
+            print(f"KPI R L Dup check Starts {timenow}")
+            sourcedf_hashed_distinct_count = sourcedf_hashed.distinct().count()
+            sourcedf_hashed_distinct_count = targetdf_hashed.distinct().count()
+            sourcedf_hashed_dup_count = sourcedf_hashed_count - sourcedf_hashed_distinct_count
+            targetdf_hashed_dup_count = targetdf_hashed_count - sourcedf_hashed_distinct_count
+            if sourcedf_hashed_dup_count!=0 or targetdf_hashed_dup_count != 0:
+                fingerprint_flag = False
+                failed_kpi += 1
+                rowdupcountstatus = 'Failed'
+                rowdupcountmsg = 'One or more rows are duplicated'
+            else:
+                rowdupcountstatus = 'Passed'
+                rowdupcountmsg = 'No rows are duplicated'
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+            # KPI 8 - Duplicate values
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Dup PK Starts {timenow}")
+
+            sourceduppkdf = verify_dup_pk(special_srcdf, joincolumns,limit)
+            targetduppkdf = verify_dup_pk(special_tgtdf, joincolumns,limit)
+            distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
+            distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
+            duplicate_rowcount_source = sourcerowcount - distinct_rowcount_source
+            duplicate_rowcount_target = targetrowcount - distinct_rowcount_target
+            if (distinct_rowcount_source == sourcerowcount and targetrowcount == distinct_rowcount_target):
+                duppkstatus = "Passed"
+                duppkmsg = "No Duplicates"
+                log_info("Test Case Passed - no duplicates")
+            else:
+                fingerprint_flag = False
+                failed_kpi += 1
+                duppkstatus = "Failed"
+                duppkmsg = "Duplicates"
+                log_info("Test Case Failed - duplicates found")
+            timenow = datetime.now(utctimezone)
+            print(f"KPI Ends {timenow}")
+
+            passed_kpi = total_kpi - failed_kpi
+
+            if fingerprint_flag == True:
                 test_result = "Passed"
                 result_desc = "Fingerprint matched"
                 log_info("Test Case Passed - KPIs matched")
             else:
                 test_result = "Failed"
-                result_desc = "Fingerprint mismatched"
+                result_desc = "One or more fingerprint mismatched. Please check detail report for more info"
                 log_info("Test Case Failed - KPIs mismatched")
-
-            if rows_both_all == None:
-                df_match_summary = None
-
+            '''if targetbutnotsource_count!=0:
+                sample_target_only = target_df_diff
+            elif sourcebutnottarget_count!=0:
+                sample_source_only = source_df_diff
+            elif targetbutnotsource_count ==0 and sourcebutnottarget_count ==0:
+                sample_target_only = sample_source_only = None'''
+            sample_target_only = target_df_diff
+            sample_source_only = source_df_diff
+            '''Commenting this line for duplicate column level check
+            if sourcedupdf.count() == 0:
+                rows_only_source = None
             else:
-                df = rows_both_all
-                #col_list = df.columns
-                if len(colmapping) == 0:
-                    column_mapping = {
-                        i: i for i in sourcedf.columns if i not in joincolumns}
-                    collist = [
-                        i for i in sourcedf.columns if i not in joincolumns]
-                else:
-                    column_mapping = dict(colmapping)
-                    collist = [
-                        i for i in sourcedf.columns if i not in joincolumns]
+                rows_only_source = sourcedupdf
 
-                    for column in collist:
 
-                        base_col = column + "_base"
-                        compare_col = column + "_compare"
-                        match_col = column + "_match"
-                        sel_col_list = []
-                        sel_col_list = joincolumns.copy()
-                        sel_col_list.append(base_col)
-                        sel_col_list.append(compare_col)
-                        key_cols = joincolumns.copy()
-
-                        filter_false = match_col + " == False"
-                        filter_true = match_col + " == True"
-
-                        mismatch = df.select(match_col).filter(
-                            filter_false).count()
-                        if (mismatch == 0):
-                            continue
-
-                        match = df.select(match_col).filter(filter_true).count()
-                        dict_match_summary[column] = [match, mismatch]
-
-                        df_details = df.select(sel_col_list).filter(filter_false).withColumnRenamed(
-                            base_col, "Source value").withColumnRenamed(compare_col, "Target value").distinct().limit(limit)
-
-                        df_details, concat_list = self.concat_keys(
-                            df_details, key_cols)
-                        df_details = df_details.select(
-                            concat(*concat_list).alias("Key Columns"), "Source value", "Target value")
-
-                        dict_match_details[column] = df_details
-
-                list_match_summary = []
-                for k, v in dict_match_summary.items():
-                    list_match_summary.append(
-                        [k, column_mapping[k], rowcount_source, rowcount_target, rowcount_match, v[0], v[1]])
-
-                df_match_summary = pd.DataFrame(list_match_summary, columns=[
-                                                "Source Column Name", "Target Column Name", "Rows in Source", "Rows in Target", "Rows with Common Keys", "Rows Matched", "Rows Mismatch"])
-
-            if (len(df_match_summary) == 0):
-                df_match_summary = None
+            if targetdupdf.count() == 0:
+                rows_only_target = None
             else:
-                df_match_summary = spark.createDataFrame(df_match_summary)
+                rows_only_target = targetdupdf
+'''
+            rows_only_source = rows_only_target = None
+            if sourceduppkdf.count() == 0:
+                sample_mismatch = None
+            else:
+                sample_mismatch = sourceduppkdf
 
+            if targetduppkdf.count() == 0:
+                rows_mismatch = None
+            else:
+                rows_mismatch = targetduppkdf
+
+            rows_both_all = df_match_summary = dict_no_of_rows = dict_match_details = None
             dict_results = {
-                'Test Result': test_result, 'No. of KPIs in Source': f"{rowcount_source:,}", 'No. of KPIs in Target': f"{rowcount_target:,}"
+                'Test Result': test_result, 'No. of KPIs in Source': f"{total_kpi:,}",
+                'No. of KPIs in Target': f"{total_kpi:,}",
+                'No. of KPIs matched': f"{passed_kpi:,}",
+                'No. of KPIs mismatched': f"{failed_kpi:,}"}
+
+            rowdict_results = {'Source Row Count': sourcerowcount, 'Target Row Count': targetrowcount, 'KPI Status':rowcountstatus ,
+                               'Reason': rowcountmsg}
+            coldict_results = {'Source Column Count': sourcecolcount, 'Target Column Count': targetcolcount, 'KPI Status':colcountstatus ,
+                               'Reason': colcountmsg}
+            nulldict_results = {'List of Columns has null in source': sourcenullcolumnlist, 'List of Columns has null in target': targetnullcolumnlist, 'KPI Status':nullcountstatus ,
+                                'Reason': nullcountmsg}
+            #dupdict_results = {'List of Columns has duplicates in source': sourcedupcolumnlist, 'List of Columns has duplicates in target': targetdupcolumnlist, 'KPI Status':dupcountstatus ,
+            #'Reason': dupcountmsg,'Dup values match source & target':duplicate_source_target}
+            dupdict_results = None
+            empdict_results = {'List of Columns has empty in source': sourceempcolumnlist, 'List of Columns has empty in target': targetempcolumnlist, 'KPI Status':empcountstatus ,
+                               'Reason': empcountmsg }
+            rowdupdict_results = {'No of duplicate rows in source': sourcedf_hashed_dup_count, 'No of duplicate rows in target': targetdf_hashed_dup_count, 'KPI Status':rowdupcountstatus ,
+                                  'Reason': rowdupcountmsg}
+            hashdict_results = { 'KPI Status':hashcountstatus ,'Reason': hashcountmsg}
+            rownulldict_results = {'No of null rows in source': sourceentirerownullcount, 'No of null rows in target': targetentirerownullcount, 'KPI Status':rownullcountstatus ,
+                                   'Reason': rownullcountmsg}
+            duppkdict_results = {
+                'Test Result': duppkstatus, 'No. of rows in Source': f"{sourcerowcount:,}",
+                'No. of distinct rows in Source': f"{distinct_rowcount_source:,}",
+                'No. of duplicate rows in Source': f"{duplicate_rowcount_source:,}",
+                'No. of rows in Target': f"{targetrowcount:,}",
+                'No. of distinct rows in Target': f"{distinct_rowcount_target:,}",
+                'No. of duplicate rows in Target': f"{duplicate_rowcount_target:,}"
             }
-            rows_both_all = rows_mismatch = rows_only_source = rows_only_target = sample_mismatch = sample_source_only = sample_target_only = df_match_summary = dict_no_of_rows = dict_match_details = None
 
         dict_compareoutput = {'rows_both_all': rows_both_all, 'rows_mismatch': rows_mismatch, 'rows_only_source': rows_only_source, 'rows_only_target': rows_only_target, 'test_result': test_result, 'sample_mismatch': sample_mismatch,
-                              'sample_source': sample_source_only, 'sample_target': sample_target_only, 'dict_results': dict_results, 'col_match_summary': df_match_summary, 'row_count': dict_no_of_rows, 'col_match_details': dict_match_details, 'result_desc': result_desc}
-        
+                              'sample_source': sample_source_only, 'sample_target': sample_target_only, 'dict_results': dict_results, 'col_match_summary': df_match_summary, 'row_count': dict_no_of_rows, 'col_match_details': dict_match_details, 'result_desc': result_desc,
+                              'rowdict_results':rowdict_results, 'coldict_results':coldict_results,'nulldict_results':nulldict_results, 'dupdict_results':dupdict_results,
+                              'hashdict_results':hashdict_results, 'empdict_results':empdict_results,'rowdupdict_results':rowdupdict_results, 'rownulldict_results':rownulldict_results,'duppkdict_results':duppkdict_results}
+
         log_info(f"Data Compare Completed for TestingType - {testcasetype} ")
         return dict_compareoutput
 
@@ -860,7 +1062,12 @@ class S2TTester:
         sample_mismatch = dict_compareoutput['sample_mismatch']
         col_match_summary = dict_compareoutput['col_match_summary']
         col_match_details = dict_compareoutput['col_match_details']
+        rows_only_source = dict_compareoutput['rows_only_source']
+        rows_only_target = dict_compareoutput['rows_only_target']
         row_count = dict_compareoutput['row_count']
+        sample_mismatch = dict_compareoutput['sample_mismatch']
+        rows_mismatch = dict_compareoutput['rows_mismatch']
+
         if (dict_config['Compare Type'] == 's2tcompare'  and  dict_config['testquerygenerationmode']  =="Auto"):
             src_conn = get_connection_config(
                 compare_input['filedetails']['sourceconnectionname'])
@@ -933,10 +1140,54 @@ class S2TTester:
         if testcasetype == 'count' or testcasetype == "duplicate":
             pass
         elif testcasetype == "fingerprint":
+            duppkdict_results = dict_compareoutput["duppkdict_results"]
+            rowdict_results = dict_compareoutput["rowdict_results"]
+            coldict_results = dict_compareoutput["coldict_results"]
+            hashdict_results = dict_compareoutput["hashdict_results"]
+            nulldict_results = dict_compareoutput["nulldict_results"]
+            #dupdict_results = dict_compareoutput["dupdict_results"]
+            rownulldict_results = dict_compareoutput["rownulldict_results"]
+            empdict_results = dict_compareoutput["empdict_results"]
+            rowdupdict_results = dict_compareoutput["rowdupdict_results"]
             pdfobj.write_text("5. Fingerprint Comparison Report ", 'section heading')
-            if col_match_summary != None:
+            '''if col_match_summary != None:
                 pdfobj.create_table_summary(row_count)
-            pdfobj.create_table_details(col_match_summary, 'mismatch_summary')
+            pdfobj.create_table_details(col_match_summary, 'mismatch_summary')'''
+            pdfobj.write_text("5.1. KPI (1) - Row Count ", 'section heading')
+            pdfobj.create_table_summary(rowdict_results)
+            pdfobj.write_text("5.2. KPI (2) - Column Count ", 'section heading')
+            pdfobj.create_table_summary(coldict_results)
+            pdfobj.write_text("5.3. KPI (3) - Column Level Null Check ", 'section heading')
+            pdfobj.create_table_summary(nulldict_results)
+            pdfobj.write_text("5.4. KPI (4) - Row Level Null Check ", 'section heading')
+            pdfobj.create_table_summary(rownulldict_results)
+            pdfobj.write_text("5.5. KPI (5) - Column Level empty Check ", 'section heading')
+            pdfobj.create_table_summary(empdict_results)
+            '''pdfobj.write_text("5.6. KPI (6) - Column Level Duplicate Check ", 'section heading')
+            pdfobj.create_table_summary(dupdict_results)
+            pdfobj.write_text("5.6.1 Source Duplicate - Column Level ", 'section heading')
+            pdfobj.create_table_details(rows_only_source, 'mismatch_details')
+            pdfobj.write_text("5.6.2 Target Duplicate - Column Level ", 'section heading')
+            pdfobj.create_table_details(rows_only_target, 'mismatch_details')
+    '''
+            pdfobj.write_text("5.6. KPI (6) - Row Level Duplicate Check ", 'section heading')
+            pdfobj.create_table_summary(rowdupdict_results)
+            pdfobj.write_text("5.7. KPI (7) Primary Key Duplicate Check ", 'section heading')
+            pdfobj.create_table_summary(duppkdict_results)
+            pdfobj.write_text("5.7.1 Primary Key Duplicate Check - Source", 'section heading')
+
+            pdfobj.create_table_details(sample_mismatch, 'mismatch_details')
+            pdfobj.write_text("5.7.2 Primary Key Duplicate Check - Target", 'section heading')
+
+            pdfobj.create_table_details(rows_mismatch, 'mismatch_details')
+            pdfobj.write_text("5.8. KPI (8) - CheckSum Row Level", 'section heading')
+            pdfobj.create_table_summary(hashdict_results)
+            pdfobj.write_text(
+                '5.8.1 Addition Rows in Source', 'section heading')
+            pdfobj.create_table_details(sample_source_only, 'mismatch_details')
+            pdfobj.write_text(
+                '5.8.2 Addition Rows in Target', 'section heading')
+            pdfobj.create_table_details(sample_target_only, 'mismatch_details')
 
         elif testcasetype == 'null':
             mismatch_heading = "5. Columns having nulls at source and target"

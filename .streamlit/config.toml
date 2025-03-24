@@ -1,10 +1,10 @@
 [server]
 folderWatchBlacklist = []
 maxUploadSize = 10
-port = 8501
-enableCORS = false
 numThreads = 8
+runOnSave = true
 headless = true
+fileWatcherType = "poll"
 
 [client]
 showErrorDetails = "none"
