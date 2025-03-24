@@ -963,14 +963,14 @@ class S2TTester:
                 rows_only_target = targetdupdf
 '''
             rows_only_source = rows_only_target = None
-            if sourceduppkdf.count() == 0:
+            if sourceduppkdf is None:
                 sample_mismatch = None
-            else:
+            elif sourceduppkdf.count() > 0 and sourceduppkdf is not None:
                 sample_mismatch = sourceduppkdf
 
-            if targetduppkdf.count() == 0:
+            if targetduppkdf is None:
                 rows_mismatch = None
-            else:
+            elif targetduppkdf.count() > 0 and targetduppkdf is not None:
                 rows_mismatch = targetduppkdf
 
             rows_both_all = df_match_summary = dict_no_of_rows = dict_match_details = None
