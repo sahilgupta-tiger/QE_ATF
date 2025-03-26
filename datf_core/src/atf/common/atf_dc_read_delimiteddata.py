@@ -25,10 +25,10 @@ def read_delimiteddata(tc_datasource_config,spark):
     columnlist = list(set(columns) - set(exclude_cols))
     columnlist.sort()
     columnlist = ','.join(columnlist)
-    query_csv = "SELECT " + columnlist + " FROM " + resourcename + "_csvview"
+    query = "SELECT " + columnlist + " FROM " + resourcename + "_csvview"
     if len(datafilter) >=5:
-      query_csv = query_csv + " WHERE " + datafilter
-    df_data = spark.sql(query_csv)        
+      query = query + " WHERE " + datafilter
+    df_data = spark.sql(query)
   elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
     querypath =tc_datasource_config['querypath']
     f = open(querypath,"r")
@@ -39,5 +39,8 @@ def read_delimiteddata(tc_datasource_config,spark):
     print(tc_datasource_config['aliasname'])
     df.createOrReplaceTempView(tc_datasource_config['aliasname'])
     df_data = spark.sql(query)
+
+  df_data.printSchema()
+  df_data.show()
   log_info("Returning the DataFrame from read_delimiteddata Function")
   return df_data, query

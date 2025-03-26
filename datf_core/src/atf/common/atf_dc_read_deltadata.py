@@ -41,22 +41,35 @@ def read_deltadata(tc_datasource_config, spark):
     log_info(f"Select Table Command statement - \n{querydelta}")
 
   elif tc_datasource_config['comparetype'] == 'likeobjectcompare':
-    log_info('Inside likeobjectcompare code')
-    columns = df.columns
-    columnlist = list(set(columns) - set(exclude_cols))
-    columnlist.sort()
-    columnlist = ','.join(columnlist)
+    if tc_datasource_config['testquerygenerationmode'] == 'Auto':
+      log_info('Inside likeobjectcompare code')
+      columns = df.columns
+      columnlist = list(set(columns) - set(exclude_cols))
+      columnlist.sort()
+      columnlist = ','.join(columnlist)
 
-    query_delta = "SELECT " + columnlist + " FROM "+ alias_name
-    querydelta = query_delta.replace(alias_name,deltatable)
+      query_delta = "SELECT " + columnlist + " FROM "+ alias_name
+      querydelta = query_delta.replace(alias_name,deltatable)
 
-    if len(datafilter) >=5:
-      query= query + " WHERE " + datafilter
+      if len(datafilter) >=5:
+        querydelta= querydelta + " WHERE " + datafilter
 
-  log_info(f"Select Table Command statement - \n{querydelta}")
-  df_deltadata = spark.sql(querydelta)
+    if tc_datasource_config['testquerygenerationmode'] == 'Manual':
+      querypath = tc_datasource_config['querypath']
+      f = open(querypath, "r+")
+      selectmanualqry = f.read().splitlines()
+      selectmanualqry = ' '.join(selectmanualqry)
+      selectmanualqry = str(selectmanualqry)
+      print(selectmanualqry)
+      querydelta = selectmanualqry
+      f.close()
+
+
+    log_info(f"Select Table Command statement - \n{querydelta}")
+    df_deltadata = spark.sql(querydelta)
   
   df_deltadata.printSchema()
+  df_deltadata.show()
   log_info("Returning the Delta DataFrame")
 
   return df_deltadata, querydelta

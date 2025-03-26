@@ -21,7 +21,8 @@ def read_parquetdata(tc_datasource_config,spark):
     query=' '.join(query)
     print(query)
 
-  elif tc_datasource_config['comparetype'] == 'likeobjectcompare':
+  elif tc_datasource_config['comparetype'] == 'likeobjectcompare'  and tc_datasource_config[
+    'testquerygenerationmode'] == 'Auto':
     excludecolumns = tc_datasource_config['excludecolumns']
     excludecolumns = str(excludecolumns)
     exclude_cols = excludecolumns.split(',')
@@ -35,6 +36,18 @@ def read_parquetdata(tc_datasource_config,spark):
     if len(datafilter) >=5:
       query= query + " WHERE " + datafilter
     print(query)
+
+  elif tc_datasource_config['comparetype'] == 'likeobjectcompare' and tc_datasource_config[
+    'testquerygenerationmode'] == 'Manual':
+    querypath = tc_datasource_config['querypath']
+    f = open(querypath, "r+")
+    selectmanualqry = f.read().splitlines()
+    selectmanualqry = ' '.join(selectmanualqry)
+    selectmanualqry = str(selectmanualqry)
+    print(selectmanualqry)
+    query = selectmanualqry
+    f.close()
+
     
   df_data = spark.sql(query)
   df_data.printSchema()

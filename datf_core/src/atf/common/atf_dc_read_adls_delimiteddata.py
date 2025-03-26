@@ -39,25 +39,34 @@ def read_adls_delimiteddata(tc_datasource_config,spark):
     log_info(f"Select Table Command statement - \n{query}")
 
   elif tc_datasource_config['comparetype'] == 'likeobjectcompare':
-    excludecolumns = tc_datasource_config['excludecolumns']
-    excludecolumns = str(excludecolumns)
-    exclude_cols = excludecolumns.split(',')
-    datafilter = tc_datasource_config['filter']
-    datafilter = str(datafilter)
-
-    df=spark.read.option("delimiter", delimiter).csv(delimited_path, header = True)
-
-    columns = df.columns
-    columnlist = list(set(columns) - set(exclude_cols))
-    columnlist.sort()
-    columnlist = ','.join(columnlist)
-    query= "SELECT " + columnlist + " FROM "+tc_datasource_config['aliasname']
-    if len(datafilter) >=5:
-      query= query + " WHERE " + datafilter
-    log_info(f"Select Table Command statement - \n{query}")
-
-  df.createOrReplaceTempView(tc_datasource_config['aliasname'])
+    df = spark.read.option("delimiter", delimiter).csv(delimited_path, header=True)
+    df.createOrReplaceTempView(tc_datasource_config['aliasname'])
+    if tc_datasource_config['testquerygenerationmode'] == 'Auto':
+      excludecolumns = tc_datasource_config['excludecolumns']
+      excludecolumns = str(excludecolumns)
+      exclude_cols = excludecolumns.split(',')
+      datafilter = tc_datasource_config['filter']
+      datafilter = str(datafilter)
+      columns = df.columns
+      columnlist = list(set(columns) - set(exclude_cols))
+      columnlist.sort()
+      columnlist = ','.join(columnlist)
+      query= "SELECT " + columnlist + " FROM "+tc_datasource_config['aliasname']
+      if len(datafilter) >=5:
+        query= query + " WHERE " + datafilter
+      log_info(f"Select Table Command statement - \n{query}")
+    if tc_datasource_config['testquerygenerationmode'] == 'Manual':
+      querypath = tc_datasource_config['querypath']
+      f = open(querypath, "r+")
+      selectmanualqry = f.read().splitlines()
+      selectmanualqry = ' '.join(selectmanualqry)
+      selectmanualqry = str(selectmanualqry)
+      print(selectmanualqry)
+      query = selectmanualqry
+      f.close()
   df_data = spark.sql(query)
+  df_data.printSchema()
+  df_data.show()
   log_info("Returning the DataFrame from read_delimiteddata Function")
 
   return df_data, query

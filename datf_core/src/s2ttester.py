@@ -396,7 +396,7 @@ class S2TTester:
                            'connectionname': tc_config['sourceconnectionname'], 
                            'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'], 
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
-                           'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],'comparetype':tc_config['comparetype'],
+                           'querypath': root_path + tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['sourcefilename']}
             source_df, source_query = read_data(tc_source_config,self.spark)
            
@@ -406,7 +406,7 @@ class S2TTester:
                            'connectionname': tc_config['targetconnectionname'], 
                            'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'], 
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
-                           'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
+                           'querypath': root_path + tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}    
             target_df, target_query = read_data(tc_target_config,self.spark)
             
@@ -970,14 +970,14 @@ class S2TTester:
                 rows_only_target = targetdupdf
 '''
             rows_only_source = rows_only_target = None
-            if sourceduppkdf.count() == 0:
+            if sourceduppkdf is None:
                 sample_mismatch = None
-            else:
+            elif sourceduppkdf.count() > 0 and sourceduppkdf is not None:
                 sample_mismatch = sourceduppkdf
 
-            if targetduppkdf.count() == 0:
+            if targetduppkdf is None:
                 rows_mismatch = None
-            else:
+            elif targetduppkdf.count() > 0 and targetduppkdf is not None:
                 rows_mismatch = targetduppkdf
 
             rows_both_all = df_match_summary = dict_no_of_rows = dict_match_details = None

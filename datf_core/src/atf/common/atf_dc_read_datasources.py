@@ -15,6 +15,7 @@ from atf.common.atf_dc_read_adls_parquetdata import read_adls_parquetdata
 from atf.common.atf_dc_read_adls_delimiteddata import read_adls_delimiteddata
 from atf.common.atf_dc_read_adls_jsondata import read_adls_jsondata
 from atf.common.atf_dc_read_adls_avrodata import read_adls_avrodata
+from atf.common.atf_dc_read_db2data import read_db2data
 
 
 def read_data(tc_datasource_config,spark):
@@ -67,5 +68,8 @@ def read_data(tc_datasource_config,spark):
 
   elif connectiontype == 'postgres' and resourceformat == 'table':
     df, query = read_postgresdata(tc_datasource_config, spark)
+
+  elif connectiontype == 'db2' and resourceformat == 'table':
+    df, query = read_db2data(tc_datasource_config, spark)
 
   return df, query

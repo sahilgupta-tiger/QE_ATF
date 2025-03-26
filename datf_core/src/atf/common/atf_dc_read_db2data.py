@@ -5,18 +5,18 @@ from atf.common.atf_common_functions import log_info,readconnectionconfig
 from testconfig import decryptcredential
 
 
-def read_mysqldata(tc_datasource_config,spark):
-  log_info("Reading from Mysql Table")
+def read_db2data(tc_datasource_config,spark):
+  log_info("Reading from DB2 Table")
   connectionname = tc_datasource_config['connectionname']
   connectiontype = tc_datasource_config['connectiontype']
   resourceformat = tc_datasource_config['format']
   connectionconfig = readconnectionconfig(connectionname)
-  connectionurl="jdbc:mysql://"+connectionconfig['host']+":"+connectionconfig['port']+"/"+connectionconfig['database']
+  connectionurl="jdbc:db2://"+connectionconfig['host']+":"+connectionconfig['port']+"/"+connectionconfig['database']
   if tc_datasource_config['testquerygenerationmode'] == 'Auto':
       query="select * from "+ tc_datasource_config['filename']
       df = (spark.read
                       .format("jdbc")
-                      .option("driver","com.mysql.jdbc.Driver")
+                      .option("driver","com.ibm.db2.jcc.DB2Driver")
                       .option("url", connectionurl)
                       .option("user", connectionconfig['user'])
                       .option("password", decryptcredential(connectionconfig['password']))
@@ -41,7 +41,7 @@ def read_mysqldata(tc_datasource_config,spark):
       f.close()
       df_data = (spark.read
             .format("jdbc")
-            .option("driver", "com.mysql.jdbc.Driver")
+            .option("driver", "com.ibm.db2.jcc.DB2Driver")
             .option("url", connectionurl)
             .option("user", connectionconfig['user'])
             .option("password", decryptcredential(connectionconfig['password']))
@@ -52,6 +52,6 @@ def read_mysqldata(tc_datasource_config,spark):
 
   df_data.printSchema()
   df_data.show()
-  log_info("Returning the DataFrame from read_mysqldata Function")
+  log_info("Returning the DataFrame from read_db2data Function")
   
   return df_data, selectcolqry_ret
