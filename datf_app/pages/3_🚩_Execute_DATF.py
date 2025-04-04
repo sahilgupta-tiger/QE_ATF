@@ -72,8 +72,9 @@ def start_execution(test_type, selected_protocol):
 
     if st.button("Start Execution"):
         with st.spinner('Execution In-Progress. Please wait...(this may take a while)'):
-            subprocess.run(f"sh {root_path}scripts/testingstart.sh {execution_cmd}",shell=True)
+            txt_out = subprocess.run(f"sh {root_path}scripts/testingstart.sh {execution_cmd}",shell=False)
 
+        print(txt_out.stdout)
         st.success("Completed. Click below to check results...")
 
 

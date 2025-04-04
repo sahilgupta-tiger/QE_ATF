@@ -6,6 +6,7 @@ import pandas as pd
 from pandasql import sqldf
 from datf_core.src.testconfig import *
 import json
+import ast
 from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
 import sweetviz as sv
@@ -153,8 +154,8 @@ def save_df_into_db(modified_df, selected_protocol):
 def test_connectivity_from_testcase(chosen_protocol, chosen_testcase):
     chosen_protocol_path = f"{tc_path}/{chosen_protocol}"
     sub_out = subprocess.run(f"sh {root_path}scripts/conncheck.sh {chosen_protocol_path} {chosen_testcase}",
-                   shell=True)
-    # print(sub_out.stdout)
+                   shell=False)
+    print(sub_out.stdout)
     src_col_df = pd.read_excel(src_column_path)
     tgt_col_df = pd.read_excel(tgt_column_path)
     return src_col_df, tgt_col_df
@@ -256,7 +257,7 @@ def generate_bulk_sql_queries(selected_bulk_file, generation_type):
 # Function to convert string representation back into dictionary and list
 def repr_eval_list(my_dict_str):
     my_list = []
-    my_dict = eval(my_dict_str)
+    my_dict = ast.literal_eval(my_dict_str)
     for key in my_dict:
         my_list.append(f"{key}: {list(my_dict[key].values())}")
     return my_list

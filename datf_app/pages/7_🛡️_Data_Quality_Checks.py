@@ -156,7 +156,7 @@ def create_row(all_fields_filled,row_id,src_col_list,ttype,max_row_id):
                     st.error(f"Row {row_id}: Please enter a valid regular expression.")
             if option1 == "DistinctSet" or option1 == "ColumnOrder":
                 try:
-                    eval_option4 = eval(option4)
+                    eval_option4 = ast.literal_eval(option4)
                     if not isinstance(eval_option4, list):
                         all_fields_filled = False
                         raise ValueError

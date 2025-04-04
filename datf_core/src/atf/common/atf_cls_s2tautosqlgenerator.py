@@ -243,46 +243,45 @@ class S2TAutoLoadScripts:
     print(f"Auto SQL Gen: dataformat = {dataFormat}")
     print(f"Auto SQL Gen: datafile = {dataFile}")
 
-    f=open(autoScriptFile,"w+")
-    if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
-      if dataFormat == "avro":
-        f.write(f"readschemadf=spark.read.format('{dataFormat}').load('{dataFile}').schema\r\n")
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{dataFile}')\r\n")
-        readschemadf=self.spark.read.format(dataFormat).load(dataFile).schema
-        readdatadf=self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
-      if dataFormat == "parquet":
-        print(dataFile)
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{dataFile}')\r\n")
-        readdatadf=self.spark.read.format(dataFormat).load(dataFile)
-      if dataFormat == "delta":
-        deltaFile = dataFile.replace(root_path,"")
-        if '/' in deltaFile:
-          f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
-          readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
-        else:
-          f.write(f"readdatadf=spark.table('{deltaFile}')\r\n")
-          readdatadf= self.spark.table(deltaFile)
-      if dataFormat == "json":
-        print(dataFile)
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
-        readdatadf=self.spark.read.format(dataFormat).schema(schemaStruct).load(dataFile)
-      if dataFormat == "delimitedfile":
-        print(dataFile)
-        f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('{dataFile}')\r\n")
-        readdatadf=self.spark.read.format("csv").option('delimiter',delimiter).option('header','true').schema(schemaStruct).load(dataFile)
-        #readdatadf.printSchema()
-      #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
-      #readdatadf=preproc_unnestfields(readdatadf)
-      readdatadf.printSchema()
-      f.write(f"readdatadf.createOrReplaceTempView('dataview')\r\n")
-      readdatadf.createOrReplaceTempView('dataview')
-      f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
-      returndf = self.spark.sql(self.selectTableCommand)
-    else:
-      f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
-      returndf, table_query = read_data(self.tcdict,self.spark)
-            
-    f.close()
+    with open(autoScriptFile,"w+") as f:
+      if dataFormat in ["avro","delta","parquet","json","delimitedfile"]:
+        if dataFormat == "avro":
+          f.write(f"readschemadf=spark.read.format('{dataFormat}').load('{dataFile}').schema\r\n")
+          f.write(f"readdatadf=spark.read.format('{dataFormat}').schema(readschemadf).load('{dataFile}')\r\n")
+          readschemadf=self.spark.read.format(dataFormat).load(dataFile).schema
+          readdatadf=self.spark.read.format(dataFormat).schema(readschemadf).load(dataFile)
+        if dataFormat == "parquet":
+          print(dataFile)
+          f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{dataFile}')\r\n")
+          readdatadf=self.spark.read.format(dataFormat).load(dataFile)
+        if dataFormat == "delta":
+          deltaFile = dataFile.replace(root_path,"")
+          if '/' in deltaFile:
+            f.write(f"readdatadf=spark.read.format('{dataFormat}').load('{deltaFile}')\r\n")
+            readdatadf= self.spark.read.format(dataFormat).load(deltaFile)
+          else:
+            f.write(f"readdatadf=spark.table('{deltaFile}')\r\n")
+            readdatadf= self.spark.table(deltaFile)
+        if dataFormat == "json":
+          print(dataFile)
+          f.write(f"readdatadf=spark.read.format('{dataFormat}').option('multiline','true').load('{dataFile}')\r\n")
+          readdatadf=self.spark.read.format(dataFormat).schema(schemaStruct).load(dataFile)
+        if dataFormat == "delimitedfile":
+          print(dataFile)
+          f.write(f"readdatadf=spark.read.format('{dataFormat}').option('delimiter',{delimiter}).option('header','true').load('{dataFile}')\r\n")
+          readdatadf=self.spark.read.format("csv").option('delimiter',delimiter).option('header','true').schema(schemaStruct).load(dataFile)
+          #readdatadf.printSchema()
+        #f.write(f"readdatadf=preproc_unnestfields(readdatadf)\r\n")
+        #readdatadf=preproc_unnestfields(readdatadf)
+        readdatadf.printSchema()
+        f.write(f"readdatadf.createOrReplaceTempView('dataview')\r\n")
+        readdatadf.createOrReplaceTempView('dataview')
+        f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
+        returndf = self.spark.sql(self.selectTableCommand)
+      else:
+        f.write(f'spark.sql("{self.selectTableCommand}")\r\n')
+        returndf, table_query = read_data(self.tcdict,self.spark)
+
     filePath = str(dataFormat) + ".`" +str(dataFile) + "`"
     file_details_dict = {"join_columns":joincols,"file_path":filePath,"connectionname":connectionname, "connectiontype":connectiontype}
     return autoScriptFile, returndf, file_details_dict

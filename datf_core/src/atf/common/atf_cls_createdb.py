@@ -1,7 +1,8 @@
 import os
 import sqlite3
 import pandas as pd
-from tabulate import tabulate
+import re
+import stat
 from testconfig import *
 
 
@@ -28,8 +29,8 @@ def export_db_to_excel(xls_file):
 
 
 def table_exists(table):
-    cur.execute('''SELECT count(name) FROM sqlite_master
-        WHERE TYPE = 'table' AND name = '{}' '''.format(table))
+    cur.execute(f'''SELECT count(name) FROM sqlite_master
+        WHERE TYPE = 'table' AND name = '{re.sub('[^a-zA-Z]+', '', table)}' ''')
     if cur.fetchone()[0] == 1:
         return True
     return False
@@ -58,5 +59,5 @@ def change_permission(folder):
         abs_path = os.path.join(folder, path_)
         if os.path.isdir(abs_path):
             change_permission(abs_path)
-        os.chmod(abs_path, 0o777)
+        os.chmod(abs_path, stat.S_IRWXU | stat.S_IRWXG)
 
