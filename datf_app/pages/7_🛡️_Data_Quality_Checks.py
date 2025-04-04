@@ -173,7 +173,7 @@ def create_row(all_fields_filled,row_id,src_col_list,ttype,max_row_id):
                     all_fields_filled = True
             if option1 == "Regexplist":
                 try:
-                    eval_option4 = eval(option4)
+                    eval_option4 = ast.literal_eval(option4)
                     if not isinstance(eval_option4, list):
                         all_fields_filled = False
                         reg_format = False

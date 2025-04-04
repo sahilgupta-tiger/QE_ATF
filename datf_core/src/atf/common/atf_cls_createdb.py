@@ -29,8 +29,7 @@ def export_db_to_excel(xls_file):
 
 
 def table_exists(table):
-    cur.execute(f'''SELECT count(name) FROM sqlite_master
-        WHERE TYPE = 'table' AND name = '{re.sub('[^a-zA-Z]+', '', table)}' ''')
+    cur.execute(f"SELECT count(name) FROM sqlite_master WHERE TYPE = 'table' AND name = '{re.sub('[^a-zA-Z]+', '', table)}';")
     if cur.fetchone()[0] == 1:
         return True
     return False

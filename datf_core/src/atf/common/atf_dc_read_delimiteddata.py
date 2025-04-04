@@ -31,8 +31,8 @@ def read_delimiteddata(tc_datasource_config,spark):
     df_data = spark.sql(query_csv)        
   elif tc_datasource_config['testquerygenerationmode'] == 'Manual':
     querypath =tc_datasource_config['querypath']
-    f = open(querypath,"r")
-    query= f.read().splitlines()
+    with open(querypath, "r") as f:
+      query= f.read().splitlines()
     query=' '.join(query)
     df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(tc_datasource_config['path'], header = True)
     df.printSchema()

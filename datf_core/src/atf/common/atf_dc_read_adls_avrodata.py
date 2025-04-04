@@ -36,8 +36,8 @@ def read_adls_avrodata(tc_datasource_config, spark):
     
     elif tc_datasource_config['comparetype'] == 's2tcompare' and tc_datasource_config['testquerygenerationmode'] == 'Manual':
         querypath = root_path + tc_datasource_config['querypath']
-        f = open(querypath, "r")
-        query = f.read().splitlines()
+        with open(querypath, "r") as f:
+            query = f.read().splitlines()
         query = ' '.join(query)
         log_info(f"Select Table Command statement - \n{query}")
 

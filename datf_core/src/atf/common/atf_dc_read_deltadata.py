@@ -34,8 +34,8 @@ def read_deltadata(tc_datasource_config, spark):
   elif tc_datasource_config['comparetype'] == 's2tcompare' and tc_datasource_config['testquerygenerationmode'] == 'Manual':
     deltatable = deltatable.replace('/','.')
     querypath = root_path+tc_datasource_config['querypath']
-    f = open(querypath,"r")
-    query_delta= f.read().splitlines()
+    with open(querypath, "r") as f:
+      query_delta= f.read().splitlines()
     query_delta=' '.join(query_delta)
     querydelta = query_delta.replace(alias_name,deltatable)
     log_info(f"Select Table Command statement - \n{querydelta}")
