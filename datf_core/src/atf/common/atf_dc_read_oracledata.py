@@ -16,8 +16,8 @@ def read_oracledata(tc_datasource_config, spark):
 
     if tc_datasource_config['testquerygenerationmode'] == 'Manual':
         querypath = root_path + tc_datasource_config['querypath']
-        f = open(querypath, "r+")
-        selectmanualqry = f.read().splitlines()
+        with open(querypath, "r+") as f:
+            selectmanualqry = f.read().splitlines()
         selectmanualqry = ' '.join(selectmanualqry)
         selectmanualqry = str(selectmanualqry)
         print(selectmanualqry)

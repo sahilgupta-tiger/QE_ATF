@@ -288,7 +288,8 @@ class ConnectionS2T:
             scriptpath, source_df, source_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
             source_conn_name = source_file_details_dict["connectionname"]
             join_cols_source = source_file_details_dict["join_columns"]
-            source_query = open(scriptpath).read().split('\n')
+            with open(scriptpath, 'r') as file:
+                source_query = file.read().splitlines()
 
             log_info(f"Reading the Target Data")
             tc_target_config = {'connectionname': tc_config['targetconnectionname'], 'connectiontype': tc_config['targetconnectiontype'],
@@ -301,7 +302,8 @@ class ConnectionS2T:
             scriptpath, target_df, target_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
             target_conn_name = target_file_details_dict["connectionname"]
             join_cols_target = target_file_details_dict["join_columns"]
-            target_query = open(scriptpath).read().split('\n')
+            with open(scriptpath, 'r') as file:
+                target_query = file.read().splitlines()
 
         elif tc_config['comparetype'] == 'likeobjectcompare':
             log_info("Reading the Source Data")

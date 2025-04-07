@@ -51,8 +51,8 @@ def data_profiling():
                 else:
                     with st.spinner('Loading Report, Please wait...'):
                         src_profile_path = create_data_profile_report(source_df, "Source Dataset")
-                        src_html_file = open(src_profile_path, 'r', encoding='utf-8')
-                        source_code = src_html_file.read()
+                        with open(src_profile_path, 'r', encoding='utf-8') as src_html_file:
+                            source_code = src_html_file.read()
                         components.html(source_code, height=800, width=850, scrolling=True)
                         # Add a download button for the HTML file
                         st.download_button(
@@ -68,8 +68,8 @@ def data_profiling():
                 else:
                     with st.spinner('Loading Report, Please wait...'):
                         tgt_profile_path = create_data_profile_report(target_df, "Target Dataset")
-                        tgt_html_file = open(tgt_profile_path, 'r', encoding='utf-8')
-                        target_code = tgt_html_file.read()
+                        with open(tgt_profile_path, 'r', encoding='utf-8') as tgt_html_file:
+                            target_code = tgt_html_file.read()
                         components.html(target_code, height=800, width=850, scrolling=True)
                         # Add a download button for the HTML file
                         st.download_button(

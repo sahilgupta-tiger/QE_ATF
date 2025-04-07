@@ -1,3 +1,4 @@
+import openpyxl; openpyxl.reader.excel.warnings.simplefilter(action='ignore')
 import sqlite3
 import subprocess
 from os import listdir
@@ -11,12 +12,11 @@ from langchain_core.messages import HumanMessage
 from langchain_openai import AzureChatOpenAI
 import sweetviz as sv
 from datetime import datetime
-import openpyxl; openpyxl.reader.excel.warnings.simplefilter(action='ignore')
 
 
 conn_exe = sqlite3.connect(f"{root_path}/utils/{exec_db_name}.db", check_same_thread=False)
-
-openai_json = json.load(open(f"{root_path}/test/connections/{genai_conn_json}.json"))
+with open(f"{root_path}/test/connections/{genai_conn_json}", "r+") as json_file:
+    openai_json = json.load(json_file)
 os.environ["AZURE_OPENAI_API_KEY"] = decryptcredential(openai_json['apikey'])
 os.environ["AZURE_OPENAI_ENDPOINT"] = openai_json['endpoint']
 openai_api_version = openai_json['apiversion']
@@ -152,9 +152,9 @@ def save_df_into_db(modified_df, selected_protocol):
 
 # Function to test the Source and Target Connection and load the pandas dataframes
 def test_connectivity_from_testcase(chosen_protocol, chosen_testcase):
-    chosen_protocol_path = f"{tc_path}/{chosen_protocol}"
-    sub_out = subprocess.run(f"sh {root_path}scripts/conncheck.sh {chosen_protocol_path} {chosen_testcase}",
-                   shell=False)
+    cmd_to_execute = ["sh", f"{root_path}/scripts/conncheck.sh",
+                      f"{tc_path}/{chosen_protocol}", chosen_testcase]
+    sub_out = subprocess.run(cmd_to_execute, capture_output=True, text=True)
     print(sub_out.stdout)
     src_col_df = pd.read_excel(src_column_path)
     tgt_col_df = pd.read_excel(tgt_column_path)

@@ -152,23 +152,19 @@ def store_results_into_db(df_pd_summary, protocol_run_details, testcasetype, cre
     new_df['DB Stored Time'] = time_stored_in_db
 
     # Connect to SQLITE DB and update the table if exists
-    conn = sqlite3.connect(f'{root_path}/utils/{results_db_name}.db')
-    new_df.to_sql(rept_table_name, conn, if_exists='append', index=False)
+    with sqlite3.connect(f'{root_path}/utils/{results_db_name}.db') as conn:
+        new_df.to_sql(rept_table_name, conn, if_exists='append', index=False)
     log_info("Execution Data stored in DB successfully")
-    conn.close()
+
 
 
 def retrieve_from_db(sql_query):
 
-    conn = sqlite3.connect(f'{root_path}/utils/{results_db_name}.db')
-    # Filter data from DB using SQL and create a DF
-    df_from_db = pd.read_sql_query(sql_query, conn)
+    with sqlite3.connect(f'{root_path}/utils/{results_db_name}.db') as conn:
+        df_from_db = pd.read_sql_query(sql_query, conn)
 
-    # Display the retrieved data
     log_info("Data retrieved from DB successfully.")
     # print(tabulate(df_from_db, headers='keys', tablefmt='psql'))
-
-    conn.close()
     return df_from_db
 
 

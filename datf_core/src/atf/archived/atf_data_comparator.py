@@ -82,8 +82,9 @@ def execute_testcase(testcase_details, auto_script_path):
 
     source_conn_name = source_file_details_dict["connectionname"]
     join_cols = source_file_details_dict["join_columns"]
-  
-    source_query = open(scriptpath).read().split('\n')
+
+    with open(scriptpath, 'r') as file:
+      source_query = file.read().splitlines()
 
       
   if (targetquerymode == 'Manual' or comparetype =='likeobjectcompare'):
@@ -111,9 +112,10 @@ def execute_testcase(testcase_details, auto_script_path):
 
     target_conn_name = target_file_details_dict["connectionname"]
     join_cols = target_file_details_dict["join_columns"]
-    
 
-    target_query = open(scriptpath).read().split('\n')
+
+    with open(scriptpath, 'r') as file:
+      target_query = file.read().splitlines()
  
     
   if(source_file_details_dict is not None):    

@@ -29,19 +29,19 @@ exec_db_name = 'DATF_EXECUTION'
 exec_table_name = 'testselection'
 exec_sheet_name = 'protocoltestcasedetails'
 protocol_tab_name = 'protocol'
-genai_conn_json = "azure_open_ai_connection"
-tc_path = f"{root_path}/test/testprotocol"
-sqlbulk_path = f"{root_path}/test/sqlbulk"
-bulkresults_path = f"{root_path}/test/results/bulkresults"
-output_file_path = f"{root_path}/test/testprotocol/{exec_table_name}_template.xlsx"
-profile_output_path = f"{root_path}/test/results/profiles"
+genai_conn_json = "azure_open_ai_connection.json"
+tc_path = f"{root_path}test/testprotocol"
+sqlbulk_path = f"{root_path}test/sqlbulk"
+bulkresults_path = f"{root_path}test/results/bulkresults"
+output_file_path = f"{root_path}test/testprotocol/{exec_table_name}_template.xlsx"
+profile_output_path = f"{root_path}test/results/profiles"
 column_data_path = f"{root_path}test/data/columndata"
 src_column_path = f"{column_data_path}/source_columns.xlsx"
 tgt_column_path = f"{column_data_path}/target_columns.xlsx"
 gen_queries_path = f"{column_data_path}/generated_queries.json"
 dq_testconfig_path = f"{column_data_path}/current_testconfig.json"
-dq_data_path = f"{root_path}/test/data/dqconfig"
-dq_result_path = f"{root_path}/test/results/dataquality"
+dq_data_path = f"{root_path}test/data/dqconfig"
+dq_result_path = f"{root_path}test/results/dataquality"
 
 
 spark_conf_JSON = """ {

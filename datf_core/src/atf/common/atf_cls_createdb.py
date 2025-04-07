@@ -8,7 +8,6 @@ from testconfig import *
 
 # Establish connection with the database and create one if it does not exist
 conn = sqlite3.connect(f'{root_path}utils/{exec_db_name}.db')
-cur = conn.cursor()
 
 
 def import_excel_to_db(xls_file):
@@ -29,8 +28,11 @@ def export_db_to_excel(xls_file):
 
 
 def table_exists(table):
-    cur.execute(f"SELECT count(name) FROM sqlite_master WHERE TYPE = 'table' AND name = '{re.sub('[^a-zA-Z]+', '', table)}';")
-    if cur.fetchone()[0] == 1:
+    with conn.cursor() as cur:
+        cur.execute("SELECT count(name) FROM sqlite_master WHERE TYPE = 'table' "
+                    f"AND name = '{re.sub('[^a-zA-Z]+', '', table)}';")
+        result = cur.fetchone()[0]
+    if result == 1:
         return True
     return False
 

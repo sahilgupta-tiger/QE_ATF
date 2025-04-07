@@ -67,12 +67,13 @@ def start_execution(test_type, selected_protocol):
 
     write_protocol_to_excel(selected_protocol)
     protocol_file_path = output_file_path
-    execution_cmd = protocol_file_path + " " + test_type.lower()
+    execution_cmd = "'" + protocol_file_path + "' " + test_type.lower()
     print(execution_cmd)
 
     if st.button("Start Execution"):
         with st.spinner('Execution In-Progress. Please wait...(this may take a while)'):
-            txt_out = subprocess.run(f"sh {root_path}scripts/testingstart.sh {execution_cmd}",shell=False)
+            cmd_to_execute = ["sh", f"{root_path}scripts/testingstart.sh", execution_cmd]
+            txt_out = subprocess.run(cmd_to_execute, capture_output=True, text=True)
 
         print(txt_out.stdout)
         st.success("Completed. Click below to check results...")
@@ -104,13 +105,13 @@ def report_generation(button_text):
         tab1, tab2, tab3 = st.tabs(["Summary", "Trends", "Detailed PDF"])
 
         with tab1:
-            html_file = open(f"{root_path}/utils/reports/datfreport.html", 'r', encoding='utf-8')
-            source_code = html_file.read()
+            with open(f"{root_path}/utils/reports/datfreport.html", 'r', encoding='utf-8') as html_file:
+                source_code = html_file.read()
             components.html(source_code, height=800, width=850, scrolling=True)
 
         with tab2:
-            html_file = open(f"{root_path}/utils/reports/datf_trends_report.html", 'r', encoding='utf-8')
-            source_code = html_file.read()
+            with open(f"{root_path}/utils/reports/datf_trends_report.html", 'r', encoding='utf-8') as html_file:
+                source_code = html_file.read()
             components.html(source_code, height=800, width=850, scrolling=True)
 
         with tab3:
