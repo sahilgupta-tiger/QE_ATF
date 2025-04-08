@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import os
+import re
 from datetime import datetime
 from re import search
 from testconfig import *
@@ -241,3 +242,12 @@ def check_entire_row_is_null(df):
   # Filter the DataFrame based on the condition
   null_rows_df = df.filter(condition)
   return null_rows_df
+
+
+def sanitize_input_str(data):
+  # Validation using regular expression to allow only alphanumeric, underscore and hyphens
+  if not isinstance(data, str) or not re.match(r"^[\w-]+$", data):
+    raise ValueError("Invalid input. Only alphanumeric characters are allowed.")
+  # Sanitize input (optional, depending on context)
+  sanitized_data = data.strip()  # Remove leading/trailing whitespace
+  return sanitized_data

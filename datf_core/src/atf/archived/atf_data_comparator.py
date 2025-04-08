@@ -33,9 +33,9 @@ lst_run_testcases = [i.strip().lower() for i in str_run_testcases]
 
 # DBTITLE 1,Function to execute testcase
 def execute_testcase(testcase_details, auto_script_path):
-  comparetype = testcase_details['comparesubtype']
-  sourcequerymode = testcase_details['sourcequerymode']
-  targetquerymode = testcase_details['targetquerymode']
+  comparetype = sanitize_input_str(testcase_details['comparesubtype'])
+  sourcequerymode = sanitize_input_str(testcase_details['sourcequerymode'])
+  targetquerymode = sanitize_input_str(testcase_details['targetquerymode'])
   s2tmappingsheet = testcase_details['s2tmappingsheet']
   sourceformat = testcase_details['sourceformat']
   targetformat = testcase_details['targetformat']
