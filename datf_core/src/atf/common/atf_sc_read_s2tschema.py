@@ -1,5 +1,4 @@
-from atf.common.atf_common_functions import (get_connection_config, get_mount_path,
-                                             log_info, preproc_unnestfields)
+from atf.common.atf_common_functions import (get_connection_config, get_mount_path,log_info, preproc_unnestfields)
 from atf.common.atf_cls_loads2t import LoadS2T
 
 

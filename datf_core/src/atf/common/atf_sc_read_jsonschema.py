@@ -1,9 +1,8 @@
-from atf.common.atf_common_functions import (get_connection_config, get_mount_path,
-                                             log_info, preproc_unnestfields)
+from atf.common.atf_common_functions import (get_connection_config, get_mount_path,log_info, preproc_unnestfields)
 
 
 
-def read_jsonschema(dict_connection, comparetype):
+def read_jsonschema(dict_connection, comparetype,spark):
   connectionname = dict_connection['connectionname']
   s3bucket = get_connection_config(connectionname)['BUCKETNAME']
   json_path = get_mount_path(s3bucket + '/' + dict_connection['filepath'])
@@ -13,6 +12,7 @@ def read_jsonschema(dict_connection, comparetype):
   df_jsonunnesteddata = preproc_unnestfields(df_jsondnesteddata)
   
   df_jsonunnesteddata.createOrReplaceTempView("jsonview")
+  query = "DESCRIBE jsonview"
   df_describe = (spark.sql("DESCRIBE jsonview;"))
   
   df_jsonschema = df_describe['col_name','data_type']
@@ -21,8 +21,6 @@ def read_jsonschema(dict_connection, comparetype):
   elif comparetype == 'objectcompare':
     layer == ''
     
-  df_jsonschema = (df_jsonschema
-                   .withColumnRenamed('col_name','columnname')
-                   .withColumnRenamed('data_type','datatype'))
+  df_jsonschema = (df_jsonschema.withColumnRenamed('col_name','columnname').withColumnRenamed('data_type','datatype'))
   
-  return df_jsonschema
+  return df_jsonschema,query

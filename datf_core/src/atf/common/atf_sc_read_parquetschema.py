@@ -1,10 +1,9 @@
 from pyspark.sql.functions import lit
-from atf.common.atf_common_functions import (get_connection_config, get_mount_path,
-                                             log_info, preproc_unnestfields)
+from atf.common.atf_common_functions import (get_connection_config, get_mount_path,log_info, preproc_unnestfields)
 
 
 
-def read_parquetschema(dict_connection, comparetype):
+def read_parquetschema(dict_connection, comparetype,saprk):
   connectionname = dict_connection['connectionname']
   s3bucket = get_connection_config(connectionname)['BUCKETNAME']
   parquet_path = get_mount_path(s3bucket + '/' + dict_connection['filepath'])
@@ -13,6 +12,7 @@ def read_parquetschema(dict_connection, comparetype):
   
   df_parquetddata = (spark.read.format("parquet").load(parquet_path).limit(1))
   df_parquetddata.createOrReplaceTempView("parquetview")
+  query = "DESCRIBE parquetview"
   df_describe = (spark.sql("DESCRIBE parquetview;"))
   if comparetype == 's2tcompare':
     layer = dict_connection['layer']
@@ -24,4 +24,4 @@ def read_parquetschema(dict_connection, comparetype):
                       .withColumnRenamed('col_name','columnname')
                       .withColumnRenamed('data_type','datatype'))
   
-  return df_parquetschema
+  return df_parquetschema,query

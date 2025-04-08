@@ -4,11 +4,17 @@ from atf.common.atf_common_functions import log_info,readconnectionconfig
 import os
 
 
-def read_bigqueryschema(dict_connection, comparetype):
+def read_bigqueryschema(dict_connection, comparetype,spark):
 
   connectionname = dict_connection['connectionname']
-  tablename = dict_connection['tablename']
-  schemaname = dict_connection['schemaname']
+  #Commented the below two lines on 07/04/2025
+  #tablename = dict_connection['tablename']
+  #schemaname = dict_connection['schemaname']
+  #Add the below three line on 07/04/2025
+  resourcename = dict_connection['filename']
+  tablename = resourcename.split(".")[1]
+  schemaname = resourcename.split(".")[0]
+  
   layer = ''
   connectionconfig = readconnectionconfig(connectionname)
   log_info("Connecting to Bigquery database")
@@ -39,4 +45,4 @@ def read_bigqueryschema(dict_connection, comparetype):
                    .withColumn('columnname',lower(col('columnname')))
                    .withColumn('datatype',lower(col('datatype'))))
   
-  return df_bigqueryschema
+  return df_bigqueryschema,bqquery

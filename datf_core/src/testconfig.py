@@ -7,10 +7,10 @@ import pytz
 import os
 from cryptography.fernet import Fernet
 
-protocol_engine = "docker" # options: default, databricks, docker
+protocol_engine = "databricks" # options: default, databricks, docker
 
 if protocol_engine == "databricks":
-    root_path = os.getenv('CWD')
+    root_path = os.getenv('CWD') + "/datf_core/"
 elif protocol_engine == "docker":
     root_path = "datf_core/"
 else:
@@ -26,6 +26,8 @@ exec_table_name = 'testselection'
 exec_sheet_name = 'protocoltestcasedetails'
 protocol_tab_name = 'protocol'
 genai_conn_json = "azure_open_ai_connection"
+
+
 tc_path = f"{root_path}/test/testprotocol"
 sqlbulk_path = f"{root_path}/test/sqlbulk"
 bulkresults_path = f"{root_path}/test/results/bulkresults"
@@ -35,10 +37,9 @@ column_data_path = f"{root_path}test/data/columndata"
 src_column_path = f"{column_data_path}/source_columns.xlsx"
 tgt_column_path = f"{column_data_path}/target_columns.xlsx"
 gen_queries_path = f"{column_data_path}/generated_queries.json"
+dq_testconfig_path = f"{column_data_path}/current_testconfig.json"
 dq_data_path = f"{root_path}/test/data/dqconfig"
 dq_result_path = f"{root_path}/test/results/dataquality"
-dq_testconfig_path = f"{column_data_path}/current_testconfig.json"
-
 
 spark_conf_JSON = """ {
     "spark.executor.instances": "18",

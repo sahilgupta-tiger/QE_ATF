@@ -1,6 +1,6 @@
 from atf.common.atf_common_functions import get_connection_config, get_mount_path, log_info
 
-def read_deltaschema(dict_connection, comparetype):
+def read_deltaschema(dict_connection, comparetype,spark):
   connectionname = dict_connection['connectionname']
   s3bucket = get_connection_config(connectionname)['BUCKETNAME']
   delta_path = get_mount_path(s3bucket + '/' + dict_connection['filepath'])
@@ -22,7 +22,7 @@ def read_deltaschema(dict_connection, comparetype):
   df_deltaschema = df_deltaschema.filter((col("columnname") != "") & (col("columnname") != "# Partitioning") & (~col("columnname").contains("Part ")))
 
   
-  return df_deltaschema
+  return df_deltaschema,sql_desc_query
 
 # COMMAND ----------
 

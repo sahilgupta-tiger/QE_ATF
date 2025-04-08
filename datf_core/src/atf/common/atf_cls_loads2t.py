@@ -158,6 +158,15 @@ class LoadS2T:
     self.sourceschema_df=self.schema_df.filter(col("tabletype") == 'source')
     self.stageschema_df=self.schema_df.filter(col("tabletype") == 'stage')
     self.targetschema_df=self.schema_df.filter(col("tabletype") == 'target') 
+    if self.sourceschema_df.count() == 0:
+      self.s2t_sourceschema_df = None
+    else:
+      self.s2t_sourceschema_df = sourceschema_df
+    if self.targetschema_df.count() == 0:
+      self.s2t_targetschema_df = None
+    else:
+      self.s2t_targetschema_df = targetschema_df
+
    
     self.stagemapping_df=self.spark.createDataFrame([], StructType([])) #Added by Susan
 
@@ -204,6 +213,13 @@ class LoadS2T:
                                .join(self.tgtschema_df, self.targetmapping_df.tgtcolumnname == self.tgtschema_df.targetcolumnname,"left_outer")
                                .join(self.srcschema_df, self.targetmapping_df.srccolumnname == self.srcschema_df.sourcecolumnname,"left_outer")
                                .drop("targetcolumnname","sourcecolumnname"))
+
+  #Added the function on 07/04/2025
+  def getSchema(self,validationtype):
+    if validationtype == "source":
+      return self.s2t_sourceschema_df
+    elif validationtype == "stage":
+      return self.s2t_targetschema_df
       
       
   def getSchemaStruct(self,entitytype):

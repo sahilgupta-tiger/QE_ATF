@@ -3,7 +3,7 @@ from pyspark.sql.types import *
 from pyspark.sql.functions import *
 
 
-def read_avroschema(dict_connection, comparetype):
+def read_avroschema(dict_connection, comparetype,spark):
   connectionname = dict_connection['connectionname']
   s3bucket = get_connection_config(connectionname)['BUCKETNAME']
   avro_path = get_mount_path(s3bucket + '/' + dict_connection['filepath'])
@@ -13,6 +13,7 @@ def read_avroschema(dict_connection, comparetype):
   df_avrounnesteddata = preproc_unnestfields(df_avronesteddata)
   
   df_avrounnesteddata.createOrReplaceTempView("avroview")
+  query = "DESCRIBE avroview;"
   df_describe = (spark.sql("DESCRIBE avroview;"))
   df_avroschema = df_describe['col_name','data_type']
   if comparetype == 's2tcompare':
@@ -24,4 +25,4 @@ def read_avroschema(dict_connection, comparetype):
                    .withColumnRenamed('col_name','columnname')
                    .withColumnRenamed('data_type','datatype'))
   
-  return df_avroschema
+  return df_avroschema,query

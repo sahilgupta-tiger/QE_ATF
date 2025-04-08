@@ -2,12 +2,17 @@
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from atf.common.atf_common_functions import log_info,debugexit
-from testconfig import root_path
+from testconfig import root_path,protocol_engine
+import os
 
 
 def read_parquetdata(tc_datasource_config,spark):
   log_info("Reading parquet file")
-  tc_datasrc_path = root_path + tc_datasource_config['path']
+  if protocol_engine == "databricks":
+    tc_datasrc_path = "file:" + root_path + tc_datasource_config['path']
+  else: 
+    tc_datasrc_path = root_path + tc_datasource_config['path']
+  log_info("tc_datasrc_path: "+tc_datasrc_path)
   df = spark.read.parquet(tc_datasrc_path)
   df.createOrReplaceTempView(tc_datasource_config['aliasname'])
   

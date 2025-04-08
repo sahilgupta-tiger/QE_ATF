@@ -11,55 +11,55 @@ from atf.common.atf_sc_read_deltaschema import read_deltaschema
 from atf.common.atf_sc_read_s2tschema import read_S2Tschema
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
-from s2ttester import spark
 
 
-def read_schema(dict_connection,comparetype): 
+
+def read_schema(dict_connection,comparetype,spark): 
   df_schema = spark.createDataFrame([], StructType([]))
   connectiontype = dict_connection['connectiontype'].strip().lower()
-  connectionformat = dict_connection['format'].strip().lower()
+  resourceformat = dict_connection['format'].strip().lower()
     
-  if(connectiontype == 'aws-s3' and connectionformat == 'xlsx'):
-    df_S2Tschema = read_S2Tschema(dict_connection,comparetype)
+  if(connectiontype == 'aws-s3' and resourceformat == 'xlsx'):
+    df_S2Tschema,query = read_S2Tschema(dict_connection,comparetype,spark)
     df_schema = df_S2Tschema
     
-  elif(connectiontype == 'aws-s3' and connectionformat == 'parquet'):
-    df_parquetschema = read_parquetschema(dict_connection, comparetype)
+  elif(connectiontype == 'aws-s3' and resourceformat == 'parquet'):
+    df_parquetschema,query = read_parquetschema(dict_connection, comparetype,spark)
     df_schema = df_parquetschema
   
-  elif(connectiontype == 'aws-s3' and connectionformat == 'avro'):
-    df_avroschema = read_avroschema(dict_connection, comparetype)
+  elif(connectiontype == 'aws-s3' and resourceformat == 'avro'):
+    df_avroschema,query = read_avroschema(dict_connection, comparetype,spark)
     df_schema = df_avroschema
   
-  elif(connectiontype == 'aws-s3' and connectionformat == 'delimited'):
-    df_delimitedschema = read_delimitedschema(dict_connection, comparetype)
+  elif(connectiontype == 'aws-s3' and resourceformat == 'delimited'):
+    df_delimitedschema,query = read_delimitedschema(dict_connection, comparetype,spark)
     df_schema = df_delimitedschema
   
-  elif(connectiontype == 'aws-s3' and connectionformat == 'json'):
-    df_jsonschema = read_jsonschema(dict_connection, comparetype)
+  elif(connectiontype == 'aws-s3' and resourceformat == 'json'):
+    df_jsonschema,query = read_jsonschema(dict_connection, comparetype,spark)
     df_schema = df_jsonschema
   
-  elif(connectiontype == 'aws-s3' and connectionformat == 'delta'):
-    df_deltaschema = read_deltaschema(dict_connection, comparetype)
+  elif(connectiontype == 'aws-s3' and resourceformat == 'delta'):
+    df_deltaschema,query = read_deltaschema(dict_connection, comparetype,spark)
     df_schema = df_deltaschema
     
-  elif(connectiontype == 'oracle' and connectionformat == 'table'):
-    df_oracleschema = read_oracleschema(dict_connection, comparetype)
+  elif(connectiontype == 'oracle' and resourceformat == 'table'):
+    df_oracleschema,query = read_oracleschema(dict_connection, comparetype,spark)
     df_schema = df_oracleschema
 
-  elif(connectiontype == 'mysql' and connectionformat == 'table'):
-    df_mysqlschema = read_mysqlschema(dict_connection, comparetype)
+  elif(connectiontype == 'mysql' and resourceformat == 'table'):
+    df_mysqlschema,query = read_mysqlschema(dict_connection, comparetype,spark)
     df_schema = df_mysqlschema
     
-  elif(connectiontype == 'redshift' and connectionformat == 'table'):
-    df_redshiftschema = read_redshiftschema(dict_connection, comparetype)
+  elif(connectiontype == 'redshift' and resourceformat == 'table'):
+    df_redshiftschema,query = read_redshiftschema(dict_connection, comparetype,spark)
     df_schema = df_redshiftschema
 
-  elif(connectiontype == 'bigquery' and connectionformat == 'table'):
-    df_bigqueryschema = read_bigqueryschema(dict_connection, comparetype)
+  elif(connectiontype == 'bigquery' and resourceformat == 'table'):
+    df_bigqueryschema,query = read_bigqueryschema(dict_connection, comparetype,spark)
     df_schema = df_bigqueryschema
 
   else:
     pass
 
-  return df_schema
+  return df_schema, query
