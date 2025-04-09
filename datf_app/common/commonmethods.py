@@ -154,8 +154,8 @@ def save_df_into_db(modified_df, selected_protocol):
 def test_connectivity_from_testcase(chosen_protocol, chosen_testcase):
     cmd_to_execute = ["sh", f"{root_path}/scripts/conncheck.sh",
                       f"{tc_path}/{chosen_protocol}", chosen_testcase]
-    sub_out = subprocess.run(cmd_to_execute, capture_output=True, text=True)
-    print(sub_out.stdout)
+    sub_out = subprocess.run(cmd_to_execute)
+    #print(sub_out.stdout)
     src_col_df = pd.read_excel(src_column_path)
     tgt_col_df = pd.read_excel(tgt_column_path)
     return src_col_df, tgt_col_df
