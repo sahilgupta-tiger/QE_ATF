@@ -1,0 +1,157 @@
+
+        <html>
+        <head>
+            <title>DATF Test Run Report</title>
+            <style>
+                /* Define a CSS style for the headers */
+                h2, h3, h4 {
+                    font-size: 18px;
+                    font-family: Arial, sans-serif;
+                }
+                /* Style to display elements side by side */
+                .flex-container {
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+            </style>
+
+        </head>
+        <body>
+            <h1>DATF Test Execution Summary</h1>
+            <div class="flex-container">
+                <div>
+                    <h3><b>1. Overall Status</b></h3>
+                    <div>
+                        
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+        
+            var pieChartData = [['Status', 'Count'], ['Failed', 2]]
+
+        function drawChart() {
+          // Drawing Pie Chart for Test Case Execution Results
+          var pieData = google.visualization.arrayToDataTable(pieChartData);       
+    
+          var pieOptions = {
+            title: 'Test Result Distribution',
+            is3D: true,
+            legend: 'none',
+                   colors:['red']
+
+          };
+
+          var pieChart = new google.visualization.PieChart(document.getElementById('pie_chart'));
+          pieChart.draw(pieData, pieOptions);
+        }
+      </script>
+    </head>
+    <body>
+      <div id="pie_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
+    </body>
+    </html>
+      <!-- Embed the pie chart here -->
+                    </div>
+                </div>
+                <div>
+                    <h3><b>2. Duration Summary</b></h3>
+                    
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+          // Drawing Bar Chart for Test Case Execution Time Intervals
+          var timeData = new google.visualization.DataTable();
+          timeData.addColumn('string', 'Time Intervals');
+          timeData.addColumn('number', 'Number of Test Cases');
+          timeData.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
+
+          timeData.addRows([
+            ['0s-45s', 0, 'No test cases'],
+        ['45s-2m', 1, 'testcaseNon_parquet_parquet_mismatch_manual'],
+        ['2m-5m', 1, 'testcase12_parquet_parquet_mismatch_manual'],
+        ['5m+', 0, 'No test cases'],
+
+          ]);
+
+          var timeOptions = {
+            title: 'Test Execution Time Intervals',
+            legend: {position: 'none'},
+            hAxis: {
+              title: 'Number of Test Cases',
+              minValue: 0,
+            },
+            vAxis: {
+              title: 'Time Intervals',
+              textStyle: { fontSize: 12 }
+            },
+            tooltip: { isHtml: true }
+          };
+
+          var timeChart = new google.visualization.BarChart(document.getElementById('time_chart'));
+          timeChart.draw(timeData, timeOptions);
+        }
+      </script>
+    </head>
+    <body>
+      <div id="time_chart" style="width: 700px; height: 500px; display: inline-block;"></div>
+    </body>
+    </html>
+      <!-- Include the duration chart here -->
+                </div>
+            </div>
+            <h2><b>2. Protocol Test Results</b></h2>
+            <p><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Testcase Name</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Source</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows in Target</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows matched</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">No. of Rows mismatched</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Test Result</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Reason</th>
+      <th style = "background-color: #C65911;font-family: Century Gothic, sans-serif;font-size: medium;color: #FFFFFF;text-align: left;border-bottom: 2px solid #C65911;padding: 0px 20px 0px 0px;width: auto">Runtime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcase12_parquet_parquet_mismatch_manual</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">25</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">25</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">25</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Content mismatched</td>
+      <td style = "background-color: #FCE4D6;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:03:02</td>
+    </tr>
+    <tr>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">testcaseNon_parquet_parquet_mismatch_manual</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">25</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">25</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Failed</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">Content mismatched</td>
+      <td style = "background-color: white; color: black;font-family: Century Gothic, sans-serif;font-size: medium;text-align: left;padding: 0px 20px 0px 0px;width: auto">0:01:22</td>
+    </tr>
+  </tbody>
+</table></p>
+            <h2><b>3. Protocol Run Details</b></h2>
+            <p><span style='font-weight:bold'>Application Name</span><span class='tab'></span>: etl_pipeline_goldlayer<br><span style='font-weight:bold'>Test Protocol Name</span><span class='tab'></span>: DATFDemo<br><span style='font-weight:bold'>Test Protocol Version</span><span class='tab'></span>: 3<br><span style='font-weight:bold'>Test Environment</span><span class='tab'></span>: SIT<br><span style='font-weight:bold'>Test Protocol Start Time</span><span class='tab'></span>: 16-Apr-2025 08:27:49 UTC<br><span style='font-weight:bold'>Test Protocol End Time</span><span class='tab'></span>: 16-Apr-2025 08:32:58 UTC<br><span style='font-weight:bold'>Total Protocol Run Time</span><span class='tab'></span>: 0:05:08<br><span style='font-weight:bold'>Total No of Test Cases</span><span class='tab'></span>: 2<br><span style='font-weight:bold'>No of Test Cases Passed</span><span class='tab'></span>: 0<br><span style='font-weight:bold'>No of Test Cases Failed</span><span class='tab'></span>: 2<br></p>
+            <h2><b>4. Protocol Run Parameters</b></h2>
+            <p><span style='font-weight:bold'>Protocol File Path</span><span class='tab'></span>: /Workspace/Shared/QE_ATF_Enhanced_03/datf_core/test/testprotocol/traversedtestprotocol_schema_loman_neg.xlsx<br><span style='font-weight:bold'>Testcase Type</span><span class='tab'></span>: schema<br></p>
+           
+        </body>
+        </html>
+    

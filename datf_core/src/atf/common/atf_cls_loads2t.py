@@ -161,11 +161,11 @@ class LoadS2T:
     if self.sourceschema_df.count() == 0:
       self.s2t_sourceschema_df = None
     else:
-      self.s2t_sourceschema_df = sourceschema_df
+      self.s2t_sourceschema_df = self.sourceschema_df
     if self.targetschema_df.count() == 0:
       self.s2t_targetschema_df = None
     else:
-      self.s2t_targetschema_df = targetschema_df
+      self.s2t_targetschema_df = self.targetschema_df
 
    
     self.stagemapping_df=self.spark.createDataFrame([], StructType([])) #Added by Susan
@@ -218,7 +218,7 @@ class LoadS2T:
   def getSchema(self,validationtype):
     if validationtype == "source":
       return self.s2t_sourceschema_df
-    elif validationtype == "stage":
+    elif validationtype == "target":
       return self.s2t_targetschema_df
       
       

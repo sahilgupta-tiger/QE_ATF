@@ -1,6 +1,6 @@
 # Databricks notebook source
-dbutils.widgets.text('test_protocol_name', 'traversedtestprotocol')
-dbutils.widgets.dropdown("test_type", "content", ['count', 'duplicate', 'content'])
+dbutils.widgets.text('test_protocol_name', 'traversedtestprotocol_schema_loman')
+dbutils.widgets.dropdown("test_type", "schema", ['count', 'duplicate', 'content','schema'])
 dbutils.widgets.text('test_names', 'all')
 dbutils.widgets.text('work_path', '/Workspace/Shared/QE_ATF_Enhanced_03')
 

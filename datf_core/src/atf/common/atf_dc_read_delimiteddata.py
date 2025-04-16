@@ -2,6 +2,7 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark import StorageLevel
 from atf.common.atf_common_functions import log_info
+from testconfig import root_path,protocol_engine
 
 def read_delimiteddata(tc_datasource_config,spark):
   log_info("Reading delimited File")
@@ -9,6 +10,7 @@ def read_delimiteddata(tc_datasource_config,spark):
   connectiontype =tc_datasource_config['connectiontype']
   resourceformat =tc_datasource_config['format']
   delimiter =tc_datasource_config['delimiter']
+  path = 'file:' + root_path + tc_datasource_config['path'] #Please comment this line if you execute in docker
 
   if tc_datasource_config['testquerygenerationmode'] == 'Auto':
     resourcename =tc_datasource_config['name']
@@ -34,7 +36,8 @@ def read_delimiteddata(tc_datasource_config,spark):
     f = open(querypath,"r")
     query= f.read().splitlines()
     query=' '.join(query)
-    df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(tc_datasource_config['path'], header = True)
+    #df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(tc_datasource_config['path'], header = True)
+    df=spark.read.option("delimiter", tc_datasource_config['delimiter']).schema(tc_datasource_config['schemastruct']).csv(path, header = True)
     df.printSchema()
     print(tc_datasource_config['aliasname'])
     df.createOrReplaceTempView(tc_datasource_config['aliasname'])

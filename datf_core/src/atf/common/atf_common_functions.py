@@ -250,3 +250,50 @@ def check_entire_row_is_null(df):
   # Filter the DataFrame based on the condition
   null_rows_df = df.filter(condition)
   return null_rows_df
+
+def read_s2t(path,spark):
+  configFilePath = root_path + path
+  log_info(f"Reading the schema worksheet from s2t file from the path for LikeObjectCompare - {configFilePath}")
+  schema_pddf=pd.read_excel(configFilePath, engine='openpyxl',sheet_name='Schema')
+
+  schema_pddf=schema_pddf.fillna("")
+  schema_df=spark.createDataFrame(schema_pddf)
+      #self.schema_df.printSchema() 
+      
+  sourceschema_df=schema_df.filter(F.col("tabletype") == 'source')
+  targetschema_df=schema_df.filter(F.col("tabletype") == 'target') 
+  if sourceschema_df.count() == 0:
+      source_s2t_schema_df = None
+      sourceflag = 'N'
+  else:
+      source_s2t_schema_df = sourceschema_df
+      source_s2t_schema_df = source_s2t_schema_df.drop("comments")
+      sourceflag = 'Y'
+  if targetschema_df.count() == 0:
+      target_s2t_schema_df = None
+      targetflag = 'N'
+  else:
+      target_s2t_schema_df = targetschema_df
+      targetflag = 'Y'
+      target_s2t_schema_df = target_s2t_schema_df.drop("comments")
+  return source_s2t_schema_df, target_s2t_schema_df, sourceflag, targetflag
+
+def get_actual_schema(file_details_dict,actual_schema_df):
+  if file_details_dict['format'] != 'table':
+    actual_schema_df = actual_schema_df.drop("comment")
+    actual_columns = actual_schema_df.columns
+    log_info(f"Actual columns in the dataframe - {actual_columns}")
+    expected_columns = ["tabletype","tablename","columnname","columnindex","datatype","nullable","primarykey","partitionby","sortkey","length","precision","scale"] 
+    for col_name in expected_columns:
+        if col_name not in actual_columns:
+            if col_name == 'tabletype':
+                actual_schema_df = actual_schema_df.withColumn(col_name, lit('target'))
+            elif col_name == 'tablename':
+                actual_schema_df = actual_schema_df.withColumn(col_name, lit(file_details_dict['aliasname']))
+            else:
+                actual_schema_df = actual_schema_df.withColumn(col_name, lit(''))
+    actual_schema_df = actual_schema_df.select("tabletype","tablename","columnname","columnindex","datatype","nullable","primarykey","partitionby","sortkey","length","precision","scale")
+  else:    
+    actual_schema_df = actual_schema_df.withColumn("tabletype",lit("source")).withColumn("tablename",lit(file_details_dict['aliasname']))
+    actual_schema_df = actual_schema_df.select("tabletype","tablename","columnname","columnindex","datatype","nullable","primarykey","partitionby","sortkey","length","precision","scale")
+  return actual_schema_df

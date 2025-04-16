@@ -13,10 +13,11 @@ from atf.common.atf_cls_pdfformatting import generatePDF
 from atf.common.atf_cls_results_chart import generate_results_charts
 from atf.common.atf_cls_s2tautosqlgenerator import S2TAutoLoadScripts
 from atf.common.atf_common_functions import read_protocol_file, log_error, log_info, read_test_case, \
-    get_connection_config, get_mount_src_path,apply_md5_hash,verify_nulls,verify_duplicates,check_empty_values, check_entire_row_is_null, list_duplicate_values,verify_dup_pk
+    get_connection_config, get_mount_src_path,apply_md5_hash,verify_nulls,verify_duplicates,check_empty_values, check_entire_row_is_null, list_duplicate_values,verify_dup_pk,read_s2t,get_actual_schema
 
 from atf.common.atf_dc_read_datasources import read_data
 from atf.common.atf_pdf_constants import *
+from atf.common.atf_sc_read_datasources import read_schema #Added the line on 07/04/2025
 from testconfig import *
 
 
@@ -117,7 +118,7 @@ class S2TTester:
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No of column has null in source','No of column has null in target',
                                     'No of columns has null count match','No of columns has null count mismatch', 'Test Result', 'Reason', 'Runtime'])
 
-        elif testcasetype == "content":
+        elif testcasetype == "content" or testcasetype == 'schema': #Included the testcase type Schema condition on 07/05
             df_protocol_summary = pd.DataFrame(columns=['Testcase Name', 'No. of Rows in Source', 'No. of Rows in Target',
                                     'No. of Rows matched', 'No. of Rows mismatched', 'Test Result', 'Reason', 'Runtime'])
         
@@ -252,7 +253,7 @@ class S2TTester:
                                     str(dict_testresults['No of columns has null count match']),str(dict_testresults['No of columns has null count mismatch']),dict_compareoutput['test_result'],
                                                       dict_compareoutput['result_desc'], str(testcase_exectime)]
 
-                elif testcasetype == "content":
+                elif testcasetype == "content" or testcasetype == 'schema': #Included schema condtion on 07/04/2025
                     df_protocol_summary.loc[index] = [test_case_name, str(dict_testresults['No. of rows in Source']), str(dict_testresults['No. of rows in Target']),
                                     str(dict_testresults['No. of matched rows']), str(dict_testresults['No. of mismatched rows']), dict_compareoutput['test_result'],
                                                       dict_compareoutput['result_desc'], str(testcase_exectime)]
@@ -333,6 +334,8 @@ class S2TTester:
         join_cols_target = []
         map_cols = []
 
+        #tc_config['testquerygenerationmode'] = 'Auto' #Please comment it
+
         if tc_config['s2tpath'] != "":
             log_info(f"Reading the S2T for Source Details located at {tc_config['s2tpath']}")
 
@@ -342,29 +345,36 @@ class S2TTester:
         if (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Manual'):
             log_info("Reading the Source Data")
             tc_source_config = {'aliasname': tc_config['sourcealiasname'], 'connectiontype': tc_config['sourceconnectiontype'],
-                           'path': tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
+                           'path':  tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
                            'connectionname': tc_config['sourceconnectionname'], 
                            'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'], 
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
-                           'querypath': tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],
+                           'querypath': root_path + tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],
                            'schemastruct': s2tobj.getSchemaStruct("source"),'comparetype':tc_config['comparetype'],'filename':tc_config['sourcefilename']}
-            source_df, source_query = read_data(tc_source_config,self.spark)
+            if testcasetype == 'schema':
+                log_info(f"PLEASE USE QUERY MODE AS 'MANUAL' FOR FORMAT : {tc_config['sourcefileformat']} IN SOURCE ")
+            else:
+                source_df, source_query = read_data(tc_source_config,self.spark)
+
 
             log_info(f"Reading the Target Data")
             tc_target_config = {'aliasname': tc_config['targetaliasname'], 'connectiontype': tc_config['targetconnectiontype'],
-                           'path': tc_config['targetfilepath']+"/"+tc_config['targetfilename'], 'format': tc_config['targetfileformat'], 
+                           'path':  tc_config['targetfilepath']+"/"+tc_config['targetfilename'], 'format': tc_config['targetfileformat'], 
                            'connectionname': tc_config['targetconnectionname'], 
                            'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'], 
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
-                           'querypath': tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],
-                           'schemastruct': s2tobj.getSchemaStruct("target"),'comparetype':tc_config['comparetype'],'filename':tc_config['targetfilename']}    
-            target_df, target_query = read_data(tc_target_config,self.spark)
+                           'querypath': root_path + tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],
+                           'schemastruct': s2tobj.getSchemaStruct("target"),'comparetype':tc_config['comparetype'],'filename':tc_config['targetfilename']} 
+            if testcasetype == 'schema':
+                log_info(f"PLEASE USE QUERY MODE AS 'MANUAL' FOR FORMAT : {tc_config['targetfileformat']} IN TARGET")
+            else:
+                target_df, target_query = read_data(tc_target_config,self.spark)
 
         elif (tc_config['comparetype'] == 's2tcompare' and tc_config['testquerygenerationmode'] == 'Auto'):
             # s2tconnectionval = get_connection_config(testcase_details['s2tconnectionname'])['BUCKETNAME']
             # s2tfilepath = s2tconnectionval + testcase_details['s2tpath']
             log_info(f"Reading the Source Data")
-            tc_source_config = {'connectionname': tc_config['sourceconnectionname'], 'connectiontype': tc_config['sourceconnectiontype'],
+            tc_source_config = {'aliasname': tc_config['sourcealiasname'],'connectionname': tc_config['sourceconnectionname'], 'connectiontype': tc_config['sourceconnectiontype'],
                            'path': tc_config['sourcefilepath'], 'format': tc_config['sourcefileformat'], 'name': tc_config['sourcefilename'],
                            'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'],
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'],
@@ -372,12 +382,21 @@ class S2TTester:
                            'filename':tc_config['sourcefilename']}
             autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_source_config, self.spark)
             scriptpath, source_df, source_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
+            log_info(f"Reading the Source Data s2t {source_file_details_dict}")
             source_conn_name = source_file_details_dict["connectionname"]
             join_cols_source = source_file_details_dict["join_columns"]
             source_query = open(scriptpath).read().split('\n')
+            #Added the if loop completely on 07/04/2025
+            if testcasetype == 'schema':
+                source_s2t_schema_df = s2tobj.getSchema("source")
+                sourceflag, source_s2t_schema_df = ('Y', source_s2t_schema_df.drop("comments")) if source_s2t_schema_df.count() > 0 else ('N', source_s2t_schema_df)
+                log_info("Printing s2t source schema")
+                source_s2t_schema_df.show()
+                source_actual_schema_df, source_schema_query = read_schema(source_file_details_dict,tc_config['comparetype'],self.spark)
+                source_actual_schema_df = get_actual_schema(source_file_details_dict,source_actual_schema_df)
 
             log_info(f"Reading the Target Data")
-            tc_target_config = {'connectionname': tc_config['targetconnectionname'], 'connectiontype': tc_config['targetconnectiontype'],
+            tc_target_config = {'aliasname': tc_config['sourcealiasname'],'connectionname': tc_config['targetconnectionname'], 'connectiontype': tc_config['targetconnectiontype'],
                            'path': tc_config['targetfilepath'], 'format': tc_config['targetfileformat'], 'name': tc_config['targetfilename'],
                            'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'],
                            'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'],
@@ -385,11 +404,23 @@ class S2TTester:
                            'filename':tc_config['targetfilename']}
             autoldscrobj = S2TAutoLoadScripts(s2tobj, tc_target_config, self.spark)
             scriptpath, target_df, target_file_details_dict = autoldscrobj.getSelectTableCmd(s2tmappingsheet)
+            log_info(f"Reading the target Data s2t {target_file_details_dict}")
             target_conn_name = target_file_details_dict["connectionname"]
             join_cols_target = target_file_details_dict["join_columns"]
             target_query = open(scriptpath).read().split('\n')
+            #Added if loop completely on 07/04/2025
+            if testcasetype == 'schema':
+                target_s2t_schema_df = s2tobj.getSchema("target")
+                targetflag, target_s2t_schema_df = ('Y', target_s2t_schema_df.drop("comments")) if target_s2t_schema_df.count() > 0 else ('N', target_s2t_schema_df)
+                log_info("Printing s2t target schema")
+                target_s2t_schema_df.show()
+                log_info(f"row count of source -- {source_s2t_schema_df.count()}")
+                log_info(f"row count of target -- {target_s2t_schema_df.count()}")
+                target_actual_schema_df, target_schema_query = read_schema(target_file_details_dict,tc_config['comparetype'],self.spark)
+                #target_actual_schema_df = target_actual_schema_df.withColumn(lit("target"),"tabletype").select("tabletype","tablename","columnname","columnindex","datatype","nullable","primarykey","length","precision","scale")
+                target_actual_schema_df = get_actual_schema(target_file_details_dict,target_actual_schema_df)
 
-        elif tc_config['comparetype'] == 'likeobjectcompare':
+        elif tc_config['comparetype'] == 'likeobjectcompare' and tc_config['testquerygenerationmode'] == 'Manual':
             log_info("Reading the Source Data")
             tc_source_config = {'aliasname': tc_config['sourcealiasname'], 'connectiontype': tc_config['sourceconnectiontype'],
                            'path': tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
@@ -409,7 +440,61 @@ class S2TTester:
                            'querypath': root_path + tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
                            'filename':tc_config['targetfilename']}    
             target_df, target_query = read_data(tc_target_config,self.spark)
-            
+
+
+        #Added the elif statement and loop completely on 07/04/2025 
+        
+        #Added the code to handle Auto query mode on 07/04/2025
+        elif tc_config['comparetype'] == 'likeobjectcompare' and tc_config['testquerygenerationmode'] == 'Auto':
+            log_info("Reading the Source Data")
+            tc_source_config = {'aliasname': tc_config['sourcealiasname'], 'connectiontype': tc_config['sourceconnectiontype'],
+                           'path': tc_config['sourcefilepath']+"/"+tc_config['sourcefilename'], 'format': tc_config['sourcefileformat'], 
+                           'connectionname': tc_config['sourceconnectionname'], 
+                           'excludecolumns': tc_config['sourceexcludecolumnlist'], 'filter': tc_config['sourcefilter'], 
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['sourcefiledelimiter'], 
+                           'querypath': root_path + tc_config['sourcequerysqlpath']+"/"+tc_config['sourcequerysqlfilename'],'comparetype':tc_config['comparetype'],
+                           'filename':tc_config['sourcefilepath']+"."+tc_config['sourcefilename']}
+            if testcasetype != 'schema':
+                source_df, source_query = read_data(tc_source_config,self.spark)
+            else:
+                log_info("In Schem condition 1")
+                #tc_config['s2tpath'] = 'test/s2t/s2t_1_parquet_parquet_mismatch.xlsx' #Please comment it
+                source_s2t_schema_df, target_s2t_schema_df,sourceflag,targetflag = read_s2t(tc_config['s2tpath'],self.spark)
+                source_actual_schema_df, source_schema_query = read_schema(tc_source_config,tc_config['comparetype'],self.spark)
+                source_actual_schema_df = get_actual_schema(tc_source_config,source_actual_schema_df)
+                
+                    
+
+            log_info(f"Reading the Target Data")
+            tc_target_config = {'aliasname': tc_config['targetaliasname'], 'connectiontype': tc_config['targetconnectiontype'],
+                           'path': tc_config['targetfilepath']+"/"+tc_config['targetfilename'], 'format': tc_config['targetfileformat'], 
+                           'connectionname': tc_config['targetconnectionname'], 
+                           'excludecolumns': tc_config['targetexcludecolumnlist'], 'filter': tc_config['targetfilter'], 
+                           'testquerygenerationmode': tc_config['testquerygenerationmode'], 'delimiter': tc_config['targetfiledelimiter'], 
+                           'querypath': root_path + tc_config['targetquerysqlpath']+"/"+tc_config['targetquerysqlfilename'],'comparetype':tc_config['comparetype'],
+                           'filename':tc_config['targetfilepath']+"."+tc_config['targetfilename']} 
+            if testcasetype != 'schema':   
+                target_df, target_query = read_data(tc_target_config,self.spark)
+            else:
+                log_info("In Schem condition 2")
+                target_actual_schema_df, target_schema_query = read_schema(tc_target_config,tc_config['comparetype'],self.spark)
+                target_actual_schema_df = get_actual_schema(tc_target_config,target_actual_schema_df)
+
+        if testcasetype == 'schema' and tc_config['testquerygenerationmode'] == 'Auto':
+            log_info("In New Condition")
+            if sourceflag == 'N' and targetflag !='N':
+                target_df = target_actual_schema_df
+                source_df = target_s2t_schema_df
+            elif sourceflag != 'N' and targetflag =='N':
+                source_df = source_s2t_schema_df
+                target_df = source_actual_schema_df
+            else:
+                source_df = source_s2t_schema_df.union(target_s2t_schema_df)
+                target_df = source_actual_schema_df.union(target_actual_schema_df)
+            source_df.show()
+            target_df.show()  
+            source_query = "select * from s2tmappingsheet.schema where tabletype in ('source','target')"
+            target_query = source_schema_query + " union " + target_schema_query
 
         if (source_file_details_dict is not None):
             file_details_dict = {"sourcefile": source_file_details_dict["file_path"], "targetfile": target_file_details_dict["file_path"], "sourceconnectionname": source_conn_name,
@@ -439,7 +524,10 @@ class S2TTester:
                          'joincolumns': join_cols, 
                          'testcasetype': testcasetype, 
                          'limit': limit, 
-                         "filedetails": file_details_dict}
+                         "filedetails": file_details_dict,
+                         "sourceformat": tc_config['sourcefileformat'],
+                         "targetformat": tc_config['targetfileformat'],
+                         "testmode":tc_config['testquerygenerationmode']}
         # print(compare_input)
         return compare_input
 
@@ -449,9 +537,11 @@ class S2TTester:
         sourcedf = compare_input['sourcedf']
         targetdf = compare_input['targetdf']
         joincolumns = compare_input['joincolumns']
-        log_info(f"Joining with column names: {joincolumns}")
         colmapping = compare_input['colmapping']
         limit = compare_input['limit']
+        testmode = compare_input['testmode']
+        sourceformat = compare_input['sourceformat']
+        targetformat = compare_input['targetformat']
         dict_match_summary = {}
         dict_match_details = {}
         # Initial spark memory processing STARTS HERE...
@@ -463,6 +553,7 @@ class S2TTester:
         if (testcasetype == 'content'):
             
             print("Comparing Contents of Source and Target now...(this may take a while)...")
+            log_info(f"Joining with column names: {joincolumns}")
             comparison_obj = LegacySparkCompare(self.spark, sourcedf, targetdf, \
                                                     join_columns=joincolumns, column_mapping=colmapping, \
                                                     cache_intermediates=True)
@@ -616,6 +707,169 @@ class S2TTester:
                 else:
                     df_match_summary = spark.createDataFrame(df_match_summary)
             duppkdict_results = rownulldict_results = rowdupdict_results = empdict_results = rowdict_results = coldict_results = nulldict_results = hashdict_results = dupdict_results = None
+
+        #Added the complete elif loop for schema validation
+        if (testcasetype == 'schema'):
+            if testmode == 'manual' and (sourceformat !='table' or targetformat!='table'):
+                log_info("Schema comparison can not be done for file format with MANUAL mode. PLEASE USE AUTO MODE")
+            joincolumns = ['tabletype','columnname']
+            log_info(f"Joining with column names: {joincolumns}")
+            print("Comparing schema of Source and Target now...(this may take a while)...")
+            
+            comparison_obj = LegacySparkCompare(self.spark, sourcedf, targetdf, \
+                                                    join_columns=joincolumns, column_mapping=colmapping, \
+                                                    cache_intermediates=True)
+            #comparison_obj.report()
+            distinct_rowcount_source = sourcedf.select(joincolumns).distinct().count()
+            distinct_rowcount_target = targetdf.select(joincolumns).distinct().count()
+            duplicate_rowcount_source = rowcount_source - distinct_rowcount_source
+            duplicate_rowcount_target = rowcount_target - distinct_rowcount_target
+            rows_both_all = comparison_obj.rows_both_all
+            rows_mismatch = comparison_obj.rows_both_mismatch
+            rows_only_source = comparison_obj.rows_only_base
+            rows_only_target = comparison_obj.rows_only_compare
+            rowcount_common = comparison_obj.common_row_count
+            rowcount_only_source = rows_only_source.count()
+            rowcount_only_target = rows_only_target.count()
+            rowcount_mismatch = rows_mismatch.count()
+            rowcount_match = rowcount_common - rowcount_mismatch
+            col_only_source = comparison_obj.columns_only_base
+            colcount_source = len(col_only_source)
+            col_only_target = comparison_obj.columns_only_compare
+            colcount_target = len(col_only_target)
+            columns_match = comparison_obj.columns_in_both
+            colcount_match = len(columns_match)
+            columns_compared = comparison_obj.columns_compared
+            colcount_compared = len(columns_compared)
+
+            rowcount_total_mismatch = rowcount_only_target + \
+                rowcount_only_source  # + rowcount_mismatch
+
+            if (rowcount_mismatch > 0 or rowcount_only_target > 0 or rowcount_only_source > 0):
+                log_info("Test Case Failed as Content Mismatched")
+                result_desc = "Content mismatched"
+                test_result = "Failed"
+            else:
+                log_info("Test Case Passed as Content Matched")
+                result_desc = "Content matched"
+                test_result = "Passed"
+
+            dict_results = {'Test Result': test_result,
+                            'No. of matched columns': f"{colcount_match:,}",
+                            'No. of columns compared': f"{colcount_compared:,}",
+                            'No. of cols in Source but not in Target': f"{colcount_source:,}",
+                            'No. of cols in Target but not in Source': f"{colcount_target:,}",
+                            'No. of rows in Source': f"{rowcount_source:,}",
+                            'No. of distinct rows in Source': f"{distinct_rowcount_source:,}",
+                            'No. of duplicate rows in Source': f"{duplicate_rowcount_source:,}",
+                            'No. of rows in Target': f"{rowcount_target:,}",
+                            'No. of distinct rows in Target': f"{distinct_rowcount_target:,}",
+                            'No. of duplicate rows in Target': f"{duplicate_rowcount_target:,}",
+                            'No. of matched rows': f"{rowcount_match:,}",
+                            'No. of mismatched rows': f"{rowcount_mismatch:,}",
+                            'No. of rows in Source but not in Target': f"{rowcount_only_source:,}",
+                            'No. of rows in Target but not in Source': f"{rowcount_only_target:,}"
+                            }
+
+
+            dict_no_of_rows = {'No. of rows in Source': rowcount_source,
+                               'No. of rows in Target': rowcount_target}
+
+            if rows_only_source.limit(1).count()==0 and rows_only_target.limit(1).count()==0:
+                pass
+            if rows_mismatch.limit(1).count()==0:
+                rows_mismatch = None
+                sample_mismatch = None
+            else:
+                sample_mismatch = rows_mismatch.select(
+                    joincolumns).limit(limit)
+                sample_mismatch, concat_list = self.concat_keys(
+                    sample_mismatch, joincolumns)
+                sample_mismatch = sample_mismatch.select(
+                    concat(*concat_list).alias("Key Columns"))
+            if rows_only_source.limit(1).count()==0:
+                rows_only_source = None
+                sample_source_only = None
+            else:
+                sample_source_only = rows_only_source.select(
+                    joincolumns).limit(limit)
+                sample_source_only, concat_list = self.concat_keys(
+                    sample_source_only, joincolumns)
+                sample_source_only = sample_source_only.select(
+                    concat(*concat_list).alias("Key Columns"))
+            if rows_only_target.limit(1).count()==0:
+                rows_only_target = None
+                sample_target_only = None
+            else:
+                sample_target_only = rows_only_target.select(
+                    joincolumns).limit(limit)
+                sample_target_only, concat_list = self.concat_keys(
+                    sample_target_only, joincolumns)
+                sample_target_only = sample_target_only.select(
+                    concat(*concat_list).alias("Key Columns"))
+
+            if rows_both_all == None:
+                df_match_summary = None
+
+            else:
+                df = rows_both_all
+                #col_list = df.columns
+                if len(colmapping) == 0:
+                    column_mapping = {
+                        i: i for i in sourcedf.columns if i not in joincolumns}
+                    collist = [
+                        i for i in sourcedf.columns if i not in joincolumns]
+                else:
+                    column_mapping = dict(colmapping)
+                    collist = [
+                        i for i in sourcedf.columns if i not in joincolumns]
+
+                for column in collist:
+
+                    base_col = column + "_base"
+                    compare_col = column + "_compare"
+                    match_col = column + "_match"
+                    sel_col_list = []
+                    sel_col_list = joincolumns.copy()
+                    sel_col_list.append(base_col)
+                    sel_col_list.append(compare_col)
+                    key_cols = joincolumns.copy()
+
+                    filter_false = match_col + " == False"
+                    filter_true = match_col + " == True"
+
+                    mismatch = df.select(match_col).filter(
+                        filter_false).count()
+                    if (mismatch == 0):
+                        continue
+
+                    match = df.select(match_col).filter(filter_true).count()
+                    dict_match_summary[column] = [match, mismatch]
+
+                    df_details = df.select(sel_col_list).filter(filter_false).withColumnRenamed(
+                        base_col, "Source value").withColumnRenamed(compare_col, "Target value").distinct().limit(limit)
+
+                    df_details, concat_list = self.concat_keys(
+                        df_details, key_cols)
+                    df_details = df_details.select(
+                        concat(*concat_list).alias("Key Columns"), "Source value", "Target value")
+
+                    dict_match_details[column] = df_details
+
+                list_match_summary = []
+                for k, v in dict_match_summary.items():
+                    list_match_summary.append(
+                        [k, column_mapping[k], rowcount_source, rowcount_target, rowcount_match, v[0], v[1]])
+
+                df_match_summary = pd.DataFrame(list_match_summary, columns=[
+                                                "Source Column Name", "Target Column Name", "Rows in Source", "Rows in Target", "Rows with Common Keys", "Rows Matched", "Rows Mismatch"])
+
+                if (len(df_match_summary) == 0):
+                    df_match_summary = None
+                else:
+                    df_match_summary = spark.createDataFrame(df_match_summary)
+            duppkdict_results = rownulldict_results = rowdupdict_results = empdict_results = rowdict_results = coldict_results = nulldict_results = hashdict_results = dupdict_results = None
+
         elif (testcasetype == "duplicate"):
             distinct_rowcount_source = sourcedf.select(
                 joincolumns).distinct().count()
@@ -1298,7 +1552,7 @@ class S2TTester:
                 '5.3 Columns having null count mismatch between source and target', 'section heading')
             pdfobj.create_table_details(sample_mismatch, 'mismatch_summary')
 
-        elif (testcasetype == 'content'):
+        elif (testcasetype == 'content' or testcasetype == 'schema'):
             mismatch_heading = "5. Sample Mismatches " + \
                 str(compare_input['limit']) + " rows"
             pdfobj.write_text(mismatch_heading, 'section heading')

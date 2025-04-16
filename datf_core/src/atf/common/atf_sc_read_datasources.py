@@ -18,6 +18,7 @@ def read_schema(dict_connection,comparetype,spark):
   df_schema = spark.createDataFrame([], StructType([]))
   connectiontype = dict_connection['connectiontype'].strip().lower()
   resourceformat = dict_connection['format'].strip().lower()
+  log_info(f"Inside the read_schema. connectiontype is -> {connectiontype}. resourceformat is -> {resourceformat}." )
     
   if(connectiontype == 'aws-s3' and resourceformat == 'xlsx'):
     df_S2Tschema,query = read_S2Tschema(dict_connection,comparetype,spark)
